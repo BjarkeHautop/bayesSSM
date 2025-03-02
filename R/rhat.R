@@ -2,15 +2,15 @@
 #'
 #' @param chains A matrix of dimensions m (iterations) x k (chains).
 #'
-#' @returns The split Rhat statistic.
+#' @returns The split-Rhat statistic.
 #'
-#' @details Uses the formula for split Rhat proposed by Gelman et al. (2013)
+#' @details Uses the formula for split-Rhat proposed by Gelman et al. (2013).
 #' @export
 #'
 #' @examples
 #' chains <- matrix(rnorm(3000), nrow = 1000, ncol = 3)
-#' split_rhat(chains)
-split_rhat <- function(chains) {
+#' rhat(chains)
+rhat <- function(chains) {
   # Check that the input is a matrix
   if (!is.matrix(chains)) {
     stop("Input 'chains' must be a matrix with dimensions m (iterations) x k
@@ -50,7 +50,7 @@ split_rhat <- function(chains) {
             indicating that the chains have not converged.")
   } else if (r_hat <= 0.99) {
     warning("Bug in code?")
-  } else if (r_hat >= 0.99 & r_hat <= 1) {
+  } else if (r_hat >= 0.99 && r_hat <= 1) {
     # Numerical issue can make it slightly less than 1, change it to 1 if so
     r_hat <- 1
   }

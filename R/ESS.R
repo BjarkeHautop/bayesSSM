@@ -2,15 +2,15 @@
 #'
 #' @param chains A matrix of dimensions m (iterations) x k (chains).
 #'
-#' @returns The estimated effective sample size (ESS) of the chains.
+#' @returns The estimated effective sample size (ess) of the chains.
 #'
-#' @details Uses the formula for ESS proposed by Vehtari et al. (2021)
+#' @details Uses the formula for ESS proposed by Vehtari et al. (2021).
 #' @export
 #'
 #' @examples
 #' chains <- matrix(rnorm(3000), nrow = 1000, ncol = 3)
-#' ESS(chains)
-ESS <- function(chains) {
+#' ess(chains)
+ess <- function(chains) {
   if (!is.matrix(chains)) {
     stop("Input 'chains' must be a matrix with dimensions M (iterations) x K
          (chains).")

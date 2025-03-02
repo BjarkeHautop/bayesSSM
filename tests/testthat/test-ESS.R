@@ -1,10 +1,10 @@
 test_that("ESS independent", {
   n <- 3000
   chains <- matrix(rnorm(n), nrow = n / 3, ncol = 3)
-  expect_equal(ESS(chains), n, tolerance = 0.05 * n)
+  expect_equal(ess(chains), n, tolerance = 0.05 * n)
 })
 
-test_that("ESS autocorrelated", {
+test_that("ess autocorrelated", {
   n <- 3000
   rho <- 0.9
   chains <- matrix(0, nrow = n / 3, ncol = 3)
@@ -17,6 +17,6 @@ test_that("ESS autocorrelated", {
     }
   }
 
-  # The ESS should be lower than `n` due to autocorrelation
-  expect_lt(ESS(chains), n)
+  # The ess should be lower than `n` due to autocorrelation
+  expect_lt(ess(chains), n)
 })
