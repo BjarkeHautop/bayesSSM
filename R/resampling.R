@@ -3,7 +3,7 @@
 #' These functions implement multinomial, stratified, and systematic resampling.
 #' @keywords internal
 
-# Multinomial resampling: samples indices with replacement based on weights
+# Multinomial resampling: samples indices with replacement based on weights.
 .resample_multinomial <- function(particles, weights) {
   n <- length(weights)
   indices <- sample(seq_len(n), size = n, replace = TRUE, prob = weights)
