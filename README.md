@@ -9,7 +9,9 @@
 coverage](https://codecov.io/gh/BjarkeHautop/bayesSSM/graph/badge.svg)](https://app.codecov.io/gh/BjarkeHautop/bayesSSM)
 <!-- badges: end -->
 
-The goal of bayesSSM is to …
+The goal of bayesSSM is to provide a set of tools for Bayesian inference
+in state-space models. The package is currently under development and is
+not yet ready for use.
 
 ## Installation
 
