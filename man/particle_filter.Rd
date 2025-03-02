@@ -74,17 +74,17 @@ A list containing:
     each time step.}
     \item{algorithm}{A character string indicating the filtering algorithm
     used.}
-    \item{particles_history}{(Optional) A matrix of particle states over
-    time (one row per time step),
-      returned if \code{return_particles} is \code{TRUE}.}
+     \item{weights_history}{(Optional) A matrix of particle weights over time
+    (one row per time step), returned if \code{return_particles} is
+    \code{TRUE}.}
   }
 }
 \description{
-This function implements a particle filter for estimating the hidden states in a
-state space model using sequential Monte Carlo methods. It supports three variants:
-Sequential Importance Sampling (SIS), Sequential Importance Sampling with
-Resampling (SISR), and SIS with Adaptive Resampling (SISAR). The latter
-adapts resampling based on the Effective Sample Size (ESS).
+This function implements a particle filter for estimating the hidden states
+in a state space model using sequential Monte Carlo methods. It supports
+three variants: Sequential Importance Sampling (SIS), Sequential Importance
+Sampling with Resampling (SISR), and SIS with Adaptive Resampling (SISAR).
+The latter adapts resampling based on the Effective Sample Size (ESS).
 }
 \details{
 The particle filter is a sequential Monte Carlo method that approximates the
@@ -116,7 +116,7 @@ likelihood_fn <- function(y, particles, t) dnorm(y, mean = particles, sd = 1)
 # Generate some synthetic observations.
 y <- cumsum(rnorm(50))
 
-# Run the particle filter using default settings (SISAR with stratified resampling).
+# Run the particle filter using default settings.
 result <- particle_filter(y, n = 100, init_fn, transition_fn, likelihood_fn)
 plot(result$state_est, type = "l", col = "blue", main = "State Estimates")
 }

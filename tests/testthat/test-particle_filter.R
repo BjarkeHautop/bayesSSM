@@ -16,7 +16,7 @@ likelihood_fn <- function(y, particles, t, ...) rep(1, length(particles))
 y <- rep(0, 5)
 
 test_that("particle_filter returns correct structure", {
-  result <- particle_filter(y, n = 10, init_fn, transition_fn, likelihood_fn, ¨
+  result <- particle_filter(y, n = 10, init_fn, transition_fn, likelihood_fn,
                             algorithm = "SIS")
   expect_true(is.list(result))
   expect_true("state_est" %in% names(result))
