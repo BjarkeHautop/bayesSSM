@@ -7,6 +7,7 @@
 
 [![Codecov test
 coverage](https://codecov.io/gh/BjarkeHautop/bayesSSM/graph/badge.svg)](https://app.codecov.io/gh/BjarkeHautop/bayesSSM)
+[![R-CMD-check](https://github.com/BjarkeHautop/bayesSSM/workflows/R-CMD-check/badge.svg)](https://github.com/BjarkeHautop/bayesSSM/actions)
 <!-- badges: end -->
 
 The goal of bayesSSM is to provide a set of tools for Bayesian inference
