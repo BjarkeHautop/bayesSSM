@@ -16,8 +16,10 @@ likelihood_fn <- function(y, particles, t, ...) rep(1, length(particles))
 y <- rep(0, 5)
 
 test_that("particle_filter returns correct structure", {
-  result <- particle_filter(y, n = 10, init_fn, transition_fn, likelihood_fn,
-                            algorithm = "SIS")
+  result <- particle_filter(y,
+    n = 10, init_fn, transition_fn, likelihood_fn,
+    algorithm = "SIS"
+  )
   expect_true(is.list(result))
   expect_true("state_est" %in% names(result))
   expect_true("ess" %in% names(result))
@@ -26,15 +28,19 @@ test_that("particle_filter returns correct structure", {
 })
 
 test_that("particle_filter returns no particles_history when requested", {
-  result <- particle_filter(y, n = 10, init_fn, transition_fn, likelihood_fn,
-                            algorithm = "SIS", return_particles = FALSE)
+  result <- particle_filter(y,
+    n = 10, init_fn, transition_fn, likelihood_fn,
+    algorithm = "SIS", return_particles = FALSE
+  )
   expect_false("particles_history" %in% names(result))
 })
 
 test_that("particle_filter validates n input", {
   expect_error(
-    particle_filter(y, n = -10, init_fn, transition_fn, likelihood_fn,
-                    algorithm = "SIS"),
+    particle_filter(y,
+      n = -10, init_fn, transition_fn, likelihood_fn,
+      algorithm = "SIS"
+    ),
     "n must be a positive integer"
   )
 })
@@ -51,7 +57,6 @@ transition_fn_ssm <- function(particles, t, phi, sigma_x, ...) {
 }
 
 log_likelihood_fn_ssm <- function(y, particles, t, sigma_y, ...) {
-  # Y_t ~ N(X_t, sigma_y^2)
   dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
 }
 
