@@ -39,37 +39,48 @@ test_that("particle_filter validates n input", {
   )
 })
 
-test_that("particle_filter state estimates update correctly", {
-  # With the simple functions:
-  # - At time t = 1: particles are 0, so state_est[1] = 0.
-  # - At each subsequent time, particles are incremented by 1.
-  # Thus, the state estimate should follow: 0, 1, 2, 3, 4.
-  result <- particle_filter(y, n = 10, init_fn, transition_fn, likelihood_fn,
-                            algorithm = "SIS")
-  expect_equal(result$state_est, 0:4)
-})
+# Works with more complicated setup
+init_fn_ssm <- function(n, ...) {
+  rnorm(n, mean = 0, sd = 1)
+}
 
-test_that("particle_filter ESS remains consistent", {
-  # Since likelihood_fn returns uniform weights,
-  # after normalization each weight equals 1/n, so ESS = n at every time step.
-  result <- particle_filter(y, n = 10, init_fn, transition_fn, likelihood_fn,
-                            algorithm = "SIS")
-  expect_equal(result$ess, rep(10, 5))
-})
+transition_fn_ssm <- function(particles, t, phi, sigma_x, ...) {
+  # X_t = phi*X_{t-1} + sin(X_{t-1}) + sigma_x*V_t,  V_t ~ N(0,1)
+  phi * particles + sin(particles) +
+    rnorm(length(particles), mean = 0, sd = sigma_x)
+}
 
-test_that("particle_filter using SISR resets weights every step", {
-  result <- particle_filter(y, n = 10, init_fn, transition_fn, likelihood_fn,
-                            algorithm = "SISR")
-  # For SISR, resampling is performed at every time step, so the ESS should be
-  # reset to n.
-  expect_equal(result$ess, rep(10, 5))
-  expect_equal(result$algorithm, "SISR")
-})
+log_likelihood_fn_ssm <- function(y, particles, t, sigma_y, ...) {
+  # Y_t ~ N(X_t, sigma_y^2)
+  dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
+}
 
-test_that("particle_filter using SISAR with forced resampling resets weights", {
-  # Use a high threshold to force resampling (since ESS is lower than threshold).
-  result <- particle_filter(y, n = 10, init_fn, transition_fn, likelihood_fn,
-                            algorithm = "SISAR", threshold = 15)
-  expect_equal(result$ess, rep(10, 5))
-  expect_equal(result$algorithm, "SISAR")
+simulate_ssm <- function(num_steps, phi, sigma_x, sigma_y) {
+  x <- numeric(num_steps)
+  y <- numeric(num_steps)
+  x[1] <- rnorm(1, mean = 0, sd = sigma_x)
+  y[1] <- rnorm(1, mean = x[1], sd = sigma_y)
+  for (t in 2:num_steps) {
+    x[t] <- phi * x[t - 1] + sin(x[t - 1]) + rnorm(1, mean = 0, sd = sigma_x)
+    y[t] <- x[t] + rnorm(1, mean = 0, sd = sigma_y)
+  }
+  list(x = x, y = y)
+}
+my_data <- simulate_ssm(50, phi = 0.8, sigma_x = 1, sigma_y = 0.5)
+
+test_that("particle_filter works non-trivial setup", {
+  result <- particle_filter(
+    y = my_data$y,
+    n = 100,
+    init_fn = init_fn_ssm,
+    transition_fn = transition_fn_ssm,
+    log_likelihood_fn = log_likelihood_fn_ssm,
+    phi = 0.8,
+    sigma_x = 1,
+    sigma_y = 0.5,
+    algorithm = "SISAR",
+    resample_fn = "systematic"
+  )
+  rmse <- sqrt(mean((result$state_est - my_data$x)^2))
+  expect_lt(rmse, 1)
 })

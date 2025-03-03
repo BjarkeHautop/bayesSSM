@@ -2,14 +2,14 @@
 % Please edit documentation in R/particle_filter.R
 \name{particle_filter}
 \alias{particle_filter}
-\title{Particle Filter Implementation}
+\title{Particle Filter Implementation with Log-Sum-Exp Trick}
 \usage{
 particle_filter(
   y,
   n,
   init_fn,
   transition_fn,
-  likelihood_fn,
+  log_likelihood_fn,
   algorithm = c("SISAR", "SISR", "SIS"),
   resample_fn = c("stratified", "systematic", "multinomial"),
   threshold = NULL,
@@ -20,71 +20,80 @@ particle_filter(
 \arguments{
 \item{y}{A numeric vector of observations.}
 
-\item{n}{An integer specifying the number of particles. Must be positive.}
+\item{n}{A positive integer specifying the number of particles.}
 
 \item{init_fn}{A function that initializes the particle states. It should
 accept an integer (the number of particles) as its first argument and return
 a vector or matrix of initial particle states.}
 
-\item{transition_fn}{A function describing the state transition model.
-It should take the current particles and the current time step as
-arguments, and return the propagated particles.}
+\item{transition_fn}{A function describing the state transition model. It
+should take the current particles and the current time step as arguments and
+return the propagated particles.}
 
-\item{likelihood_fn}{A function that computes the likelihood weights for the
+\item{log_likelihood_fn}{A function that computes the log likelihoods for the
 particles. It should accept an observation, the current particles, and the
-current time step as arguments.}
+current time step as arguments and return a numeric vector of log likelihood
+values.}
 
 \item{algorithm}{A character string specifying the particle filtering
-algorithm to use. Options are:
-\describe{
-  \item{"SIS"}{Sequential Importance Sampling (without resampling).}
-  \item{"SISR"}{Sequential Importance Sampling with resampling at every
-  time step.}
-  \item{"SISAR"}{SIS with adaptive resampling based on Effective Sample
-  Size (ESS).}
-}
-The default is \code{"SISAR"}.}
+algorithm. Options are:
+  \describe{
+    \item{"SIS"}{Sequential Importance Sampling (without resampling).}
+    \item{"SISR"}{Sequential Importance Sampling with resampling at every
+    time step.}
+    \item{"SISAR"}{SIS with adaptive resampling based on ESS.}
+  }
+  The default is \code{"SISAR"}.}
 
 \item{resample_fn}{A character string specifying the resampling method
-(used with \code{"SISR"} or \code{"SISAR"}).
-Options include:
-\describe{
-  \item{"stratified"}{(default) Stratified resampling.}
-  \item{"systematic"}{Systematic resampling.}
-  \item{"multinomial"}{Multinomial resampling.}
-}}
+(used with \code{"SISR"} or \code{"SISAR"}). Options include:
+  \describe{
+    \item{"stratified"}{(default) Stratified resampling.}
+    \item{"systematic"}{Systematic resampling.}
+    \item{"multinomial"}{Multinomial resampling.}
+  }}
 
 \item{threshold}{A numeric value specifying the ESS threshold for triggering
-resampling in the \code{"SISR"} or \code{"SISAR"} algorithm.
-If not provided, it defaults to \code{n / 2}.}
+resampling in the \code{"SISAR"} algorithm. If not provided, it defaults to
+\code{n / 2}.}
 
 \item{return_particles}{A logical value indicating whether to return the full
-particle history.
-Defaults to \code{TRUE}.}
+particle history. Defaults to \code{TRUE}.}
 
 \item{...}{Additional arguments passed to \code{init_fn},
-\code{transition_fn}, and \code{likelihood_fn}.}
+\code{transition_fn}, and \code{log_likelihood_fn}.}
 }
 \value{
 A list containing:
   \describe{
     \item{state_est}{A numeric vector of estimated states over time,
     computed as the weighted average of particles.}
-    \item{ess}{A numeric vector containing the Effective Sample Size (ESS) at
-    each time step.}
+    \item{ess}{A numeric vector of the Effective Sample Size (ESS) at each
+    time step.}
+    \item{loglike}{The accumulated log-likelihood of the observations given
+    the model.}
     \item{algorithm}{A character string indicating the filtering algorithm
     used.}
-     \item{weights_history}{(Optional) A matrix of particle weights over time
+    \item{particles_history}{(Optional) A matrix of particle states over
+    time (one row per time step), returned if \code{return_particles}
+    is \code{TRUE}.}
+    \item{weights_history}{(Optional) A matrix of particle weights over time
     (one row per time step), returned if \code{return_particles} is
     \code{TRUE}.}
   }
 }
 \description{
 This function implements a particle filter for estimating the hidden states
-in a state space model using sequential Monte Carlo methods. It supports
-three variants: Sequential Importance Sampling (SIS), Sequential Importance
-Sampling with Resampling (SISR), and SIS with Adaptive Resampling (SISAR).
-The latter adapts resampling based on the Effective Sample Size (ESS).
+in a state space model using sequential Monte Carlo methods. Three filtering
+variants are supported:
+\enumerate{
+  \item \strong{SIS:} Sequential Importance Sampling (without resampling).
+  \item \strong{SISR:} Sequential Importance Sampling with resampling at
+  every time step.
+  \item \strong{SISAR:} SIS with adaptive resampling based on the Effective
+  Sample Size (ESS). Resampling is triggered when the ESS falls below a
+  given threshold (default \code{n / 2}).
+}
 }
 \details{
 The particle filter is a sequential Monte Carlo method that approximates the
@@ -100,7 +109,7 @@ supported algorithms differ in their approach to resampling:
   specified threshold (defaulting to \code{n / 2}).
 }
 The Effective Sample Size (ESS) in context of particle filters is defined as
-\deqn{ESS = \frac{1}{\sum_{i=1}^n w_i^2},}
+\deqn{ESS = \left(\sum_{i=1}^n w_i^2\right)^{-1},}
 where \eqn{w_i} are the normalized weights of the particles.
 
 The default resampling method is stratified resampling, as Douc et al., 2005
@@ -108,15 +117,17 @@ showed that it always gives a lower variance compared to
 multinomial resampling.
 }
 \examples{
-# Define example functions for initialization, transition, and likelihood.
 init_fn <- function(n) rnorm(n, 0, 1)
 transition_fn <- function(particles, t) particles + rnorm(length(particles))
-likelihood_fn <- function(y, particles, t) dnorm(y, mean = particles, sd = 1)
+log_likelihood_fn <- function(y, particles, t) {
+  dnorm(y, mean = particles, sd = 1, log = TRUE)
+}
 
-# Generate some synthetic observations.
+# Generate synthetic observations.
 y <- cumsum(rnorm(50))
+n <- 100
 
 # Run the particle filter using default settings.
-result <- particle_filter(y, n = 100, init_fn, transition_fn, likelihood_fn)
+result <- particle_filter(y, n, init_fn, transition_fn, log_likelihood_fn)
 plot(result$state_est, type = "l", col = "blue", main = "State Estimates")
 }
