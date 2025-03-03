@@ -2,4 +2,6 @@
 
 export(ess)
 export(particle_filter)
+export(pmmh)
 export(rhat)
+export(tune_control)
