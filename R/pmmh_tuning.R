@@ -55,6 +55,7 @@
   variance_estimate <- stats::var(pilot_loglikes)
   target_n <- ceiling(pilot_n * variance_estimate)
   target_n <- max(target_n, 100) # Ensure a minimum number of particles
+  target_n <- min(target_n, 2000) # Limit to 2000 particles
 
   list(
     variance_estimate = variance_estimate,
@@ -224,8 +225,6 @@
       # Check if proposed theta is valid (log-prior is finite)
       if (all(is.finite(log_prior_proposed))) {
         valid_theta <- TRUE
-      } else {
-        cat("Proposed theta outside valid domain, retrying...\n")
       }
     }
 
@@ -289,7 +288,7 @@
   print(pilot_theta_mean)
   if (ncol(pilot_theta_post) > 1) {
     if (!is.null(param_transform) && any(param_transform == "log")) {
-      cat("Pilot chain posterior covariance (on transformed spaced):\n")
+      cat("Pilot chain posterior covariance (on transformed space):\n")
     } else {
       cat("Pilot chain posterior covariance:\n")
     }

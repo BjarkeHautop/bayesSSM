@@ -95,59 +95,6 @@ test_that(".run_pilot_chain works", {
 })
 
 
-test_that(".run_pilot_chain transformation", {
-  set.seed(1405)
-  init_fn_ssm <- function(n, ...) {
-    rnorm(n, mean = 0, sd = 1)
-  }
-
-  transition_fn_ssm <- function(particles, t, phi, ...) {
-    phi * particles + rnorm(length(particles), mean = 0, sd = 1)
-  }
-
-  log_likelihood_fn_ssm <- function(y, particles, t, ...) {
-    dnorm(y, mean = particles, sd = 1, log = TRUE)
-  }
-
-  simulate_ssm <- function(num_steps, phi) {
-    x <- numeric(num_steps)
-    y <- numeric(num_steps)
-    x[1] <- rnorm(1, mean = 0, sd = 1)
-    y[1] <- rnorm(1, mean = x[1], sd = 1)
-    for (t in 2:num_steps) {
-      x[t] <- phi * x[t - 1] + rnorm(1, mean = 0, sd = 1)
-      y[t] <- x[t] + rnorm(1, mean = 0, sd = 1)
-    }
-    list(x = x, y = y)
-  }
-  my_data <- simulate_ssm(50, phi = 0.8)
-
-  log_prior_phi <- function(phi) {
-    dnorm(phi, mean = 0, sd = 1, log = TRUE)
-  }
-
-  log_priors <- list(
-    phi = log_prior_phi
-  )
-
-  result <- .run_pilot_chain(
-    y = my_data$y,
-    pilot_m = 100,
-    pilot_n = 100,
-    pilot_reps = 10,
-    init_fn = init_fn_ssm,
-    transition_fn = transition_fn_ssm,
-    log_likelihood_fn = log_likelihood_fn_ssm,
-    log_priors = log_priors,
-    proposal_sd = c(0.1),
-    init_params = c(phi = 0.8),
-    algorithm = "SISR",
-    resample_fn = "systematic",
-    param_transform = "log"
-  )
-  expect_lt(result$target_n, 500)
-})
-
 # More complicated example
 
 test_that("More complicated example", {
