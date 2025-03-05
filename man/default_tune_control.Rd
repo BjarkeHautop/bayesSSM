@@ -5,7 +5,7 @@
 \title{Create Tuning Control Parameters}
 \usage{
 default_tune_control(
-  pilot_proposal_sd = 0.1,
+  pilot_proposal_sd = 1,
   pilot_n = 100,
   pilot_m = 2000,
   pilot_target_var = 1,
@@ -17,7 +17,7 @@ default_tune_control(
 }
 \arguments{
 \item{pilot_proposal_sd}{Standard deviation for pilot proposals. Default is
-0.1.}
+1.}
 
 \item{pilot_n}{Number of pilot particles for particle filter. Default is 100.}
 

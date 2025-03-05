@@ -26,7 +26,7 @@
 #' filter using the provided parameter vector \code{theta}. It then estimates
 #' the variance of the log-likelihoods and scales the initial particle number
 #' by this variance. The final number of particles is taken as the ceiling of
-#' the scaled value with a minimum of 100.
+#' the scaled value with a minimum of 100 and a maximum of 1000.
 #'
 #' @keywords internal
 .pilot_run <- function(y, pilot_n, pilot_reps, init_fn_ssm,
@@ -55,7 +55,7 @@
   variance_estimate <- stats::var(pilot_loglikes)
   target_n <- ceiling(pilot_n * variance_estimate)
   target_n <- max(target_n, 100) # Ensure a minimum number of particles
-  target_n <- min(target_n, 2000) # Limit to 2000 particles
+  target_n <- min(target_n, 1000) # Limit to 1000 particles
 
   list(
     variance_estimate = variance_estimate,

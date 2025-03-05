@@ -3,7 +3,7 @@
 #' This function creates a list of tuning parameters used by the pmmh function.
 #'
 #' @param pilot_proposal_sd Standard deviation for pilot proposals. Default is
-#' 0.1.
+#' 1.
 #' @param pilot_n Number of pilot particles for particle filter. Default is 100.
 #' @param pilot_m Number of iterations for MCMC. Default is 2000.
 #' @param pilot_target_var The target variance for the posterior log-likelihood
@@ -18,7 +18,7 @@
 #' @return A list of tuning control parameters.
 #' @export
 default_tune_control <- function(
-  pilot_proposal_sd = 0.1, pilot_n = 100, pilot_m = 2000,
+  pilot_proposal_sd = 1, pilot_n = 100, pilot_m = 2000,
   pilot_target_var = 1, pilot_burn_in = 1000, pilot_reps = 10,
   pilot_algorithm = c("SISAR", "SISR", "SIS"),
   pilot_resample_fn = c("stratified", "systematic", "multinomial")
@@ -140,11 +140,12 @@ default_tune_control <- function(
 #'   sigma_y = log_prior_sigma_y
 #' )
 #' # Generate data
-#' x <- numeric(50)
-#' y <- numeric(50)
+#' t_val <- 20
+#' x <- numeric(t_val)
+#' y <- numeric(t_val)
 #' x[1] <- rnorm(1, mean = 0, sd = 1)
 #' y[1] <- rnorm(1, mean = x[1], sd = 0.5)
-#' for (t in 2:50) {
+#' for (t in 2:t_val) {
 #'   x[t] <- 0.8 * x[t - 1] + sin(x[t - 1]) + rnorm(1, mean = 0, sd = 1)
 #'   y[t] <- x[t] + rnorm(1, mean = 0, sd = 0.5)
 #' }
@@ -158,7 +159,7 @@ default_tune_control <- function(
 #'   log_priors = log_priors,
 #'   init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
 #'   burn_in = 100,
-#'   num_chains = 1,
+#'   num_chains = 2,
 #'   param_transform = c("identity", "log", "log"),
 #'   tune_control = default_tune_control(pilot_m = 100, pilot_burn_in = 50)
 #' )
