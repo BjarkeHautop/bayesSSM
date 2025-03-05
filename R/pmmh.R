@@ -168,6 +168,7 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
                  resample_fn = c("stratified", "systematic", "multinomial"),
                  param_transform = NULL,
                  tune_control = default_tune_control(),
+                 verbose = FALSE,
                  ...) {
 
   # ---------------------------
@@ -213,7 +214,7 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
     }
   }
 
-  # Add ... as arg if user didn't
+  # Add ... as arg to functions if not present
   has_dots <- function(fun) {
     "..." %in% names(formals(fun))
   }
@@ -406,28 +407,65 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
   # Step 4: Compute diagnostics (ESS and Rhat) for each parameter.
   # ---------------------------
 
-  n_params <- ncol(theta_chain_post[[1]])
-  diagnostics <- list()
-  for (j in 1:n_params) {
-    # Combine the j-th parameter across all chains into a matrix:
-    # Each column corresponds to one chain.
-    param_matrix <- sapply(theta_chain_post, function(chain) chain[, j])
-    diagnostics[[ colnames(theta_chain_post[[1]])[j] ]] <- list(
-      ess = ess(param_matrix),
-      rhat = rhat(param_matrix)
-    )
-  }
+  separate_parameters <- function(theta_chain_post) {
+    param_names <- colnames(theta_chain_post[[1]])
 
+    result <- list()
+
+    for (param in param_names) {
+      # Extract and bind the values of the parameter for each chain
+      param_combined <- do.call(
+        cbind, lapply(1:length(theta_chain_post), function(i) {
+          chain_data <- theta_chain_post[[i]]
+
+        param_data <- chain_data[, param, drop = FALSE]
+        colnames(param_data) <- paste(param, "chain", i, sep = "_")
+
+        return(param_data)
+      }))
+
+      result[[param]] <- param_combined
+    }
+
+    result
+  }
+  theta_chain_per_param <- separate_parameters(theta_chain_post)
+  param_ess <- list()
+  param_Rhat <- list()
+
+  for (param in names(theta_chain_per_param)) {
+    param_chain <- theta_chain_per_param[[param]]
+
+    param_ess[[param]] <- ess(param_chain)
+    param_Rhat[[param]] <- rhat(param_chain)
+  }
   result <- list(
     theta_chain = theta_chain_post,   # MCMC samples of theta
     latent_state_chain = state_est_chain_post,  # Samples of latent states
     latent_state_estimate = latent_state_estimate, # Final state estimates
-    diagnostics = diagnostics  # Convergence diagnostics (ESS, Rhat)
+    diagnostics = list(ess = param_ess, rhat = param_Rhat)
   )
 
   # Assign class
   class(result) <- "pmmh_output"
 
+  print(result)
+
+  # If any ESS<400 print a warning
+  warning("Some ESS values are below 400, indicating poor mixing.
+          Consider running the chains for more iterations.")
+
+  # If any Rhat>1.01 print a warning
+  warning("Some Rhat values are above 1.01, indicating that the chains
+          have not converged.
+          Consider running the chains for more iterations
+          and/or increase burn_in.")
+
+  # If any Rhat<0.99 please submit issue to Github
+  message("Some Rhat values are below 0.99, please increase iterations or/and
+          particles.
+          If the issue persists it could be a bug,
+          please submit an issue to Github.")
   return(result)
 }
 

@@ -45,15 +45,9 @@ rhat <- function(chains) {
   # Compute the potential scale reduction statistic, Rhat
   r_hat <- sqrt(var_hat / w)
 
-  if (r_hat > 1.01) {
-    warning("The split Rhat statistic is greater than 1.01,
-            indicating that the chains have not converged.")
-  } else if (r_hat <= 0.99) {
-    warning("Bug in code?")
-  } else if (r_hat >= 0.99 && r_hat <= 1) {
+  if (r_hat >= 0.99 && r_hat <= 1) {
     # Numerical issue can make it slightly less than 1, change it to 1 if so
     r_hat <- 1
   }
-
   r_hat
 }

@@ -62,49 +62,41 @@ test_that("default_tune_control errors on invalid inputs", {
 #--------------------------
 
 # -----------------------------
-# Dummy model functions for pmmh
-# -----------------------------
-
-init_fn_ssm <- function(particles) rnorm(particles, mean = 0, sd = 1)
-transition_fn_ssm <- function(particles, phi, sigma_x) {
-  phi * particles + sin(particles) +
-    rnorm(length(particles), mean = 0, sd = sigma_x)
-}
-log_likelihood_fn_ssm <- function(y, particles, sigma_y) {
-  dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
-}
-log_prior_phi <- function(phi) {
-  dnorm(phi, mean = 0, sd = 1, log = TRUE)
-}
-log_prior_sigma_x <- function(sigma) {
-  dexp(sigma, rate = 1, log = TRUE)
-}
-log_prior_sigma_y <- function(sigma) {
-  dexp(sigma, rate = 1, log = TRUE)
-}
-log_priors <- list(
-  phi = log_prior_phi,
-  sigma_x = log_prior_sigma_x,
-  sigma_y = log_prior_sigma_y
-)
-
-# Mock functions for checks
-mock_init_fn <- function(particles, phi, sigma_x) particles
-mock_transition_fn <- function(particles, phi, sigma_x) particles
-mock_log_likelihood_fn <- function(y, particles, sigma_y) particles
-
-valid_init_params <- list(phi = 0.8, sigma_x = 1, sigma_y = 0.5)
-valid_log_priors <- list(
-  phi = function(phi) 0,
-  sigma_x = function(sigma_x) 0,
-  sigma_y = function(sigma_y) 0
-)
-
-# -----------------------------
 # Input Validation Tests for pmmh
 # -----------------------------
 
 test_that("pmmh checks input types", {
+  init_fn_ssm <- function(particles) rnorm(particles, mean = 0, sd = 1)
+  transition_fn_ssm <- function(particles, phi, sigma_x) {
+    phi * particles + sin(particles) +
+      rnorm(length(particles), mean = 0, sd = sigma_x)
+  }
+  log_likelihood_fn_ssm <- function(y, particles, sigma_y) {
+    dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
+  }
+  log_prior_phi <- function(phi) {
+    dnorm(phi, mean = 0, sd = 1, log = TRUE)
+  }
+  log_prior_sigma_x <- function(sigma) {
+    dexp(sigma, rate = 1, log = TRUE)
+  }
+  log_prior_sigma_y <- function(sigma) {
+    dexp(sigma, rate = 1, log = TRUE)
+  }
+  log_priors <- list(
+    phi = log_prior_phi,
+    sigma_x = log_prior_sigma_x,
+    sigma_y = log_prior_sigma_y
+  )
+
+  valid_init_params <- list(phi = 0.8, sigma_x = 1, sigma_y = 0.5)
+  valid_log_priors <- list(
+    phi = function(phi) 0,
+    sigma_x = function(sigma_x) 0,
+    sigma_y = function(sigma_y) 0
+  )
+
+
   # y must be numeric
   expect_error(pmmh(
     y = "not numeric", m = 10, init_fn_ssm = init_fn_ssm,
@@ -144,6 +136,19 @@ test_that("pmmh checks input types", {
 # -----------------------------
 
 test_that("pmmh checks function arguments", {
+
+  valid_init_params <- list(phi = 0.8, sigma_x = 1, sigma_y = 0.5)
+  valid_log_priors <- list(
+    phi = function(phi) 0,
+    sigma_x = function(sigma_x) 0,
+    sigma_y = function(sigma_y) 0
+  )
+
+  mock_init_fn <- function(particles, phi, sigma_x) particles
+  mock_transition_fn <- function(particles, phi, sigma_x) particles
+  mock_log_likelihood_fn <- function(y, particles, sigma_y) particles
+
+
   # Check if functions accept 'particles'
   expect_error(pmmh(
     y = numeric(50),
@@ -178,6 +183,18 @@ test_that("pmmh checks function arguments", {
 # -----------------------------
 
 test_that("pmmh checks that parameters match init_params and log_priors", {
+
+  valid_init_params <- list(phi = 0.8, sigma_x = 1, sigma_y = 0.5)
+  valid_log_priors <- list(
+    phi = function(phi) 0,
+    sigma_x = function(sigma_x) 0,
+    sigma_y = function(sigma_y) 0
+  )
+
+  mock_init_fn <- function(particles, phi, sigma_x) particles
+  mock_transition_fn <- function(particles, phi, sigma_x) particles
+  mock_log_likelihood_fn <- function(y, particles, sigma_y) particles
+
   invalid_init_params <- list(phi = 0.8, sigma_x = 1)
   expect_error(pmmh(
     y = numeric(50), m = 10, init_fn_ssm = mock_init_fn,

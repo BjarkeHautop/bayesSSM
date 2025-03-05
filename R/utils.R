@@ -1,3 +1,18 @@
+#' Helper function to validate input of user-defined functions and priors
+#'
+#' @param init_fn_ssm A function to initialize the state-space model.
+#' @param transition_fn_ssm A function that defines the state transition of the
+#' state-space model.
+#' @param log_likelihood_fn_ssm A function that calculates the log-likelihood
+#' for the state-space model given latent states.
+#' @param log_priors A list of functions for computing the log-prior of each
+#' parameter.
+#' @param init_params A vector of initial parameter values.
+#'
+#' @returns
+#' @export
+#'
+#' @examples
 .check_params_match <- function(
     init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm, init_params,
     log_priors) {
