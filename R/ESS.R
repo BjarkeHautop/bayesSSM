@@ -18,6 +18,12 @@ ess <- function(chains) {
 
   m <- nrow(chains)
   k <- ncol(chains)
+  if (m < 2) {
+    stop("Number of iterations must be at least 2.")
+  }
+  if (k < 2) {
+    stop("Number of chains must be at least 2.")
+  }
 
   # --- Compute within-chain and between-chain variances ---
   chain_means <- colMeans(chains)

@@ -213,3 +213,61 @@ test_that("pmmh checks that parameters match init_params and log_priors", {
     init_params = valid_init_params, burn_in = 1),
     "Parameters in functions do not match the names in log_priors")
 })
+
+test_that("pmmh works with valid arguments", {
+  set.seed(1405)
+  init_fn_ssm <- function(particles) {
+    stats::rnorm(particles, mean = 0, sd = 1)
+  }
+  transition_fn_ssm <- function(particles, phi, sigma_x) {
+    phi * particles + sin(particles) +
+      stats::rnorm(length(particles), mean = 0, sd = sigma_x)
+  }
+  log_likelihood_fn_ssm <- function(y, particles, sigma_y) {
+    stats::dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
+  }
+  log_prior_phi <- function(phi) {
+    stats::dnorm(phi, mean = 0, sd = 1, log = TRUE)
+  }
+  log_prior_sigma_x <- function(sigma) {
+    stats::dexp(sigma, rate = 1, log = TRUE)
+  }
+  log_prior_sigma_y <- function(sigma) {
+    stats::dexp(sigma, rate = 1, log = TRUE)
+  }
+  log_priors <- list(
+    phi = log_prior_phi,
+    sigma_x = log_prior_sigma_x,
+    sigma_y = log_prior_sigma_y
+  )
+
+  # Generate data
+  t_val <- 20
+  x <- numeric(t_val)
+  y <- numeric(t_val)
+  x[1] <- rnorm(1, mean = 0, sd = 1)
+  y[1] <- rnorm(1, mean = x[1], sd = 0.5)
+  for (t in 2:t_val) {
+    x[t] <- 0.8 * x[t - 1] + sin(x[t - 1]) + rnorm(1, mean = 0, sd = 1)
+    y[t] <- x[t] + rnorm(1, mean = 0, sd = 0.5)
+  }
+
+  expect_error({
+    suppressWarnings({
+      pmmh_result <- pmmh(
+        y = y,
+        m = 200,
+        init_fn_ssm = init_fn_ssm,
+        transition_fn_ssm = transition_fn_ssm,
+        log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+        log_priors = log_priors,
+        init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+        burn_in = 100,
+        num_chains = 2,
+        param_transform = c("identity", "log", "log"),
+        tune_control = default_tune_control(pilot_m = 100, pilot_burn_in = 50)
+      )
+    })
+  }, regexp = NA)  # Expects that no errors are thrown
+})
+

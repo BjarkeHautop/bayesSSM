@@ -86,8 +86,9 @@ default_tune_control <- function(
 #' containing tuning parameters for the pilot chain, such as \code{pilot_m},
 #' \code{pilot_n}, \code{pilot_reps}, \code{pilot_proposal_sd},
 #' \code{pilot_algorithm}, and \code{pilot_resample_fn}.
-#' @param ... Additional arguments passed to the state-space model functions
-#' and the particle filter.
+#' @param verbose A logical value indicating whether to print information about
+#' pilot_run tuning. Defaults to \code{FALSE}.
+#' @param seed An optional integer to set the seed for reproducibility.
 #'
 #' @details The PMMH algorithm proceeds in three main steps:
 #' \enumerate{
@@ -169,8 +170,9 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
                  param_transform = NULL,
                  tune_control = default_tune_control(),
                  verbose = FALSE,
-                 ...) {
-
+                 seed = NULL
+                 ) {
+  if (!is.null(seed)) set.seed(seed)
   # ---------------------------
   # Input validation
   # ---------------------------
@@ -260,6 +262,7 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
   # ---------------------------
   # Step 1: Run the pilot (particle) chain for tuning
   # ---------------------------
+  message("Running pilot chain for tuning...")
   pilot_chain <- .run_pilot_chain(
     y = y,
     pilot_m = tune_control$pilot_m,
@@ -274,7 +277,7 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
     algorithm = tune_control$pilot_algorithm,
     resample_fn = tune_control$pilot_resample_fn,
     param_transform = param_transform,
-    ...
+    verbose = verbose
   )
 
   init_theta <- pilot_chain$pilot_theta_mean
@@ -316,8 +319,7 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
         algorithm = algorithm,
         resample_fn = resample_fn
       ),
-      as.list(current_theta),
-      list(...)
+      as.list(current_theta)
     ))
     current_loglike <- pf_result$loglike
     current_state_est <- pf_result$state_est
@@ -354,8 +356,7 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
           algorithm = algorithm,
           resample_fn = resample_fn
         ),
-        as.list(proposed_theta),
-        list(...)
+        as.list(proposed_theta)
       ))
       proposed_loglike <- pf_proposed$loglike
 
@@ -373,7 +374,7 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
                              log_jacobian_current)
       log_accept_ratio <- log_accept_num - log_accept_denom
 
-      if (log(runif(1)) < log_accept_ratio) {
+      if (log(stats::runif(1)) < log_accept_ratio) {
         current_theta <- proposed_theta
         current_loglike <- proposed_loglike
         current_state_est <- pf_proposed$state_est
@@ -409,36 +410,53 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
 
   separate_parameters <- function(theta_chain_post) {
     param_names <- colnames(theta_chain_post[[1]])
-
     result <- list()
 
     for (param in param_names) {
       # Extract and bind the values of the parameter for each chain
       param_combined <- do.call(
-        cbind, lapply(1:length(theta_chain_post), function(i) {
+        cbind, lapply(seq_along(theta_chain_post), function(i) {
           chain_data <- theta_chain_post[[i]]
-
-        param_data <- chain_data[, param, drop = FALSE]
-        colnames(param_data) <- paste(param, "chain", i, sep = "_")
-
-        return(param_data)
-      }))
-
+          param_data <- chain_data[, param, drop = FALSE]
+          colnames(param_data) <- paste(param, "chain", i, sep = "_")
+          return(param_data)
+        })
+      )
       result[[param]] <- param_combined
     }
 
-    result
+    return(result)
   }
+
   theta_chain_per_param <- separate_parameters(theta_chain_post)
   param_ess <- list()
   param_Rhat <- list()
 
+  num_chains <- length(theta_chain_post)
+
+  # Initialize flag for ESS message
+  ess_message_shown <- FALSE
+
   for (param in names(theta_chain_per_param)) {
     param_chain <- theta_chain_per_param[[param]]
 
-    param_ess[[param]] <- ess(param_chain)
+    if (num_chains > 1) {
+      param_ess[[param]] <- ess(param_chain)
+    } else {
+      param_ess[[param]] <- NA
+      # Show the message only once
+      if (!ess_message_shown) {
+        message(paste0(
+          "ESS cannot be computed with only one chain. Run at least 2 chains."
+        ))
+        ess_message_shown <- TRUE
+      }
+    }
+
     param_Rhat[[param]] <- rhat(param_chain)
   }
+
+
   result <- list(
     theta_chain = theta_chain_post,   # MCMC samples of theta
     latent_state_chain = state_est_chain_post,  # Samples of latent states
@@ -452,20 +470,30 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
   print(result)
 
   # If any ESS<400 print a warning
-  warning("Some ESS values are below 400, indicating poor mixing.
-          Consider running the chains for more iterations.")
+  if (any(sapply(param_ess, function(x) !is.na(x) && x < 400))) {
+    warning(paste0(
+      "Some ESS values are below 400, indicating poor mixing. ",
+      "Consider running the chains for more iterations."
+    ))
+  }
 
   # If any Rhat>1.01 print a warning
-  warning("Some Rhat values are above 1.01, indicating that the chains
-          have not converged.
-          Consider running the chains for more iterations
-          and/or increase burn_in.")
+  if (any(sapply(param_Rhat, function(x) x > 1.01))) {
+    warning(paste0(
+      "Some Rhat values are above 1.01, indicating that the chains ",
+      "have not converged. Consider running the chains for more iterations ",
+      "and/or increase burn_in."
+    ))
+  }
 
-  # If any Rhat<0.99 please submit issue to Github
-  message("Some Rhat values are below 0.99, please increase iterations or/and
+  # If any Rhat<0.99 Bug?
+  if (any(sapply(param_Rhat, function(x) x < 0.99))) {
+    message("Some Rhat values are below 0.99, please increase iterations or/and
           particles.
           If the issue persists it could be a bug,
           please submit an issue to Github.")
-  return(result)
+  }
+
+  result
 }
 

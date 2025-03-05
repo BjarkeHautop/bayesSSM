@@ -18,7 +18,8 @@ pmmh(
   resample_fn = c("stratified", "systematic", "multinomial"),
   param_transform = NULL,
   tune_control = default_tune_control(),
-  ...
+  verbose = FALSE,
+  seed = NULL
 )
 }
 \arguments{
@@ -62,8 +63,10 @@ containing tuning parameters for the pilot chain, such as \code{pilot_m},
 \code{pilot_n}, \code{pilot_reps}, \code{pilot_proposal_sd},
 \code{pilot_algorithm}, and \code{pilot_resample_fn}.}
 
-\item{...}{Additional arguments passed to the state-space model functions
-and the particle filter.}
+\item{verbose}{A logical value indicating whether to print information about
+pilot_run tuning. Defaults to \code{FALSE}.}
+
+\item{seed}{An optional integer to set the seed for reproducibility.}
 }
 \value{
 A list containing:

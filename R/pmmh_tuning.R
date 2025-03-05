@@ -66,7 +66,6 @@
 
 #' Run Pilot Chain for Posterior Estimation
 #'
-#'
 #' @param y A numeric vector of observations.
 #' @param pilot_m An integer specifying the number of iterations for the pilot
 #' chain.
@@ -128,9 +127,8 @@
                              ),
                              param_transform = NULL,
                              init_params = NULL,
+                             verbose = FALSE,
                              ...) {
-  cat("Running pilot chain to estimate posterior mean and covariance...\n")
-
   num_params <- length(log_priors)
   pilot_theta_chain <- matrix(NA, nrow = pilot_m, ncol = num_params)
   colnames(pilot_theta_chain) <- names(log_priors)
@@ -283,24 +281,26 @@
   } else {
     pilot_theta_cov <- stats::var(pilot_theta_post)
   }
-
-  cat("Pilot chain posterior mean:\n")
-  print(pilot_theta_mean)
-  if (ncol(pilot_theta_post) > 1) {
-    if (!is.null(param_transform) && any(param_transform == "log")) {
-      cat("Pilot chain posterior covariance (on transformed space):\n")
+  if (verbose) {
+    message("Pilot chain posterior mean:")
+    print(pilot_theta_mean)
+    if (ncol(pilot_theta_post) > 1) {
+      if (!is.null(param_transform) && any(param_transform == "log")) {
+        message("Pilot chain posterior covariance (on transformed space):")
+      } else {
+        message("Pilot chain posterior covariance:")
+      }
+      print(pilot_theta_cov)
     } else {
-      cat("Pilot chain posterior covariance:\n")
+      if (!is.null(param_transform) && any(param_transform == "log")) {
+        message("Pilot chain posterior variance (on transformed space):")
+      } else {
+        message("Pilot chain posterior variance:")
+      }
+      print(pilot_theta_cov)
     }
-    print(pilot_theta_cov)
-  } else {
-    if (!is.null(param_transform) && any(param_transform == "log")) {
-      cat("Pilot chain posterior variance (on transformed space):\n")
-    } else {
-      cat("Pilot chain posterior variance:\n")
-    }
-    print(pilot_theta_cov)
   }
+
 
   # Run the pilot run using the estimated posterior mean.
   pilot_result <- do.call(.pilot_run, c(
@@ -317,7 +317,7 @@
   ))
 
   target_n <- pilot_result$target_n
-  cat("Estimated target number of particles for PMMH:", target_n, "\n")
+  message("Using ", target_n, " number of particles for PMMH:")
 
   list(
     pilot_theta_mean = pilot_theta_mean,

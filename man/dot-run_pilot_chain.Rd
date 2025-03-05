@@ -18,6 +18,7 @@
   resample_fn = c("stratified", "systematic", "multinomial"),
   param_transform = NULL,
   init_params = NULL,
+  verbose = FALSE,
   ...
 )
 }

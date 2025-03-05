@@ -82,9 +82,9 @@ test_that(".run_pilot_chain works", {
     pilot_m = 100,
     pilot_n = 100,
     pilot_reps = 10,
-    init_fn = init_fn_ssm,
-    transition_fn = transition_fn_ssm,
-    log_likelihood_fn = log_likelihood_fn_ssm,
+    init_fn_ssm = init_fn_ssm,
+    transition_fn_ssm = transition_fn_ssm,
+    log_likelihood_fn_ssm = log_likelihood_fn_ssm,
     log_priors = log_priors,
     proposal_sd = c(0.1),
     init_params = c(phi = 0.8),
@@ -100,17 +100,17 @@ test_that(".run_pilot_chain works", {
 test_that("More complicated example", {
   set.seed(1405)
 
-  init_fn_ssm <- function(n, ...) {
-    rnorm(n, mean = 0, sd = 1)
+  init_fn_ssm <- function(particles, ...) {
+    rnorm(particles, mean = 0, sd = 1)
   }
 
-  transition_fn_ssm <- function(particles, t, phi, sigma_x, ...) {
+  transition_fn_ssm <- function(particles, phi, sigma_x, ...) {
     # X_t = phi*X_{t-1} + sin(X_{t-1}) + sigma_x*V_t,  V_t ~ N(0,1)
     phi * particles + sin(particles) +
       rnorm(length(particles), mean = 0, sd = sigma_x)
   }
 
-  log_likelihood_fn_ssm <- function(y, particles, t, sigma_y, ...) {
+  log_likelihood_fn_ssm <- function(y, particles, sigma_y, ...) {
     dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
   }
 
@@ -153,9 +153,9 @@ test_that("More complicated example", {
     pilot_m = 1000,
     pilot_n = 100,
     pilot_reps = 10,
-    init_fn = init_fn_ssm,
-    transition_fn = transition_fn_ssm,
-    log_likelihood_fn = log_likelihood_fn_ssm,
+    init_fn_ssm = init_fn_ssm,
+    transition_fn_ssm = transition_fn_ssm,
+    log_likelihood_fn_ssm = log_likelihood_fn_ssm,
     log_priors = log_priors,
     proposal_sd = c(0.1, 0.1, 0.1),
     init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
@@ -171,11 +171,11 @@ test_that("More complicated example", {
 test_that("More complicated example with transformation", {
   set.seed(1405)
 
-  init_fn_ssm <- function(n, ...) {
-    rnorm(n, mean = 0, sd = 1)
+  init_fn_ssm <- function(particles, ...) {
+    rnorm(particles, mean = 0, sd = 1)
   }
 
-  transition_fn_ssm <- function(particles, t, phi, sigma_x, ...) {
+  transition_fn_ssm <- function(particles, phi, sigma_x, ...) {
     # X_t = phi*X_{t-1} + sin(X_{t-1}) + sigma_x*V_t,  V_t ~ N(0,1)
     phi * particles + sin(particles) +
       rnorm(length(particles), mean = 0, sd = sigma_x)
@@ -224,9 +224,9 @@ test_that("More complicated example with transformation", {
     pilot_m = 1000,
     pilot_n = 100,
     pilot_reps = 10,
-    init_fn = init_fn_ssm,
-    transition_fn = transition_fn_ssm,
-    log_likelihood_fn = log_likelihood_fn_ssm,
+    init_fn_ssm = init_fn_ssm,
+    transition_fn_ssm = transition_fn_ssm,
+    log_likelihood_fn_ssm = log_likelihood_fn_ssm,
     log_priors = log_priors,
     proposal_sd = c(0.1, 0.1, 0.1),
     init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),

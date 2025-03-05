@@ -1,13 +1,10 @@
 #' Print method for PMMH output
 #'
 #' @param x An object of class `pmmh_output`.
-#' @param ... Additional arguments (not used here).
 #'
-#' @returns
-#' @export
+#' @returns The object `x` invisibly.
 #'
-#' @examples
-print.pmmh_output <- function(x, ...) {
+print.pmmh_output <- function(x) {
   # Extract parameter names from the first chain's columns
   param_names <- colnames(x$theta_chain[[1]])
 
@@ -18,17 +15,17 @@ print.pmmh_output <- function(x, ...) {
 
     # Compute summary statistics
     mean_val <- mean(samples)
-    sd_val <- sd(samples)
-    median_val <- median(samples)
-    ci_lower <- quantile(samples, 0.025)
-    ci_upper <- quantile(samples, 0.975)
+    sd_val <- stats::sd(samples)
+    median_val <- stats::median(samples)
+    ci_lower <- stats::quantile(samples, 0.025)
+    ci_upper <- stats::quantile(samples, 0.975)
 
     # Round these values to 2 decimal places
     c(Mean   = round(mean_val, 2),
       SD     = round(sd_val, 2),
       Median = round(median_val, 2),
-      CI2.5  = round(ci_lower, 2),
-      CI97.5 = round(ci_upper, 2))
+      CI  = round(ci_lower, 2),
+      CI = round(ci_upper, 2))
   }))
 
   # Extract ESS and Rhat diagnostics (assumed to be named vectors/lists)

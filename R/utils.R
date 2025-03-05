@@ -9,10 +9,9 @@
 #' parameter.
 #' @param init_params A vector of initial parameter values.
 #'
-#' @returns
+#' @returns NULL
 #' @export
 #'
-#' @examples
 .check_params_match <- function(
     init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm, init_params,
     log_priors) {
