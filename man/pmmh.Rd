@@ -100,7 +100,7 @@ init_fn_ssm <- function(particles) {
 }
 transition_fn_ssm <- function(particles, phi, sigma_x) {
   phi * particles + sin(particles) +
-  stats::rnorm(length(particles), mean = 0, sd = sigma_x)
+    stats::rnorm(length(particles), mean = 0, sd = sigma_x)
 }
 log_likelihood_fn_ssm <- function(y, particles, sigma_y) {
   stats::dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
@@ -140,6 +140,10 @@ pmmh_result <- pmmh(
   init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
   burn_in = 100,
   num_chains = 2,
-  param_transform = c("identity", "log", "log"),
+  param_transform = list(
+    phi = "identity",
+    sigma_x = "log",
+    sigma_y = "log"
+  )
 )
 }

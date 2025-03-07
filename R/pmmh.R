@@ -154,7 +154,11 @@ default_tune_control <- function(
 #'   init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
 #'   burn_in = 100,
 #'   num_chains = 2,
-#'   param_transform = c("identity", "log", "log"),
+#'   param_transform = list(
+#'     phi = "identity",
+#'     sigma_x = "log",
+#'     sigma_y = "log"
+#'   )
 #' )
 #' @export
 pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
@@ -171,7 +175,7 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
   # ---------------------------
   if (!is.numeric(y)) stop("y must be a numeric vector")
   if (!is.numeric(m) || m <= 0) stop("m must be a positive integer")
-  if (!is.numeric(burn_in) || burn_in <= 0) {
+  if (!is.numeric(burn_in) || burn_in < 0) {
     stop("burn_in must be a positive integer")
   }
   if (burn_in >= m) {
@@ -195,19 +199,35 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
   algorithm <- match.arg(algorithm)
   resample_fn <- match.arg(resample_fn)
 
-  n_params <- length(init_params)
+  num_params <- length(init_params)
+  # Ensure param_transform is set correctly.
   if (is.null(param_transform)) {
-    param_transform <- rep("identity", n_params)
+    param_transform <- rep("identity", num_params)
+    names(param_transform) <- names(log_priors)
   } else {
-    if (length(param_transform) != n_params) {
-      stop("param_transform must have the same length as init_params")
+    # If param_transform is provided as a list, convert it to a named vector.
+    if (is.list(param_transform)) {
+      if (!all(names(log_priors) %in% names(param_transform))) {
+        stop(paste0("param_transform must include an entry for every parameter",
+                    "in log_priors."))
+      }
+      # Order the transformation list to match the order of log_priors.
+      param_transform <- unlist(param_transform[names(log_priors)])
+    } else {
+      # If it's a vector, ensure it is named (or warn the user).
+      if (is.null(names(param_transform))) {
+        warning(paste0("param_transform is not named. It is recommended to",
+                       "supply a named list matching log_priors."))
+      }
     }
-    valid_transforms <- c("log", "identity")
-    invalid <- !param_transform %in% valid_transforms
-    if (any(invalid)) {
-      warning("Only 'log' and 'identity' transformations are supported.
-              Using 'identity' for invalid entries.")
-      param_transform[invalid] <- "identity"
+    # Validate that only 'log' and 'identity' are used.
+    invalid_transform <- which(!(param_transform %in% c("log", "identity")))
+    if (length(invalid_transform) > 0) {
+      warning(paste0(
+        "Only 'log' and 'identity' transformations are supported.",
+        " Using 'identity' for invalid entries."
+      ))
+      param_transform[invalid_transform] <- "identity"
     }
   }
 
@@ -230,7 +250,7 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
   }
 
   tune_control$pilot_proposal_sd <- rep(tune_control$pilot_proposal_sd,
-    length.out = n_params
+    length.out = num_params
   )
 
   # ---------------------------
@@ -278,7 +298,7 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
   for (chain in 1:num_chains) {
     message("Running chain ", chain, "...")
     current_theta <- init_theta
-    theta_chain <- matrix(NA, nrow = m, ncol = n_params)
+    theta_chain <- matrix(NA, nrow = m, ncol = num_params)
     colnames(theta_chain) <- names(current_theta)
     state_est_chain <- vector("list", m)
 

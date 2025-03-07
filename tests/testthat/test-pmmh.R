@@ -134,7 +134,18 @@ test_that("pmmh checks input types", {
     "m must be a positive integer"
   )
 
-  # burn_in must be positive and smaller than m
+  # burn_in must be positive
+  expect_error(
+    pmmh(
+      y = rnorm(10), m = 10, burn_in = -1, init_fn_ssm = init_fn_ssm,
+      transition_fn_ssm = transition_fn_ssm,
+      log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+      log_priors = log_priors, init_params = valid_init_params
+    ),
+    "burn_in must be a positive integer"
+  )
+
+  # burn_in must be smaller than m
   expect_error(
     pmmh(
       y = rnorm(10), m = 10, burn_in = 10, init_fn_ssm = init_fn_ssm,
@@ -155,6 +166,18 @@ test_that("pmmh checks input types", {
       log_priors = log_priors, init_params = valid_init_params
     ),
     "num_chains must be a positive integer"
+  )
+
+  # log-likelihood must take y as an argument
+  expect_error(
+    pmmh(
+      y = rnorm(10), m = 10, burn_in = 2, num_chains = 1,
+      init_fn_ssm = init_fn_ssm,
+      transition_fn_ssm = transition_fn_ssm,
+      log_likelihood_fn_ssm = function(particles, sigma_y) particles,
+      log_priors = log_priors, init_params = valid_init_params
+    ),
+    "log_likelihood_fn_ssm must take 'y'"
   )
 })
 
@@ -305,7 +328,11 @@ test_that("pmmh works with valid arguments", {
           init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
           burn_in = 100,
           num_chains = 2,
-          param_transform = c("identity", "log", "log"),
+          param_transform = list(
+            phi = "identity",
+            sigma_x = "log",
+            sigma_y = "log"
+          ),
           seed = 1405
         )
       })

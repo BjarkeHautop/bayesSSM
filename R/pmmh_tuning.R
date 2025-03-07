@@ -173,7 +173,24 @@
   # Ensure param_transform is set correctly.
   if (is.null(param_transform)) {
     param_transform <- rep("identity", num_params)
+    names(param_transform) <- names(log_priors)
   } else {
+    # If param_transform is provided as a list, convert it to a named vector.
+    if (is.list(param_transform)) {
+      if (!all(names(log_priors) %in% names(param_transform))) {
+        stop(paste0("param_transform must include an entry for every parameter",
+                    "in log_priors."))
+      }
+      # Order the transformation list to match the order of log_priors.
+      param_transform <- unlist(param_transform[names(log_priors)])
+    } else {
+      # If it's a vector, ensure it is named (or warn the user).
+      if (is.null(names(param_transform))) {
+        warning("param_transform is not named. It is recommended to supply a
+                named list matching log_priors.")
+      }
+    }
+    # Validate that only 'log' and 'identity' are used.
     invalid_transform <- which(!(param_transform %in% c("log", "identity")))
     if (length(invalid_transform) > 0) {
       warning(paste0(
@@ -183,6 +200,7 @@
       param_transform[invalid_transform] <- "identity"
     }
   }
+
 
   for (m in 2:pilot_m) {
     valid_theta <- FALSE

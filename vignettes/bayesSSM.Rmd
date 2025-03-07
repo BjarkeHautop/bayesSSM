@@ -12,8 +12,8 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  fig.width = 6, 
-  fig.height = 4   
+  fig.width = 6,
+  fig.height = 4
 )
 ```
 
@@ -132,7 +132,11 @@ result <- pmmh(
   burn_in = 500,
   num_chains = 2,
   seed = 1405,
-  param_transform = c("identity", "log", "log"),
+  param_transform = list(
+    phi = "identity",
+    sigma_x = "log",
+    sigma_y = "log"
+  ),
   verbose = TRUE
 )
 ```

@@ -232,7 +232,11 @@ test_that("More complicated example with transformation", {
     init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
     algorithm = "SISAR",
     resample_fn = "stratified",
-    param_transform = c("identity", "log", "log")
+    param_transform = list(
+      phi = "identity",
+      sigma_x = "log",
+      sigma_y = "log"
+    )
   )
   means <- unname(result$pilot_theta_mean)
   expect_equal(means[1], phi, tolerance = 0.5)
