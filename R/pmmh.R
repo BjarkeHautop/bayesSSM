@@ -190,12 +190,6 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
     init_params, log_priors
   )
 
-  # Check if y is an argument in log_likelihood_fn_ssm
-  if (!"y" %in% names(formals(log_likelihood_fn_ssm))) {
-    stop("log_likelihood_fn_ssm must take 'y' as an argument")
-  }
-
-
   algorithm <- match.arg(algorithm)
   resample_fn <- match.arg(resample_fn)
 

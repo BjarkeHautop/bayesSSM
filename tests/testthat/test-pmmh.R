@@ -177,7 +177,7 @@ test_that("pmmh checks input types", {
       log_likelihood_fn_ssm = function(particles, sigma_y) particles,
       log_priors = log_priors, init_params = valid_init_params
     ),
-    "log_likelihood_fn_ssm must take 'y'"
+    "log_likelihood_fn_ssm does not contain 'y'"
   )
 })
 
