@@ -3,7 +3,7 @@
 #' This function creates a list of tuning parameters used by the pmmh function.
 #'
 #' @param pilot_proposal_sd Standard deviation for pilot proposals. Default is
-#' 1.
+#' 0.5.
 #' @param pilot_n Number of pilot particles for particle filter. Default is 100.
 #' @param pilot_m Number of iterations for MCMC. Default is 2000.
 #' @param pilot_target_var The target variance for the posterior log-likelihood
@@ -18,7 +18,7 @@
 #' @return A list of tuning control parameters.
 #' @export
 default_tune_control <- function(
-  pilot_proposal_sd = 1, pilot_n = 100, pilot_m = 2000,
+  pilot_proposal_sd = 0.5, pilot_n = 100, pilot_m = 2000,
   pilot_target_var = 1, pilot_burn_in = 1000, pilot_reps = 10,
   pilot_algorithm = c("SISAR", "SISR", "SIS"),
   pilot_resample_fn = c("stratified", "systematic", "multinomial")
@@ -96,16 +96,11 @@ default_tune_control <- function(
 #'   settings provided in \code{tune_control} to obtain initial estimates for
 #'   the parameter vector, its covariance, and the required number of particles.
 #'   \item \strong{Main MCMC Chain:} The main PMMH chain is executed for
-#'   \code{m} iterations using the tuned settings. The proposal step may
-#'   apply a log or identity transformation to each parameter based on the
-#'   \code{param_transform} argument.
-#'   \item \strong{Post-Processing:} After discarding the burn-in samples,
-#'   the latent state estimates from the remaining iterations are combined to
-#'   compute a final latent state estimate as the column means of the latent
-#'   state matrix.
+#'   \code{m} iterations using the tuned settings.
 #' }
 #'
 #' @return A list containing:
+
 #' \describe{
 #'   \item{\code{theta_chain}}{A matrix of post burn-in parameter samples.}
 #'   \item{\code{latent_state_chain}}{A list of latent state estimates from
@@ -379,6 +374,8 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
     rbind, unlist(state_est_chain_post, recursive = FALSE)
   )
   latent_state_estimate <- colMeans(all_state_estimates)
+  latent_state_variance <- apply(all_state_estimates, 2, stats::var)
+
 
   # ---------------------------
   # Step 4: Compute diagnostics (ESS and Rhat) for each parameter.
@@ -406,7 +403,7 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
 
   theta_chain_per_param <- separate_parameters(theta_chain_post)
   param_ess <- list()
-  param_Rhat <- list()
+  param_rhat <- list()
 
   num_chains <- length(theta_chain_post)
 
@@ -429,15 +426,18 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
       }
     }
 
-    param_Rhat[[param]] <- rhat(param_chain)
+    param_rhat[[param]] <- rhat(param_chain)
   }
 
-
+  # Convert chains to data frames
+  theta_chain_post <- lapply(theta_chain_post, as.data.frame)
   result <- list(
-    theta_chain = theta_chain_post,   # MCMC samples of theta
-    latent_state_chain = state_est_chain_post,  # Samples of latent states
-    latent_state_estimate = latent_state_estimate, # Final state estimates
-    diagnostics = list(ess = param_ess, rhat = param_Rhat)
+    theta_chain = theta_chain_post,
+    latent_state_estimate = list(
+      mean = latent_state_estimate,
+      var = latent_state_variance
+    ),
+    diagnostics = list(ess = param_ess, rhat = param_rhat)
   )
 
   # Assign class
@@ -454,7 +454,7 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
   }
 
   # If any Rhat>1.01 print a warning
-  if (any(sapply(param_Rhat, function(x) x > 1.01))) {
+  if (any(sapply(param_rhat, function(x) x > 1.01 && !is.na(x)))) {
     warning(paste0(
       "Some Rhat values are above 1.01, indicating that the chains ",
       "have not converged. Consider running the chains for more iterations ",
@@ -463,7 +463,7 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
   }
 
   # If any Rhat<0.99 Bug?
-  if (any(sapply(param_Rhat, function(x) x < 0.99))) {
+  if (any(sapply(param_rhat, function(x) x < 0.99 && !is.na(x)))) {
     message("Some Rhat values are below 0.99, please increase iterations or/and
           particles.
           If the issue persists it could be a bug,

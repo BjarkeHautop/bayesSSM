@@ -40,5 +40,5 @@ test_that("ess stops for too few chains", {
 
 test_that("ess stops for zero variance chains", {
   chains <- matrix(rep(1, 9), nrow = 3, ncol = 3)
-  expect_error(ess(chains), "One or more chains have zero variance")
+  expect_warning(ess(chains), "One or more chains have zero variance")
 })

@@ -292,7 +292,7 @@
     list(...)
   ))
   target_n <- pilot_result$target_n
-  message("Using ", target_n, " number of particles for PMMH:")
+  message("Using ", target_n, " particles for PMMH:")
 
   list(
     pilot_theta_mean = pilot_theta_mean,

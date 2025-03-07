@@ -12,7 +12,7 @@ test_that("default_tune_control returns a list with correct defaults", {
     "pilot_burn_in", "pilot_reps", "pilot_algorithm", "pilot_resample_fn"))
 
   # Check default values
-  expect_equal(result$pilot_proposal_sd, 1)
+  expect_equal(result$pilot_proposal_sd, 0.5)
   expect_equal(result$pilot_n, 100)
   expect_equal(result$pilot_m, 2000)
   expect_equal(result$target_var, 1)

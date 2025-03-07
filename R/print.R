@@ -1,11 +1,17 @@
 #' Print method for PMMH output
 #'
 #' @param x An object of class `pmmh_output`.
+#' @param ... Additional arguments.
 #'
 #' @returns The object `x` invisibly.
 #'
-#' @keywords internal
-.print.pmmh_output <- function(x) {
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' print(pmmh_output)
+#' }
+print.pmmh_output <- function(x, ...) {
   # Extract parameter names from the first chain's columns
   param_names <- colnames(x$theta_chain[[1]])
 

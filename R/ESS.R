@@ -37,7 +37,8 @@ ess <- function(chains) {
 
   # If any chain_vars is zero give error
   if (any(chain_vars == 0)) {
-    stop("One or more chains have zero variance.")
+    warning("One or more chains have zero variance.")
+    return(NA)
   }
 
   w <- mean(chain_vars)

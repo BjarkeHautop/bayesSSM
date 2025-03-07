@@ -18,7 +18,11 @@ Imports:
     MASS,
     stats
 Suggests: 
-    testthat (>= 3.0.0)
+    knitr,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    ggplot2
 Config/testthat/edition: 3
 URL: https://github.com/BjarkeHautop/bayesSSM
 BugReports: https://github.com/BjarkeHautop/bayesSSM/issues
+VignetteBuilder: knitr

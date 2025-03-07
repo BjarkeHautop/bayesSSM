@@ -91,13 +91,7 @@ The PMMH algorithm proceeds in three main steps:
   settings provided in \code{tune_control} to obtain initial estimates for
   the parameter vector, its covariance, and the required number of particles.
   \item \strong{Main MCMC Chain:} The main PMMH chain is executed for
-  \code{m} iterations using the tuned settings. The proposal step may
-  apply a log or identity transformation to each parameter based on the
-  \code{param_transform} argument.
-  \item \strong{Post-Processing:} After discarding the burn-in samples,
-  the latent state estimates from the remaining iterations are combined to
-  compute a final latent state estimate as the column means of the latent
-  state matrix.
+  \code{m} iterations using the tuned settings.
 }
 }
 \examples{

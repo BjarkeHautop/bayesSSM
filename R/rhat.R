@@ -37,6 +37,13 @@ rhat <- function(chains) {
 
   # Compute the within-chain variances
   chain_vars <- apply(chains_split, 2, stats::var)
+
+  # If any chain_vars is zero give warning and return NA
+  if (any(chain_vars == 0)) {
+    warning("One or more chains have zero variance.")
+    return(NA)
+  }
+
   w <- mean(chain_vars)
 
   # Compute the marginal posterior variance estimator
