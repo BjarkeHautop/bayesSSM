@@ -121,8 +121,10 @@
                              transition_fn_ssm, log_likelihood_fn_ssm,
                              log_priors, proposal_sd,
                              algorithm = c("SISAR", "SISR", "SIS"),
-                             resample_fn = c("stratified", "systematic",
-                                             "multinomial"),
+                             resample_fn = c(
+                               "stratified", "systematic",
+                               "multinomial"
+                             ),
                              param_transform = NULL,
                              init_params = NULL,
                              verbose = FALSE,
@@ -142,9 +144,11 @@
     log_priors[[i]](init_params[i])
   })
   if (any(!is.finite(log_prior_init))) {
-    stop(paste0("Invalid initial parameters: at least one initial value is",
-                "outside the support of its prior. Modify them in the argument",
-                "init_params."))
+    stop(paste0(
+      "Invalid initial parameters: at least one initial value is",
+      "outside the support of its prior. Modify them in the argument",
+      "init_params."
+    ))
   }
 
   current_theta <- init_params
@@ -172,8 +176,10 @@
   } else {
     invalid_transform <- which(!(param_transform %in% c("log", "identity")))
     if (length(invalid_transform) > 0) {
-      warning(paste0("Only 'log' and 'identity' transformations are supported.",
-                     " Using 'identity' for invalid entries."))
+      warning(paste0(
+        "Only 'log' and 'identity' transformations are supported.",
+        " Using 'identity' for invalid entries."
+      ))
       param_transform[invalid_transform] <- "identity"
     }
   }
@@ -184,7 +190,8 @@
       # Transform the current theta.
       current_theta_trans <- .transform_params(
         theta = current_theta,
-        transform = param_transform)
+        transform = param_transform
+      )
       # Propose in the transformed space.
       proposed_theta_trans <- current_theta_trans +
         stats::rnorm(length(current_theta_trans), mean = 0, sd = proposal_sd)
@@ -199,14 +206,16 @@
         theta = proposed_theta,
         transform = param_transform
       )
-      log_jacobian_current  <- .compute_jacobian(
+      log_jacobian_current <- .compute_jacobian(
         theta = current_theta,
         transform = param_transform
       )
 
       # Compute the log-priors for the proposed parameters.
-      log_prior_proposed <- mapply(function(fn, theta) fn(theta),
-                                   log_priors, proposed_theta)
+      log_prior_proposed <- mapply(
+        function(fn, theta) fn(theta),
+        log_priors, proposed_theta
+      )
 
       if (all(is.finite(log_prior_proposed))) {
         valid_theta <- TRUE
@@ -214,8 +223,10 @@
     }
 
     # Compute log-priors for current parameters.
-    log_prior_current <- mapply(function(fn, theta) fn(theta),
-                                log_priors, current_theta)
+    log_prior_current <- mapply(
+      function(fn, theta) fn(theta),
+      log_priors, current_theta
+    )
 
     # Run particle filter with the proposed parameters.
     proposed_theta_list <- as.list(proposed_theta)

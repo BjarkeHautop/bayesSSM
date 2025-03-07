@@ -15,11 +15,11 @@
 .check_params_match <- function(
     init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm, init_params,
     log_priors) {
-
   # Helper function to get parameter names excluding 'particles' and 'y'
   get_fn_params <- function(fn) {
     fn_args <- names(formals(fn))
-    return(fn_args)
+
+    fn_args
   }
 
   # Check if 'particles' is in init_fn_ssm, transition_fn_ssm, and
@@ -43,9 +43,11 @@
 
   # Combine parameters from all three functions
   # (ignoring 'particles' and 'y' in the check)
-  fn_params <- unique(c(get_fn_params(init_fn_ssm),
-                        get_fn_params(transition_fn_ssm),
-                        get_fn_params(log_likelihood_fn_ssm)))
+  fn_params <- unique(c(
+    get_fn_params(init_fn_ssm),
+    get_fn_params(transition_fn_ssm),
+    get_fn_params(log_likelihood_fn_ssm)
+  ))
   # Drop 'particles' and 'y'
   fn_params <- fn_params[!(fn_params %in% c("particles", "y"))]
 

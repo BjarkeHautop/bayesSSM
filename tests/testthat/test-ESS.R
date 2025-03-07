@@ -24,8 +24,10 @@ test_that("ess autocorrelated", {
 test_that("ess stops for non-matrix input", {
   expect_error(ess(list(1, 2, 3)), "Input 'chains' must be a matrix")
   expect_error(ess(c(1, 2, 3)), "Input 'chains' must be a matrix")
-  expect_error(ess(data.frame(a = c(1, 2, 3), b = c(4, 5, 6))),
-               "Input 'chains' must be a matrix")
+  expect_error(
+    ess(data.frame(a = c(1, 2, 3), b = c(4, 5, 6))),
+    "Input 'chains' must be a matrix"
+  )
 })
 
 test_that("ess stops for too few iterations", {

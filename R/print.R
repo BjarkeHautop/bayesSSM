@@ -28,11 +28,13 @@ print.pmmh_output <- function(x, ...) {
     ci_upper <- stats::quantile(samples, 0.975)
 
     # Round these values to 2 decimal places
-    c(Mean   = round(mean_val, 2),
-      SD     = round(sd_val, 2),
+    c(
+      Mean = round(mean_val, 2),
+      SD = round(sd_val, 2),
       Median = round(median_val, 2),
-      CI  = round(ci_lower, 2),
-      CI = round(ci_upper, 2))
+      CI = round(ci_lower, 2),
+      CI = round(ci_upper, 2)
+    )
   }))
 
   # Extract ESS and Rhat diagnostics (assumed to be named vectors/lists)
@@ -60,5 +62,3 @@ print.pmmh_output <- function(x, ...) {
   # Return the object invisibly
   invisible(x)
 }
-
-

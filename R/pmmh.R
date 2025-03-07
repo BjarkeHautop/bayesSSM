@@ -18,11 +18,10 @@
 #' @return A list of tuning control parameters.
 #' @export
 default_tune_control <- function(
-  pilot_proposal_sd = 1, pilot_n = 100, pilot_m = 2000,
-  pilot_target_var = 1, pilot_burn_in = 1000, pilot_reps = 10,
-  pilot_algorithm = c("SISAR", "SISR", "SIS"),
-  pilot_resample_fn = c("stratified", "systematic", "multinomial")
-) {
+    pilot_proposal_sd = 1, pilot_n = 100, pilot_m = 2000,
+    pilot_target_var = 1, pilot_burn_in = 1000, pilot_reps = 10,
+    pilot_algorithm = c("SISAR", "SISR", "SIS"),
+    pilot_resample_fn = c("stratified", "systematic", "multinomial")) {
   if (!is.numeric(pilot_proposal_sd) || pilot_proposal_sd <= 0) {
     stop("pilot_proposal_sd must be a positive numeric value.")
   }
@@ -115,7 +114,7 @@ default_tune_control <- function(
 #' }
 #' transition_fn_ssm <- function(particles, phi, sigma_x) {
 #'   phi * particles + sin(particles) +
-#'   stats::rnorm(length(particles), mean = 0, sd = sigma_x)
+#'     stats::rnorm(length(particles), mean = 0, sd = sigma_x)
 #' }
 #' log_likelihood_fn_ssm <- function(y, particles, sigma_y) {
 #'   stats::dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
@@ -165,8 +164,7 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
                  param_transform = NULL,
                  tune_control = default_tune_control(),
                  verbose = FALSE,
-                 seed = NULL
-                 ) {
+                 seed = NULL) {
   if (!is.null(seed)) set.seed(seed)
   # ---------------------------
   # Input validation
@@ -183,8 +181,10 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
     stop("num_chains must be a positive integer")
   }
 
-  .check_params_match(init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
-                      init_params, log_priors)
+  .check_params_match(
+    init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
+    init_params, log_priors
+  )
 
   # Check if y is an argument in log_likelihood_fn_ssm
   if (!"y" %in% names(formals(log_likelihood_fn_ssm))) {
@@ -223,12 +223,15 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
     formals(transition_fn_ssm) <- c(formals(transition_fn_ssm), alist(... = ))
   }
   if (!has_dots(log_likelihood_fn_ssm)) {
-    formals(log_likelihood_fn_ssm) <- c(formals(log_likelihood_fn_ssm),
-                                        alist(... = ))
+    formals(log_likelihood_fn_ssm) <- c(
+      formals(log_likelihood_fn_ssm),
+      alist(... = )
+    )
   }
 
   tune_control$pilot_proposal_sd <- rep(tune_control$pilot_proposal_sd,
-                                        length.out = n_params)
+    length.out = n_params
+  )
 
   # ---------------------------
   # Step 1: Run the pilot (particle) chain for tuning
@@ -301,10 +304,14 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
     for (i in 2:m) {
       # --- Propose in the transformed space ---
       current_theta_trans <- .transform_params(current_theta, param_transform)
-      proposed_theta_trans <- MASS::mvrnorm(n = 1, mu = current_theta_trans,
-                                            Sigma = proposal_cov_trans)
-      proposed_theta <- .back_transform_params(proposed_theta_trans,
-                                              param_transform)
+      proposed_theta_trans <- MASS::mvrnorm(
+        n = 1, mu = current_theta_trans,
+        Sigma = proposal_cov_trans
+      )
+      proposed_theta <- .back_transform_params(
+        proposed_theta_trans,
+        param_transform
+      )
 
       # --- Check the validity of proposed parameters ---
       log_prior_proposed <- sapply(seq_along(proposed_theta), function(j) {
@@ -332,8 +339,15 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
       proposed_loglike <- pf_proposed$loglike
 
       # --- Compute the Jacobian adjustments ---
-      log_jacobian_proposed <- .compute_jacobian(proposed_theta, param_transform)
-      log_jacobian_current  <- .compute_jacobian(current_theta, param_transform)
+      log_jacobian_proposed <- .compute_jacobian(
+        theta = proposed_theta,
+        transform = param_transform
+      )
+
+      log_jacobian_current <- .compute_jacobian(
+        theta = current_theta,
+        transform = param_transform
+      )
 
       # --- Compute the acceptance ratio ---
       log_prior_current <- sapply(seq_along(current_theta), function(j) {
@@ -392,13 +406,14 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
           chain_data <- theta_chain_post[[i]]
           param_data <- chain_data[, param, drop = FALSE]
           colnames(param_data) <- paste(param, "chain", i, sep = "_")
-          return(param_data)
+
+          param_data
         })
       )
       result[[param]] <- param_combined
     }
 
-    return(result)
+    result
   }
 
   theta_chain_per_param <- separate_parameters(theta_chain_post)
@@ -472,4 +487,3 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
 
   result
 }
-

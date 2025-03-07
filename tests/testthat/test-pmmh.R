@@ -9,7 +9,8 @@ test_that("default_tune_control returns a list with correct defaults", {
   expect_type(result, "list")
   expect_named(result, c(
     "pilot_proposal_sd", "pilot_n", "pilot_m", "target_var",
-    "pilot_burn_in", "pilot_reps", "pilot_algorithm", "pilot_resample_fn"))
+    "pilot_burn_in", "pilot_reps", "pilot_algorithm", "pilot_resample_fn"
+  ))
 
   # Check default values
   expect_equal(result$pilot_proposal_sd, 1)
@@ -41,20 +42,34 @@ test_that("default_tune_control handles valid inputs", {
 })
 
 test_that("default_tune_control errors on invalid inputs", {
-  expect_error(default_tune_control(pilot_proposal_sd = -0.1),
-               "pilot_proposal_sd must be a positive numeric value.")
-  expect_error(default_tune_control(pilot_n = 0),
-               "pilot_n must be a positive numeric value.")
-  expect_error(default_tune_control(pilot_m = -10),
-               "pilot_m must be a positive numeric value.")
-  expect_error(default_tune_control(pilot_target_var = "a"),
-               "pilot_target_var must be a positive numeric value.")
-  expect_error(default_tune_control(pilot_burn_in = -1),
-               "pilot_burn_in must be a positive numeric value.")
-  expect_error(default_tune_control(pilot_algorithm = "InvalidAlg"),
-               "'arg' should be one of")
-  expect_error(default_tune_control(pilot_resample_fn = "InvalidFn"),
-               "'arg' should be one of")
+  expect_error(
+    default_tune_control(pilot_proposal_sd = -0.1),
+    "pilot_proposal_sd must be a positive numeric value."
+  )
+  expect_error(
+    default_tune_control(pilot_n = 0),
+    "pilot_n must be a positive numeric value."
+  )
+  expect_error(
+    default_tune_control(pilot_m = -10),
+    "pilot_m must be a positive numeric value."
+  )
+  expect_error(
+    default_tune_control(pilot_target_var = "a"),
+    "pilot_target_var must be a positive numeric value."
+  )
+  expect_error(
+    default_tune_control(pilot_burn_in = -1),
+    "pilot_burn_in must be a positive numeric value."
+  )
+  expect_error(
+    default_tune_control(pilot_algorithm = "InvalidAlg"),
+    "'arg' should be one of"
+  )
+  expect_error(
+    default_tune_control(pilot_resample_fn = "InvalidFn"),
+    "'arg' should be one of"
+  )
 })
 
 #--------------------------
@@ -98,37 +113,49 @@ test_that("pmmh checks input types", {
 
 
   # y must be numeric
-  expect_error(pmmh(
-    y = "not numeric", m = 10, init_fn_ssm = init_fn_ssm,
-    transition_fn_ssm = transition_fn_ssm,
-    log_likelihood_fn_ssm = log_likelihood_fn_ssm,
-    log_priors = log_priors, init_params = valid_init_params, burn_in = 2),
-    "y must be a numeric vector")
+  expect_error(
+    pmmh(
+      y = "not numeric", m = 10, init_fn_ssm = init_fn_ssm,
+      transition_fn_ssm = transition_fn_ssm,
+      log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+      log_priors = log_priors, init_params = valid_init_params, burn_in = 2
+    ),
+    "y must be a numeric vector"
+  )
 
   # m must be a positive integer
-  expect_error(pmmh(
-    y = rnorm(10), m = -5, init_fn_ssm = init_fn_ssm,
-    transition_fn_ssm = transition_fn_ssm,
-    log_likelihood_fn_ssm = log_likelihood_fn_ssm,
-    log_priors = log_priors, init_params = valid_init_params, burn_in = 2),
-    "m must be a positive integer")
+  expect_error(
+    pmmh(
+      y = rnorm(10), m = -5, init_fn_ssm = init_fn_ssm,
+      transition_fn_ssm = transition_fn_ssm,
+      log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+      log_priors = log_priors, init_params = valid_init_params, burn_in = 2
+    ),
+    "m must be a positive integer"
+  )
 
   # burn_in must be positive and smaller than m
-  expect_error(pmmh(
-    y = rnorm(10), m = 10, burn_in = 10, init_fn_ssm = init_fn_ssm,
-    transition_fn_ssm = transition_fn_ssm,
-    log_likelihood_fn_ssm = log_likelihood_fn_ssm,
-    log_priors = log_priors, init_params = valid_init_params),
-    "burn_in must be smaller than")
+  expect_error(
+    pmmh(
+      y = rnorm(10), m = 10, burn_in = 10, init_fn_ssm = init_fn_ssm,
+      transition_fn_ssm = transition_fn_ssm,
+      log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+      log_priors = log_priors, init_params = valid_init_params
+    ),
+    "burn_in must be smaller than"
+  )
 
   # num_chains must be a positive integer
-  expect_error(pmmh(
-    y = rnorm(10), m = 10, burn_in = 2, num_chains = 0,
-    init_fn_ssm = init_fn_ssm,
-    transition_fn_ssm = transition_fn_ssm,
-    log_likelihood_fn_ssm = log_likelihood_fn_ssm,
-    log_priors = log_priors, init_params = valid_init_params),
-    "num_chains must be a positive integer")
+  expect_error(
+    pmmh(
+      y = rnorm(10), m = 10, burn_in = 2, num_chains = 0,
+      init_fn_ssm = init_fn_ssm,
+      transition_fn_ssm = transition_fn_ssm,
+      log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+      log_priors = log_priors, init_params = valid_init_params
+    ),
+    "num_chains must be a positive integer"
+  )
 })
 
 # -----------------------------
@@ -136,7 +163,6 @@ test_that("pmmh checks input types", {
 # -----------------------------
 
 test_that("pmmh checks function arguments", {
-
   valid_init_params <- list(phi = 0.8, sigma_x = 1, sigma_y = 0.5)
   valid_log_priors <- list(
     phi = function(phi) 0,
@@ -150,32 +176,41 @@ test_that("pmmh checks function arguments", {
 
 
   # Check if functions accept 'particles'
-  expect_error(pmmh(
-    y = numeric(50),
-    m = 10,
-    init_fn_ssm = function(phi, sigma_x) 0,
-    transition_fn_ssm = mock_transition_fn,
-    log_likelihood_fn_ssm = mock_log_likelihood_fn,
-    log_priors = valid_log_priors,
-    init_params = valid_init_params,
-    burn_in = 1),
-    "init_fn_ssm does not contain 'particles' as an argument")
+  expect_error(
+    pmmh(
+      y = numeric(50),
+      m = 10,
+      init_fn_ssm = function(phi, sigma_x) 0,
+      transition_fn_ssm = mock_transition_fn,
+      log_likelihood_fn_ssm = mock_log_likelihood_fn,
+      log_priors = valid_log_priors,
+      init_params = valid_init_params,
+      burn_in = 1
+    ),
+    "init_fn_ssm does not contain 'particles' as an argument"
+  )
 
-  expect_error(pmmh(
-    y = numeric(50), m = 10, init_fn_ssm = mock_init_fn,
-    transition_fn_ssm = function(phi, sigma_x) 0,
-    log_likelihood_fn_ssm = mock_log_likelihood_fn,
-    log_priors = valid_log_priors,
-    init_params = valid_init_params, burn_in = 1),
-    "transition_fn_ssm does not contain 'particles' as an argument")
+  expect_error(
+    pmmh(
+      y = numeric(50), m = 10, init_fn_ssm = mock_init_fn,
+      transition_fn_ssm = function(phi, sigma_x) 0,
+      log_likelihood_fn_ssm = mock_log_likelihood_fn,
+      log_priors = valid_log_priors,
+      init_params = valid_init_params, burn_in = 1
+    ),
+    "transition_fn_ssm does not contain 'particles' as an argument"
+  )
 
-  expect_error(pmmh(
-    y = numeric(50), m = 10, init_fn_ssm = mock_init_fn,
-    transition_fn_ssm = mock_transition_fn,
-    log_likelihood_fn_ssm = function(y, sigma_y) 0,
-    log_priors = valid_log_priors,
-    init_params = valid_init_params, burn_in = 1),
-    "log_likelihood_fn_ssm does not contain 'particles' as an argument")
+  expect_error(
+    pmmh(
+      y = numeric(50), m = 10, init_fn_ssm = mock_init_fn,
+      transition_fn_ssm = mock_transition_fn,
+      log_likelihood_fn_ssm = function(y, sigma_y) 0,
+      log_priors = valid_log_priors,
+      init_params = valid_init_params, burn_in = 1
+    ),
+    "log_likelihood_fn_ssm does not contain 'particles' as an argument"
+  )
 })
 
 # -----------------------------
@@ -183,7 +218,6 @@ test_that("pmmh checks function arguments", {
 # -----------------------------
 
 test_that("pmmh checks that parameters match init_params and log_priors", {
-
   valid_init_params <- list(phi = 0.8, sigma_x = 1, sigma_y = 0.5)
   valid_log_priors <- list(
     phi = function(phi) 0,
@@ -196,22 +230,28 @@ test_that("pmmh checks that parameters match init_params and log_priors", {
   mock_log_likelihood_fn <- function(y, particles, sigma_y) particles
 
   invalid_init_params <- list(phi = 0.8, sigma_x = 1)
-  expect_error(pmmh(
-    y = numeric(50), m = 10, init_fn_ssm = mock_init_fn,
-    transition_fn_ssm = mock_transition_fn,
-    log_likelihood_fn_ssm = mock_log_likelihood_fn,
-    log_priors = valid_log_priors,
-    init_params = invalid_init_params, burn_in = 1),
-    "Parameters in functions do not match the names in init_params")
+  expect_error(
+    pmmh(
+      y = numeric(50), m = 10, init_fn_ssm = mock_init_fn,
+      transition_fn_ssm = mock_transition_fn,
+      log_likelihood_fn_ssm = mock_log_likelihood_fn,
+      log_priors = valid_log_priors,
+      init_params = invalid_init_params, burn_in = 1
+    ),
+    "Parameters in functions do not match the names in init_params"
+  )
 
   invalid_log_priors <- list(phi = function(phi) 0)
-  expect_error(pmmh(
-    y = numeric(50), m = 10, init_fn_ssm = mock_init_fn,
-    transition_fn_ssm = mock_transition_fn,
-    log_likelihood_fn_ssm = mock_log_likelihood_fn,
-    log_priors = invalid_log_priors,
-    init_params = valid_init_params, burn_in = 1),
-    "Parameters in functions do not match the names in log_priors")
+  expect_error(
+    pmmh(
+      y = numeric(50), m = 10, init_fn_ssm = mock_init_fn,
+      transition_fn_ssm = mock_transition_fn,
+      log_likelihood_fn_ssm = mock_log_likelihood_fn,
+      log_priors = invalid_log_priors,
+      init_params = valid_init_params, burn_in = 1
+    ),
+    "Parameters in functions do not match the names in log_priors"
+  )
 })
 
 test_that("pmmh works with valid arguments", {
@@ -252,22 +292,24 @@ test_that("pmmh works with valid arguments", {
     y[t] <- x[t] + rnorm(1, mean = 0, sd = 0.5)
   }
 
-  expect_error({
-    suppressWarnings({
-      pmmh_result <- pmmh(
-        y = y,
-        m = 1000,
-        init_fn_ssm = init_fn_ssm,
-        transition_fn_ssm = transition_fn_ssm,
-        log_likelihood_fn_ssm = log_likelihood_fn_ssm,
-        log_priors = log_priors,
-        init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
-        burn_in = 100,
-        num_chains = 2,
-        param_transform = c("identity", "log", "log"),
-        seed = 1405
-      )
-    })
-  }, regexp = NA)  # Expects that no errors are thrown
+  expect_error(
+    {
+      suppressWarnings({
+        pmmh_result <- pmmh(
+          y = y,
+          m = 1000,
+          init_fn_ssm = init_fn_ssm,
+          transition_fn_ssm = transition_fn_ssm,
+          log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+          log_priors = log_priors,
+          init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+          burn_in = 100,
+          num_chains = 2,
+          param_transform = c("identity", "log", "log"),
+          seed = 1405
+        )
+      })
+    },
+    regexp = NA
+  ) # Expects that no errors are thrown
 })
-
