@@ -4,7 +4,8 @@
 #'
 #' @returns The object `x` invisibly.
 #'
-print.pmmh_output <- function(x) {
+#' @keywords internal
+.print.pmmh_output <- function(x) {
   # Extract parameter names from the first chain's columns
   param_names <- colnames(x$theta_chain[[1]])
 

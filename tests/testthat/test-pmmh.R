@@ -256,16 +256,15 @@ test_that("pmmh works with valid arguments", {
     suppressWarnings({
       pmmh_result <- pmmh(
         y = y,
-        m = 600,
+        m = 1000,
         init_fn_ssm = init_fn_ssm,
         transition_fn_ssm = transition_fn_ssm,
         log_likelihood_fn_ssm = log_likelihood_fn_ssm,
         log_priors = log_priors,
         init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
-        burn_in = 200,
+        burn_in = 100,
         num_chains = 2,
         param_transform = c("identity", "log", "log"),
-        tune_control = default_tune_control(pilot_m = 200, pilot_burn_in = 100),
         seed = 1405
       )
     })

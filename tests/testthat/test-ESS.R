@@ -20,3 +20,25 @@ test_that("ess autocorrelated", {
   # The ess should be lower than `n` due to autocorrelation
   expect_lt(ess(chains), n)
 })
+
+test_that("ess stops for non-matrix input", {
+  expect_error(ess(list(1, 2, 3)), "Input 'chains' must be a matrix")
+  expect_error(ess(c(1, 2, 3)), "Input 'chains' must be a matrix")
+  expect_error(ess(data.frame(a = c(1, 2, 3), b = c(4, 5, 6))),
+               "Input 'chains' must be a matrix")
+})
+
+test_that("ess stops for too few iterations", {
+  chains <- matrix(rnorm(3), nrow = 1, ncol = 3)
+  expect_error(ess(chains), "Number of iterations must be at least 2")
+})
+
+test_that("ess stops for too few chains", {
+  chains <- matrix(rnorm(6), nrow = 6, ncol = 1)
+  expect_error(ess(chains), "Number of chains must be at least 2")
+})
+
+test_that("ess stops for zero variance chains", {
+  chains <- matrix(rep(1, 9), nrow = 3, ncol = 3)
+  expect_error(ess(chains), "One or more chains have zero variance")
+})
