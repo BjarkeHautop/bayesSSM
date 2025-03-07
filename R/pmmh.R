@@ -89,11 +89,12 @@ default_tune_control <- function(
 #' pilot_run tuning. Defaults to \code{FALSE}.
 #' @param seed An optional integer to set the seed for reproducibility.
 #'
-#' @details The PMMH algorithm proceeds in three main steps:
+#' @details The PMMH algorithm proceeds in two main steps:
 #' \enumerate{
 #'   \item \strong{Pilot Chain:} A pilot particle chain is run using the
 #'   settings provided in \code{tune_control} to obtain initial estimates for
-#'   the parameter vector, its covariance, and the required number of particles.
+#'   the parameter vector, its covariance, and the number of particles for
+#'   the Particle Filter.
 #'   \item \strong{Main MCMC Chain:} The main PMMH chain is executed for
 #'   \code{m} iterations using the tuned settings.
 #' }
@@ -102,10 +103,9 @@ default_tune_control <- function(
 
 #' \describe{
 #'   \item{\code{theta_chain}}{A matrix of post burn-in parameter samples.}
-#'   \item{\code{latent_state_chain}}{A list of latent state estimates from
-#'   each post burn-in iteration.}
-#'   \item{\code{latent_state_estimate}}{A vector of the final latent state
-#'   estimate, computed as the column means of the latent state matrix.}
+#'   \item{\code{latent_state_chain}}{A list containg mean and variance
+#'   of latent state estimates for each time step.}
+#'   \item{\code{latent_state_estimate}}{diagnostics containing ESS and Rhat.}
 #' }
 #'
 #' @examples

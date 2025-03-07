@@ -5,6 +5,10 @@
 #' @returns The estimated effective sample size (ess) of the chains.
 #'
 #' @details Uses the formula for ESS proposed by Vehtari et al. (2021).
+#'
+#' @references Vehtari et al. (2021). Rank-normalization, folding, and
+#' localization: An improved R-hat for assessing convergence of MCMC.
+#' Available at: https://doi.org/10.1214/20-BA1221
 #' @export
 #'
 #' @examples

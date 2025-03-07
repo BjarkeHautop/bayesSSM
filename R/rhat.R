@@ -5,6 +5,9 @@
 #' @returns The split-Rhat statistic.
 #'
 #' @details Uses the formula for split-Rhat proposed by Gelman et al. (2013).
+#'
+#' @references Gelman et al. (2013). Bayesian Data Analysis, 3rd Edition.
+#'
 #' @export
 #'
 #' @examples
