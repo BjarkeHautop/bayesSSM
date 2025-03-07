@@ -237,30 +237,6 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
                                         length.out = n_params)
 
   # ---------------------------
-  # Helper functions for parameter transformation
-  # ---------------------------
-  transform_params <- function(theta, transform) {
-    # Applies the specified transformation to each parameter.
-    sapply(seq_along(theta), function(j) {
-      if (transform[j] == "log") log(theta[j]) else theta[j]
-    })
-  }
-
-  back_transform_params <- function(theta_trans, transform) {
-    # Inverse transforms parameters back to the original scale.
-    sapply(seq_along(theta_trans), function(j) {
-      if (transform[j] == "log") exp(theta_trans[j]) else theta_trans[j]
-    })
-  }
-
-  compute_jacobian <- function(theta, transform) {
-    # For a log transform, |dx/dz| = x, so log|dx/dz| = log(x); otherwise zero.
-    sum(sapply(seq_along(theta), function(j) {
-      if (transform[j] == "log") log(theta[j]) else 0
-    }))
-  }
-
-  # ---------------------------
   # Step 1: Run the pilot (particle) chain for tuning
   # ---------------------------
   message("Running pilot chain for tuning...")
@@ -330,10 +306,10 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
 
     for (i in 2:m) {
       # --- Propose in the transformed space ---
-      current_theta_trans <- transform_params(current_theta, param_transform)
+      current_theta_trans <- .transform_params(current_theta, param_transform)
       proposed_theta_trans <- MASS::mvrnorm(n = 1, mu = current_theta_trans,
                                             Sigma = proposal_cov_trans)
-      proposed_theta <- back_transform_params(proposed_theta_trans,
+      proposed_theta <- .back_transform_params(proposed_theta_trans,
                                               param_transform)
 
       # --- Check the validity of proposed parameters ---
@@ -362,8 +338,8 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
       proposed_loglike <- pf_proposed$loglike
 
       # --- Compute the Jacobian adjustments ---
-      log_jacobian_proposed <- compute_jacobian(proposed_theta, param_transform)
-      log_jacobian_current  <- compute_jacobian(current_theta, param_transform)
+      log_jacobian_proposed <- .compute_jacobian(proposed_theta, param_transform)
+      log_jacobian_current  <- .compute_jacobian(current_theta, param_transform)
 
       # --- Compute the acceptance ratio ---
       log_prior_current <- sapply(seq_along(current_theta), function(j) {

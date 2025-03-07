@@ -10,7 +10,6 @@
 #' @param init_params A vector of initial parameter values.
 #'
 #' @returns NULL
-#' @export
 #'
 .check_params_match <- function(
     init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm, init_params,
@@ -58,4 +57,51 @@
   if (!all(fn_params %in% names(log_priors))) {
     stop("Parameters in functions do not match the names in log_priors")
   }
+}
+
+# ---------------------------
+# Helper functions for parameter transformation
+# ---------------------------
+
+
+#' Internal function to transform parameters
+#'
+#' @param theta parameter vector
+#' @param transform transformation type for each parameter
+#'
+#' @returns transformed parameter vector
+
+.transform_params <- function(theta, transform) {
+  # Applies the specified transformation to each parameter.
+  sapply(seq_along(theta), function(j) {
+    if (transform[j] == "log") log(theta[j]) else theta[j]
+  })
+}
+
+#' Internal function to back-transform parameters
+#'
+#' @param theta_trans transformed parameter vector
+#' @param transform transformation type for each parameter
+#'
+#' @returns original parameter vector
+#'
+.back_transform_params <- function(theta_trans, transform) {
+  # Inverse transforms parameters back to the original scale.
+  sapply(seq_along(theta_trans), function(j) {
+    if (transform[j] == "log") exp(theta_trans[j]) else theta_trans[j]
+  })
+}
+
+
+#' Internal function to compute the Jacobian of the transformation
+#'
+#' @param theta parameter vector
+#' @param transform transformation type for each parameter
+#'
+#' @returns Jacobian of the transformation
+.compute_jacobian <- function(theta, transform) {
+  # For a log transform, |dx/dz| = x, so log|dx/dz| = log(x); otherwise zero.
+  sum(sapply(seq_along(theta), function(j) {
+    if (transform[j] == "log") log(theta[j]) else 0
+  }))
 }
