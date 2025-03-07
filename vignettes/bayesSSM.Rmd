@@ -113,7 +113,9 @@ proposal distribution for the parameters. The tuning can be modified by the
 the function `default_tune_control`. We will use the default settings.
 
 We fit 2 chains with $m=2000$ iterations for each, with a burn_in of $500$.
-In practice you should run more iterations and chains.
+In practice you should run more iterations and chains. To improve sampling
+we specify that metropolis hastings should specify $\sigma_x$ and $\sigma_y$ on
+the $\log$-scale. 
 
 ```{r}
 result <- pmmh(
