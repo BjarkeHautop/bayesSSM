@@ -121,10 +121,8 @@
                              transition_fn_ssm, log_likelihood_fn_ssm,
                              log_priors, proposal_sd,
                              algorithm = c("SISAR", "SISR", "SIS"),
-                             resample_fn = c(
-                               "stratified", "systematic",
-                               "multinomial"
-                             ),
+                             resample_fn = c("stratified", "systematic",
+                                             "multinomial"),
                              param_transform = NULL,
                              init_params = NULL,
                              verbose = FALSE,
@@ -144,17 +142,16 @@
     log_priors[[i]](init_params[i])
   })
   if (any(!is.finite(log_prior_init))) {
-    stop("Invalid initial parameters: at least one initial value is outside the
-         support of its prior. Modify them in the argument init_params.")
+    stop(paste0("Invalid initial parameters: at least one initial value is",
+                "outside the support of its prior. Modify them in the argument",
+                "init_params."))
   }
 
   current_theta <- init_params
   pilot_theta_chain[1, ] <- current_theta
 
-  # Prepare extra arguments from current_theta as a list.
+  # Run particle filter with current parameters.
   current_theta_list <- as.list(current_theta)
-
-  # Run particle filter with current parameters using do.call
   pf_result <- do.call(particle_filter, c(
     list(
       y = y, n = pilot_n, init_fn = init_fn_ssm,
@@ -166,83 +163,62 @@
     current_theta_list,
     list(...)
   ))
-
   current_loglike <- pf_result$loglike
   pilot_loglike_chain[1] <- current_loglike
 
-  log_jacobian_proposed <- 0
-  log_jacobian_current <- 0
-
-  # Check if the param_transform argument is valid
-  if (!is.null(param_transform)) {
+  # Ensure param_transform is set correctly.
+  if (is.null(param_transform)) {
+    param_transform <- rep("identity", num_params)
+  } else {
     invalid_transform <- which(!(param_transform %in% c("log", "identity")))
     if (length(invalid_transform) > 0) {
-      warning("Currently only supports 'log' and 'identity' transformation.
-              Using 'identity' (no transformation) instead.")
+      warning(paste0("Only 'log' and 'identity' transformations are supported.",
+                     " Using 'identity' for invalid entries."))
       param_transform[invalid_transform] <- "identity"
     }
   }
 
   for (m in 2:pilot_m) {
-    # Proposal step with transformation (if provided)
     valid_theta <- FALSE
     while (!valid_theta) {
-      proposed_theta <- sapply(seq_along(current_theta), function(i) {
-        if (!is.null(param_transform) && param_transform[i] == "log") {
-          # Propose on the log scale
-          log_theta <- log(current_theta[i]) + stats::rnorm(1,
-            mean = 0,
-            sd = proposal_sd[i]
-          )
-          exp(log_theta) # Transform back to original scale
-        } else {
-          # Regular proposal (identity transformation)
-          current_theta[i] + stats::rnorm(1, mean = 0, sd = proposal_sd[i])
-        }
-      })
-
-      # Calculate the log-jacobian adjustment
-      log_jacobian_proposed <- sum(sapply(
-        seq_along(proposed_theta),
-        function(i) {
-          if (!is.null(param_transform) && param_transform[i] == "log") {
-            -log(proposed_theta[i]) # Log transformation adjustment
-          } else {
-            0 # No transformation, no adjustment
-          }
-        }
-      ))
-
-      # Compute the log-priors for the proposed parameters
-      log_prior_proposed <- mapply(
-        function(fn, theta) fn(theta), log_priors,
-        proposed_theta
+      # Transform the current theta.
+      current_theta_trans <- .transform_params(
+        theta = current_theta,
+        transform = param_transform)
+      # Propose in the transformed space.
+      proposed_theta_trans <- current_theta_trans +
+        stats::rnorm(length(current_theta_trans), mean = 0, sd = proposal_sd)
+      # Back-transform to original scale.
+      proposed_theta <- .back_transform_params(
+        theta_trans = proposed_theta_trans,
+        transform = param_transform
       )
-      log_prior_proposed_total <- sum(log_prior_proposed)
 
-      # Check if proposed theta is valid (log-prior is finite)
+      # Compute the Jacobian adjustments.
+      log_jacobian_proposed <- .compute_jacobian(
+        theta = proposed_theta,
+        transform = param_transform
+      )
+      log_jacobian_current  <- .compute_jacobian(
+        theta = current_theta,
+        transform = param_transform
+      )
+
+      # Compute the log-priors for the proposed parameters.
+      log_prior_proposed <- mapply(function(fn, theta) fn(theta),
+                                   log_priors, proposed_theta)
+
       if (all(is.finite(log_prior_proposed))) {
         valid_theta <- TRUE
       }
     }
 
-    # Compute the log-priors for current and proposed parameters.
-    log_prior_current <- mapply(
-      function(fn, theta) fn(theta), log_priors,
-      current_theta
-    )
-    log_prior_proposed <- mapply(
-      function(fn, theta) fn(theta), log_priors,
-      proposed_theta
-    )
-
-    log_prior_current_total <- sum(log_prior_current)
-    log_prior_proposed_total <- sum(log_prior_proposed)
-
-    # Prepare extra arguments from proposed_theta as a list.
-    proposed_theta_list <- as.list(proposed_theta)
+    # Compute log-priors for current parameters.
+    log_prior_current <- mapply(function(fn, theta) fn(theta),
+                                log_priors, current_theta)
 
     # Run particle filter with the proposed parameters.
+    proposed_theta_list <- as.list(proposed_theta)
     pf_prop <- do.call(particle_filter, c(
       list(
         y = y, n = pilot_n, init_fn = init_fn_ssm,
@@ -254,13 +230,14 @@
       proposed_theta_list,
       list(...)
     ))
-
     proposed_loglike <- pf_prop$loglike
-    log_num <- log_prior_proposed_total + proposed_loglike +
+
+    # Acceptance ratio with Jacobian adjustments.
+    log_accept_num <- sum(log_prior_proposed) + proposed_loglike +
       log_jacobian_proposed
-    log_denom <- log_prior_current_total + current_loglike +
+    log_accept_denom <- sum(log_prior_current) + current_loglike +
       log_jacobian_current
-    log_accept_ratio <- log_num - log_denom
+    log_accept_ratio <- log_accept_num - log_accept_denom
 
     if (log(stats::runif(1)) < log_accept_ratio) {
       current_theta <- proposed_theta
@@ -273,7 +250,6 @@
 
   burn_in <- floor(pilot_m / 2)
   pilot_theta_post <- pilot_theta_chain[(burn_in + 1):pilot_m, , drop = FALSE]
-
   pilot_theta_mean <- colMeans(pilot_theta_post)
 
   if (ncol(pilot_theta_post) > 1) {
@@ -281,18 +257,19 @@
   } else {
     pilot_theta_cov <- stats::var(pilot_theta_post)
   }
+
   if (verbose) {
     message("Pilot chain posterior mean:")
     print(pilot_theta_mean)
     if (ncol(pilot_theta_post) > 1) {
-      if (!is.null(param_transform) && any(param_transform == "log")) {
+      if (any(param_transform == "log")) {
         message("Pilot chain posterior covariance (on transformed space):")
       } else {
         message("Pilot chain posterior covariance:")
       }
       print(pilot_theta_cov)
     } else {
-      if (!is.null(param_transform) && any(param_transform == "log")) {
+      if (any(param_transform == "log")) {
         message("Pilot chain posterior variance (on transformed space):")
       } else {
         message("Pilot chain posterior variance:")
@@ -300,7 +277,6 @@
       print(pilot_theta_cov)
     }
   }
-
 
   # Run the pilot run using the estimated posterior mean.
   pilot_result <- do.call(.pilot_run, c(
@@ -315,7 +291,6 @@
     as.list(pilot_theta_mean),
     list(...)
   ))
-
   target_n <- pilot_result$target_n
   message("Using ", target_n, " number of particles for PMMH:")
 

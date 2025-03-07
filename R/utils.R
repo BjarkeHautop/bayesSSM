@@ -11,6 +11,7 @@
 #'
 #' @returns NULL
 #'
+#' @keywords internal
 .check_params_match <- function(
     init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm, init_params,
     log_priors) {
@@ -70,6 +71,8 @@
 #' @param transform transformation type for each parameter
 #'
 #' @returns transformed parameter vector
+#'
+#' @keywords internal
 
 .transform_params <- function(theta, transform) {
   # Applies the specified transformation to each parameter.
@@ -85,6 +88,7 @@
 #'
 #' @returns original parameter vector
 #'
+#' @keywords internal
 .back_transform_params <- function(theta_trans, transform) {
   # Inverse transforms parameters back to the original scale.
   sapply(seq_along(theta_trans), function(j) {
@@ -99,6 +103,8 @@
 #' @param transform transformation type for each parameter
 #'
 #' @returns Jacobian of the transformation
+#'
+#' @keywords internal
 .compute_jacobian <- function(theta, transform) {
   # For a log transform, |dx/dz| = x, so log|dx/dz| = log(x); otherwise zero.
   sum(sapply(seq_along(theta), function(j) {

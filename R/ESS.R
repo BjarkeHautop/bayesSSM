@@ -32,8 +32,14 @@ ess <- function(chains) {
   # Between-chain variance, b
   b <- m / (k - 1) * sum((chain_means - overall_mean)^2)
 
-  # Within-chain variances, W (using stats::var which uses denominator (M-1))
+  # Within-chain variances, W
   chain_vars <- apply(chains, 2, stats::var)
+
+  # If any chain_vars is zero give error
+  if (any(chain_vars == 0)) {
+    stop("One or more chains have zero variance.")
+  }
+
   w <- mean(chain_vars)
 
   # Marginal posterior variance estimator

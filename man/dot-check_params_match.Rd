@@ -29,3 +29,4 @@ parameter.}
 \description{
 Helper function to validate input of user-defined functions and priors
 }
+\keyword{internal}
