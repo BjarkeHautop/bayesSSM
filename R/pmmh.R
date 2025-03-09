@@ -165,13 +165,13 @@ default_tune_control <- function(
 #' # Convergence warning is expected with such low MCMC iterations.
 #'
 pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
-         log_priors, init_params, burn_in, num_chains = 4,
-         algorithm = c("SISAR", "SISR", "SIS"),
-         resample_fn = c("stratified", "systematic", "multinomial"),
-         param_transform = NULL,
-         tune_control = default_tune_control(),
-         verbose = FALSE,
-         seed = NULL) {
+                 log_priors, init_params, burn_in, num_chains = 4,
+                 algorithm = c("SISAR", "SISR", "SIS"),
+                 resample_fn = c("stratified", "systematic", "multinomial"),
+                 param_transform = NULL,
+                 tune_control = default_tune_control(),
+                 verbose = FALSE,
+                 seed = NULL) {
   if (!is.null(seed)) set.seed(seed)
   # ---------------------------
   # Input validation
@@ -246,8 +246,9 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
     )
   }
 
-  tune_control$pilot_proposal_sd <- rep(tune_control$pilot_proposal_sd,
-                                        length.out = num_params
+  tune_control$pilot_proposal_sd <- rep(
+    tune_control$pilot_proposal_sd,
+    length.out = num_params
   )
 
   theta_chains <- vector("list", num_chains)

@@ -33,8 +33,8 @@ Consider the following SSM:
 
 $$
 \begin{aligned}
-        X_1 &\sim N(0,\, 1) \\
-        X_t&=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0, \, 1) \\
+        X_1 &\sim N(0,1) \\
+        X_t&=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0,1) \\
         Y_t&=X_t+\sigma_y W_t, \quad W_t \sim N(0, \, 1).
 \end{aligned}
 $$
@@ -64,8 +64,8 @@ We define the priors for our model as follows:
 $$
 \begin{aligned}
         \phi &\sim N(0,1), \\
-        \sigma_x &\sim \text{half-}N(1), \\
-        \sigma_y &\sim \text{half-}N(1).
+        \sigma_x &\sim \text{Exp}(1), \\
+        \sigma_y &\sim \text{Exp}(1).
 \end{aligned}
 $$
 
@@ -129,9 +129,9 @@ pmmh(
 #> Running particle MCMC chains with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat
-#>        phi 0.97 0.13   1.01    0.72     1.24   4 1.015
-#>    sigma_x 1.09 0.37   1.11    0.12     1.65  23 1.019
-#>    sigma_y 0.61 0.42   0.43    0.14     1.46   2 1.159
+#>        phi 0.67 0.13   0.68    0.42     0.85  18 1.037
+#>    sigma_x 0.74 0.35   0.80    0.04     1.20   4 1.345
+#>    sigma_y 0.64 0.35   0.61    0.14     1.24   3 1.520
 #> Warning in pmmh(y = y, m = 200, init_fn_ssm = init_fn_ssm, transition_fn_ssm =
 #> transition_fn_ssm, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.
@@ -141,9 +141,9 @@ pmmh(
 #> and/or increase burn_in.
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat
-#>        phi 0.97 0.13   1.01    0.72     1.24   4 1.015
-#>    sigma_x 1.09 0.37   1.11    0.12     1.65  23 1.019
-#>    sigma_y 0.61 0.42   0.43    0.14     1.46   2 1.159
+#>        phi 0.67 0.13   0.68    0.42     0.85  18 1.037
+#>    sigma_x 0.74 0.35   0.80    0.04     1.20   4 1.345
+#>    sigma_y 0.64 0.35   0.61    0.14     1.24   3 1.520
 ```
 
 We get convergence warnings because we only ran the algorithm for a
