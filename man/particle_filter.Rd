@@ -118,12 +118,12 @@ multinomial resampling.
 }
 \examples{
 init_fn <- function(n) rnorm(n, 0, 1)
-transition_fn <- function(particles, t) particles + rnorm(length(particles))
-log_likelihood_fn <- function(y, particles, t) {
+transition_fn <- function(particles) particles + rnorm(length(particles))
+log_likelihood_fn <- function(y, particles) {
   dnorm(y, mean = particles, sd = 1, log = TRUE)
 }
 
-# Generate synthetic observations.
+# Generate data.
 y <- cumsum(rnorm(50))
 n <- 100
 

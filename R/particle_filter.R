@@ -95,12 +95,12 @@
 #'
 #' @examples
 #' init_fn <- function(n) rnorm(n, 0, 1)
-#' transition_fn <- function(particles, t) particles + rnorm(length(particles))
-#' log_likelihood_fn <- function(y, particles, t) {
+#' transition_fn <- function(particles) particles + rnorm(length(particles))
+#' log_likelihood_fn <- function(y, particles) {
 #'   dnorm(y, mean = particles, sd = 1, log = TRUE)
 #' }
 #'
-#' # Generate synthetic observations.
+#' # Generate data.
 #' y <- cumsum(rnorm(50))
 #' n <- 100
 #'
@@ -122,9 +122,9 @@ particle_filter <- function(
   resample_fn <- match.arg(resample_fn)
 
   resample_func <- switch(resample_fn,
-    multinomial = .resample_multinomial,
-    stratified = .resample_stratified,
-    systematic = .resample_systematic
+                          multinomial = .resample_multinomial,
+                          stratified = .resample_stratified,
+                          systematic = .resample_systematic
   )
 
   num_steps <- length(y)
@@ -144,11 +144,11 @@ particle_filter <- function(
 
   # Initialization at time step 1
   particles <- init_fn(n, ...)
-  log_weights <- log_likelihood_fn(y[1], particles, t = 1, ...)
+  log_weights <- log_likelihood_fn(y[1], particles, ...)
 
   # Compute incremental log likelihood l_1 and normalize weights
-  log_l_t <- logsumexp(log_weights) - log(n)
-  loglike <- log_l_t
+  log_l_1 <- logsumexp(log_weights) - log(n)
+  loglike <- log_l_1
   log_normalizer <- logsumexp(log_weights)
   log_weights <- log_weights - log_normalizer
   weights <- exp(log_weights)
@@ -165,20 +165,20 @@ particle_filter <- function(
     threshold <- n / 2
   }
 
-  # Main loop over remaining time steps
-  for (t in 2:num_steps) {
-    # Propagate particles through the state transition model
-    particles <- transition_fn(particles, t, ...)
+  # Main loop over remaining time steps (using 'i' as the index)
+  for (i in 2:num_steps) {
+    # Propagate particles through the (time-invariant) state transition model
+    particles <- transition_fn(particles, ...)
 
     # Compute log likelihoods for the current observation
-    log_likelihoods <- log_likelihood_fn(y[t], particles, t, ...)
+    log_likelihoods <- log_likelihood_fn(y[i], particles, ...)
 
     # Update log weights: previous log(weights) plus new log likelihoods
     log_weights <- log(weights) + log_likelihoods
 
-    # Compute the incremental log likelihood L_t
-    log_l_t <- logsumexp(log_weights) - log(n)
-    loglike <- loglike + log_l_t
+    # Compute the incremental log likelihood for this time step
+    log_l_i <- logsumexp(log_weights) - log(n)
+    loglike <- loglike + log_l_i
 
     # Normalize weights using the log-sum-exp trick
     log_normalizer <- logsumexp(log_weights)
@@ -187,24 +187,24 @@ particle_filter <- function(
 
     # Compute Effective Sample Size (ESS)
     ess_current <- 1 / sum(weights^2)
-    ess_vec[t] <- ess_current
+    ess_vec[i] <- ess_current
 
     # Resampling based on chosen algorithm
     if (algorithm == "SISR") {
       particles <- resample_func(particles, weights)
       weights <- rep(1 / n, n)
-      ess_vec[t] <- n # Reset ESS after resampling
+      ess_vec[i] <- n # Reset ESS after resampling
     } else if (algorithm == "SISAR" && ess_current < threshold) {
       particles <- resample_func(particles, weights)
       weights <- rep(1 / n, n)
-      ess_vec[t] <- n # Reset ESS after resampling
+      ess_vec[i] <- n # Reset ESS after resampling
     }
 
     # Update the state estimate as the weighted average of particles
-    state_est[t] <- sum(particles * weights)
+    state_est[i] <- sum(particles * weights)
     if (return_particles) {
-      particles_history[t, ] <- particles
-      weights_history[t, ] <- weights
+      particles_history[i, ] <- particles
+      weights_history[i, ] <- weights
     }
   }
 
@@ -221,3 +221,4 @@ particle_filter <- function(
   }
   result
 }
+

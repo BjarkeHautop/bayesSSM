@@ -1,16 +1,6 @@
-library(testthat)
-
-# For testing, we define simple functions for initialization, transition, and
-# likelihood.
-# These functions produce deterministic outputs:
-# - init_fn returns a vector of zeros.
-# - transition_fn increments each particle by 1.
-# - likelihood_fn returns uniform weights (ones) so that after normalization,
-# weights are equal.
-
 init_fn <- function(n, ...) rep(0, n)
-transition_fn <- function(particles, t, ...) particles + 1
-likelihood_fn <- function(y, particles, t, ...) rep(1, length(particles))
+transition_fn <- function(particles, ...) particles + 1
+likelihood_fn <- function(y, particles, ...) rep(1, length(particles))
 
 # A simple observation vector for testing (5 time steps)
 y <- rep(0, 5)
@@ -50,13 +40,13 @@ init_fn_ssm <- function(n, ...) {
   rnorm(n, mean = 0, sd = 1)
 }
 
-transition_fn_ssm <- function(particles, t, phi, sigma_x, ...) {
+transition_fn_ssm <- function(particles, phi, sigma_x, ...) {
   # X_t = phi*X_{t-1} + sin(X_{t-1}) + sigma_x*V_t,  V_t ~ N(0,1)
   phi * particles + sin(particles) +
     rnorm(length(particles), mean = 0, sd = sigma_x)
 }
 
-log_likelihood_fn_ssm <- function(y, particles, t, sigma_y, ...) {
+log_likelihood_fn_ssm <- function(y, particles, sigma_y, ...) {
   dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
 }
 
