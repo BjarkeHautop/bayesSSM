@@ -108,6 +108,8 @@ default_tune_control <- function(
 #'   \item{\code{latent_state_estimate}}{diagnostics containing ESS and Rhat.}
 #' }
 #'
+#' @export
+#'
 #' @examples
 #' init_fn_ssm <- function(particles) {
 #'   stats::rnorm(particles, mean = 0, sd = 1)
@@ -160,15 +162,16 @@ default_tune_control <- function(
 #'     sigma_y = "log"
 #'   )
 #' )
-#' @export
+#' # Convergence warning is expected with such low MCMC iterations.
+#'
 pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
-                 log_priors, init_params, burn_in, num_chains = 4,
-                 algorithm = c("SISAR", "SISR", "SIS"),
-                 resample_fn = c("stratified", "systematic", "multinomial"),
-                 param_transform = NULL,
-                 tune_control = default_tune_control(),
-                 verbose = FALSE,
-                 seed = NULL) {
+         log_priors, init_params, burn_in, num_chains = 4,
+         algorithm = c("SISAR", "SISR", "SIS"),
+         resample_fn = c("stratified", "systematic", "multinomial"),
+         param_transform = NULL,
+         tune_control = default_tune_control(),
+         verbose = FALSE,
+         seed = NULL) {
   if (!is.null(seed)) set.seed(seed)
   # ---------------------------
   # Input validation
@@ -244,53 +247,57 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
   }
 
   tune_control$pilot_proposal_sd <- rep(tune_control$pilot_proposal_sd,
-    length.out = num_params
+                                        length.out = num_params
   )
 
-  # ---------------------------
-  # Step 1: Run the pilot (particle) chain for tuning
-  # ---------------------------
-  message("Running pilot chain for tuning...")
-  pilot_chain <- .run_pilot_chain(
-    y = y,
-    pilot_m = tune_control$pilot_m,
-    pilot_n = tune_control$pilot_n,
-    pilot_reps = tune_control$pilot_reps,
-    init_fn_ssm = init_fn_ssm,
-    transition_fn_ssm = transition_fn_ssm,
-    log_likelihood_fn_ssm = log_likelihood_fn_ssm,
-    log_priors = log_priors,
-    proposal_sd = tune_control$pilot_proposal_sd,
-    init_params = init_params,
-    algorithm = tune_control$pilot_algorithm,
-    resample_fn = tune_control$pilot_resample_fn,
-    param_transform = param_transform,
-    verbose = verbose
-  )
-
-  init_theta <- pilot_chain$pilot_theta_mean
-  proposal_cov <- pilot_chain$pilot_theta_cov
-  target_n <- pilot_chain$target_n
-
-  # Precompute the transformed proposal covariance:
-  # For log-transformed parameters, the scaling is done using the pilot
-  # estimates.
-  scale_vec <- sapply(seq_along(init_theta), function(j) {
-    if (param_transform[j] == "log") init_theta[j] else 1
-  })
-  proposal_cov_trans <- diag(1 / scale_vec) %*% proposal_cov %*%
-    diag(1 / scale_vec)
-
-  message("Running particle MCMC chains with tuned settings...")
-
-  # ---------------------------
-  # Step 2: Run the PMMH chains using the tuned settings
-  # ---------------------------
   theta_chains <- vector("list", num_chains)
   state_est_chains <- vector("list", num_chains)
 
   for (chain in 1:num_chains) {
     message("Running chain ", chain, "...")
+
+    # ---------------------------
+    # Step 1: Run the pilot (particle) chain for tuning
+    # ---------------------------
+    message("Running pilot chain for tuning...")
+    pilot_chain <- .run_pilot_chain(
+      y = y,
+      pilot_m = tune_control$pilot_m,
+      pilot_n = tune_control$pilot_n,
+      pilot_reps = tune_control$pilot_reps,
+      init_fn_ssm = init_fn_ssm,
+      transition_fn_ssm = transition_fn_ssm,
+      log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+      log_priors = log_priors,
+      proposal_sd = tune_control$pilot_proposal_sd,
+      init_params = init_params,
+      algorithm = tune_control$pilot_algorithm,
+      resample_fn = tune_control$pilot_resample_fn,
+      param_transform = param_transform,
+      verbose = verbose
+    )
+
+    init_theta <- pilot_chain$pilot_theta_mean
+    proposal_cov <- pilot_chain$pilot_theta_cov
+    target_n <- pilot_chain$target_n
+
+    # Precompute the transformed proposal covariance:
+    # For log-transformed parameters, the scaling is done using the pilot
+    # estimates.
+    scale_vec <- sapply(seq_along(init_theta), function(j) {
+      if (param_transform[j] == "log") init_theta[j] else 1
+    })
+    proposal_cov_trans <- diag(1 / scale_vec) %*% proposal_cov %*%
+      diag(1 / scale_vec)
+
+    # ---------------------------
+    # Step 2: Run the PMMH chains using the tuned settings
+    # ---------------------------
+
+    message("Running particle MCMC chains with tuned settings...")
+
+
+
     current_theta <- init_theta
     theta_chain <- matrix(NA, nrow = m, ncol = num_params)
     colnames(theta_chain) <- names(current_theta)

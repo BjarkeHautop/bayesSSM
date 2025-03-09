@@ -131,3 +131,8 @@ n <- 100
 result <- particle_filter(y, n, init_fn, transition_fn, log_likelihood_fn)
 plot(result$state_est, type = "l", col = "blue", main = "State Estimates")
 }
+\references{
+Douc, R., Cappé, O., & Moulines, E. (2005). Comparison of
+Resampling Schemes for Particle Filtering.
+Accessible at: https://arxiv.org/abs/cs/0507025
+}

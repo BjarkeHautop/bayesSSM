@@ -22,3 +22,6 @@ Uses the formula for split-Rhat proposed by Gelman et al. (2013).
 chains <- matrix(rnorm(3000), nrow = 1000, ncol = 3)
 rhat(chains)
 }
+\references{
+Gelman et al. (2013). Bayesian Data Analysis, 3rd Edition.
+}

@@ -87,6 +87,10 @@
 #' showed that it always gives a lower variance compared to
 #' multinomial resampling.
 #'
+#' @references Douc, R., Cappé, O., & Moulines, E. (2005). Comparison of
+#' Resampling Schemes for Particle Filtering.
+#' Accessible at: https://arxiv.org/abs/cs/0507025
+#'
 #' @export
 #'
 #' @examples
