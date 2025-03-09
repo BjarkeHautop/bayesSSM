@@ -10,8 +10,8 @@ coverage](https://codecov.io/gh/BjarkeHautop/bayesSSM/graph/badge.svg)](https://
 [![R-CMD-check](https://github.com/BjarkeHautop/bayesSSM/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/BjarkeHautop/bayesSSM/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-bayesSSM is an R package offering a suite of tools for performing
-Bayesian inference in state-space models (SSMs). It implements Particle
+bayesSSM is an R package offering a set of tools for performing Bayesian
+inference in state-space models (SSMs). It implements the Particle
 Marginal Metropolis-Hastings (PMMH) for Bayesian inference.
 
 > **Note:** This package is under active development and may undergo
@@ -100,6 +100,14 @@ log_priors <- list(
 )
 ```
 
+Note, that `init_fn_ssm` must take an argument `particles` and return a
+vector of initial values for the latent state variables.
+`transition_fn_ssm` must take arguments `particles`, and
+`log_likelihood_fn_ssm` must take arguments `y` and `particles`. Any
+parameters for the SSM can be given as additional arguments to the
+functions. Any parameter must have a corresponding log-prior function in
+`log_priors`.
+
 Now we can run the PMMH algorithm using the `pmmh` function. We run 2
 chains for 200 MCMC samples with a burn-in of 10. In practice you would
 want to run it for a much larger number of samples.
@@ -107,7 +115,7 @@ want to run it for a much larger number of samples.
 ``` r
 library(bayesSSM)
 
-pmmh(
+result <- pmmh(
   y = y,
   m = 200, # number of MCMC samples
   init_fn_ssm = init_fn_ssm,
@@ -121,17 +129,17 @@ pmmh(
 )
 #> Running chain 1...
 #> Running pilot chain for tuning...
-#> Using 50 particles for PMMH:
+#> Using 288 particles for PMMH:
 #> Running particle MCMC chains with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
-#> Using 50 particles for PMMH:
+#> Using 341 particles for PMMH:
 #> Running particle MCMC chains with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat
-#>        phi 0.67 0.13   0.68    0.42     0.85  18 1.037
-#>    sigma_x 0.74 0.35   0.80    0.04     1.20   4 1.345
-#>    sigma_y 0.64 0.35   0.61    0.14     1.24   3 1.520
+#>        phi 0.87 0.06   0.87    0.76     1.00  32 1.009
+#>    sigma_x 0.97 0.11   0.93    0.84     1.16   1 1.507
+#>    sigma_y 0.40 0.18   0.41    0.06     0.70   1 1.301
 #> Warning in pmmh(y = y, m = 200, init_fn_ssm = init_fn_ssm, transition_fn_ssm =
 #> transition_fn_ssm, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.
@@ -139,11 +147,6 @@ pmmh(
 #> transition_fn_ssm, : Some Rhat values are above 1.01, indicating that the
 #> chains have not converged. Consider running the chains for more iterations
 #> and/or increase burn_in.
-#> PMMH Results Summary:
-#>  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat
-#>        phi 0.67 0.13   0.68    0.42     0.85  18 1.037
-#>    sigma_x 0.74 0.35   0.80    0.04     1.20   4 1.345
-#>    sigma_y 0.64 0.35   0.61    0.14     1.24   3 1.520
 ```
 
 We get convergence warnings because we only ran the algorithm for a

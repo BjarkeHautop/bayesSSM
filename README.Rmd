@@ -20,8 +20,8 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/BjarkeHautop/bayesSSM/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/BjarkeHautop/bayesSSM/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-bayesSSM is an R package offering a suite of tools for performing Bayesian 
-inference in state-space models (SSMs). It implements 
+bayesSSM is an R package offering a set of tools for performing Bayesian 
+inference in state-space models (SSMs). It implements the
 Particle Marginal Metropolis-Hastings (PMMH) for Bayesian inference. 
 
 > **Note:** This package is under active development and may undergo 
@@ -110,6 +110,13 @@ log_priors <- list(
 )
 ```
 
+Note, that `init_fn_ssm` must take an argument `particles` and return a vector
+of initial values for the latent state variables. `transition_fn_ssm` must take
+arguments `particles`, and `log_likelihood_fn_ssm` must take arguments `y` and
+`particles`. Any parameters for the SSM can be given as additional arguments to
+the functions. Any parameter must have a corresponding log-prior function in
+`log_priors`.
+
 Now we can run the PMMH algorithm using the `pmmh` function. We run 2 chains for
 200 MCMC samples with a burn-in of 10. 
 In practice you would want to run it for a much larger number of samples. 
@@ -117,7 +124,7 @@ In practice you would want to run it for a much larger number of samples.
 ```{r example}
 library(bayesSSM)
 
-pmmh(
+result <- pmmh(
   y = y,
   m = 200, # number of MCMC samples
   init_fn_ssm = init_fn_ssm,
