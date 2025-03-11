@@ -10,7 +10,7 @@ default_tune_control(
   pilot_m = 2000,
   pilot_target_var = 1,
   pilot_burn_in = 1000,
-  pilot_reps = 10,
+  pilot_reps = 100,
   pilot_algorithm = c("SISAR", "SISR", "SIS"),
   pilot_resample_fn = c("stratified", "systematic", "multinomial")
 )
@@ -28,7 +28,7 @@ evaluated at estimated posterior mean. Default is 1.}
 
 \item{pilot_burn_in}{Number of burn-in iterations for MCMC. Default is 1000.}
 
-\item{pilot_reps}{Number of times a particle filter is run. Default is 10.}
+\item{pilot_reps}{Number of times a particle filter is run. Default is 100.}
 
 \item{pilot_algorithm}{The algorithm used for the pilot particle filter.
 Default is "SISAR".}

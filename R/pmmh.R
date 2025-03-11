@@ -9,7 +9,7 @@
 #' @param pilot_target_var The target variance for the posterior log-likelihood
 #' evaluated at estimated posterior mean. Default is 1.
 #' @param pilot_burn_in Number of burn-in iterations for MCMC. Default is 1000.
-#' @param pilot_reps Number of times a particle filter is run. Default is 10.
+#' @param pilot_reps Number of times a particle filter is run. Default is 100.
 #' @param pilot_algorithm The algorithm used for the pilot particle filter.
 #' Default is "SISAR".
 #' @param pilot_resample_fn The resampling function used for the pilot particle
@@ -19,7 +19,7 @@
 #' @export
 default_tune_control <- function(
     pilot_proposal_sd = 1, pilot_n = 100, pilot_m = 2000,
-    pilot_target_var = 1, pilot_burn_in = 1000, pilot_reps = 10,
+    pilot_target_var = 1, pilot_burn_in = 1000, pilot_reps = 100,
     pilot_algorithm = c("SISAR", "SISR", "SIS"),
     pilot_resample_fn = c("stratified", "systematic", "multinomial")) {
   if (!is.numeric(pilot_proposal_sd) || pilot_proposal_sd <= 0) {

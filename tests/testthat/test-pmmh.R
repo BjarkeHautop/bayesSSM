@@ -18,7 +18,7 @@ test_that("default_tune_control returns a list with correct defaults", {
   expect_equal(result$pilot_m, 2000)
   expect_equal(result$target_var, 1)
   expect_equal(result$pilot_burn_in, 1000)
-  expect_equal(result$pilot_reps, 10)
+  expect_equal(result$pilot_reps, 100)
   expect_equal(result$pilot_algorithm, "SISAR")
   expect_equal(result$pilot_resample_fn, "stratified")
 })

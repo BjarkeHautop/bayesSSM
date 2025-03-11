@@ -32,8 +32,7 @@ A list containing:
 \describe{
   \item{variance_estimate}{The estimated variance of the log-likelihoods
   from the pilot run.}
-  \item{target_N}{The recommended target number of particles (ensuring a
-  minimum of 100).}
+  \item{target_N}{The number of particles used in PMMH algorithm.}
   \item{pilot_loglikes}{A numeric vector of log-likelihood values computed
   during the run.}
 }
