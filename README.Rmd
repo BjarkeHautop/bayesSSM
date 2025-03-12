@@ -79,8 +79,17 @@ $$
 \end{aligned}
 $$
 
-We can use `pmmh` to perform Bayesian inference on this model. We need to define
-the following functions:
+We can use `pmmh` to perform Bayesian inference on this model. To use `pmmh`
+we need to define the functions for the SSM and the priors. The functions 
+`init_fn_ssm`, `transition_fn_ssm` should be functions that simulates the
+latent state variables and the observed data. They must contain the argument
+`particles` which is a vector of particles, and can contain any other args as
+parameters. The function `log_likelihood_fn_ssm` should be a function that
+calculates the log-likelihood of the observed data given the latent state
+variables. It must contain the arguments `y` and `particles`.
+
+The priors for the parameters must be defined as log-prior functions. Every 
+parameter must have a corresponding log-prior function.
 
 ```{r}
 init_fn_ssm <- function(particles) {

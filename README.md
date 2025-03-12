@@ -69,8 +69,18 @@ $$
 \end{aligned}
 $$
 
-We can use `pmmh` to perform Bayesian inference on this model. We need
-to define the following functions:
+We can use `pmmh` to perform Bayesian inference on this model. To use
+`pmmh` we need to define the functions for the SSM and the priors. The
+functions `init_fn_ssm`, `transition_fn_ssm` should be functions that
+simulates the latent state variables and the observed data. They must
+contain the argument `particles` which is a vector of particles, and can
+contain any other args as parameters. The function
+`log_likelihood_fn_ssm` should be a function that calculates the
+log-likelihood of the observed data given the latent state variables. It
+must contain the arguments `y` and `particles`.
+
+The priors for the parameters must be defined as log-prior functions.
+Every parameter must have a corresponding log-prior function.
 
 ``` r
 init_fn_ssm <- function(particles) {
@@ -137,9 +147,9 @@ result <- pmmh(
 #> Running particle MCMC chains with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat
-#>        phi 0.88 0.09   0.89    0.65     1.01  42 1.102
-#>    sigma_x 0.66 0.37   0.70    0.08     1.30  26 1.040
-#>    sigma_y 0.95 0.33   1.04    0.25     1.44  25 1.036
+#>        phi 0.62 0.08   0.61    0.42     0.77  17 1.032
+#>    sigma_x 0.82 0.39   0.82    0.01     1.33  13 1.030
+#>    sigma_y 0.65 0.38   0.66    0.16     1.34   8 1.291
 #> Warning in pmmh(y = y, m = 200, init_fn_ssm = init_fn_ssm, transition_fn_ssm =
 #> transition_fn_ssm, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.
