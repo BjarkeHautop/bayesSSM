@@ -153,7 +153,7 @@ of samples.
 ## State-space Models
 
 State-space models are used to describe systems that evolve over time with 
-hidden (latent) state variables. The typical SSM is structured as a 
+latent (hidden) state variables. The typical SSM is structured as a 
 directed acyclic graph (DAG):
 
 ![SSM](man/figures/DAG_SSM.png)
@@ -185,7 +185,7 @@ The core function, `pmmh`, implements the Particle Marginal Metropolis-Hastings,
 which is an algorithm that first generates a set of $N$ particles to approximate
 the likelihood and then uses these particles to perform MCMC sampling of the
 parameters $\theta$. The implementation automatically tunes the number of
-particles and the proposal distribution for the parameters, which can be modifed
-by `default_tune_control`.
+particles and the proposal distribution for the parameters, which can be 
+modified by `default_tune_control`.
 
 

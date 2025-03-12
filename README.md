@@ -147,9 +147,9 @@ result <- pmmh(
 #> Running particle MCMC chains with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat
-#>        phi 0.82 0.07   0.85    0.67     0.94   2 1.001
-#>    sigma_x 0.60 0.30   0.70    0.03     1.11   9 1.015
-#>    sigma_y 0.62 0.26   0.55    0.34     1.09   3 1.048
+#>        phi 0.63 0.12   0.64    0.38     0.90  37 1.092
+#>    sigma_x 0.55 0.34   0.55    0.03     1.20  35 1.036
+#>    sigma_y 0.78 0.26   0.79    0.24     1.23  28 1.003
 #> Warning in pmmh(y = y, m = 200, init_fn_ssm = init_fn_ssm, transition_fn_ssm =
 #> transition_fn_ssm, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.
@@ -165,7 +165,7 @@ small number of samples.
 ## State-space Models
 
 State-space models are used to describe systems that evolve over time
-with hidden (latent) state variables. The typical SSM is structured as a
+with latent (hidden) state variables. The typical SSM is structured as a
 directed acyclic graph (DAG):
 
 <figure>
@@ -202,5 +202,5 @@ Metropolis-Hastings, which is an algorithm that first generates a set of
 $N$ particles to approximate the likelihood and then uses these
 particles to perform MCMC sampling of the parameters $\theta$. The
 implementation automatically tunes the number of particles and the
-proposal distribution for the parameters, which can be modifed by
+proposal distribution for the parameters, which can be modified by
 `default_tune_control`.
