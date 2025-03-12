@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# bayesSSM <img src="man/figures/logo.png" align="right" height="72" alt="" />
+# bayesSSM <img src="man/figures/logo.png" align="right" height="138" alt="" />
 
 <!-- badges: start -->
 [![Codecov test coverage](https://codecov.io/gh/BjarkeHautop/bayesSSM/graph/badge.svg)](https://app.codecov.io/gh/BjarkeHautop/bayesSSM)
