@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# bayesSSM <img src="man/figures/logo.png" align="right" height="139" alt="" />
+# bayesSSM <img src="man/figures/logo.png" align="right" height="72" alt="" />
 
 <!-- badges: start -->
 
@@ -129,17 +129,17 @@ result <- pmmh(
 )
 #> Running chain 1...
 #> Running pilot chain for tuning...
-#> Using 516 particles for PMMH:
+#> Using 50 particles for PMMH:
 #> Running particle MCMC chains with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
-#> Using 760 particles for PMMH:
+#> Using 50 particles for PMMH:
 #> Running particle MCMC chains with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat
-#>        phi 0.67 0.16   0.66    0.36     0.96  18 1.290
-#>    sigma_x 1.17 0.27   1.13    0.81     1.79  22 1.025
-#>    sigma_y 0.84 0.32   0.86    0.23     1.51  28 1.015
+#>        phi 0.88 0.09   0.89    0.65     1.01  42 1.102
+#>    sigma_x 0.66 0.37   0.70    0.08     1.30  26 1.040
+#>    sigma_y 0.95 0.33   1.04    0.25     1.44  25 1.036
 #> Warning in pmmh(y = y, m = 200, init_fn_ssm = init_fn_ssm, transition_fn_ssm =
 #> transition_fn_ssm, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.
