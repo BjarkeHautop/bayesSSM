@@ -1,4 +1,4 @@
-#' Particle Filter Implementation with Log-Sum-Exp Trick
+#' Particle Filter
 #'
 #' This function implements a particle filter for estimating the hidden states
 #' in a state space model using sequential Monte Carlo methods. Three filtering
@@ -9,13 +9,15 @@
 #'   every time step.
 #'   \item \strong{SISAR:} SIS with adaptive resampling based on the Effective
 #'   Sample Size (ESS). Resampling is triggered when the ESS falls below a
-#'   given threshold (default \code{n / 2}).
+#'   given threshold (default \code{particles / 2}).
 #' }
+#' It is recommended to use either SISR or SISAR to avoid weight degenracy.
 #'
-#' @param y A numeric vector of observations.
-#' @param n A positive integer specifying the number of particles.
+#'
+#' @param y A numeric vector or matrix of observations.
+#' @param num_particles A positive integer specifying the number of particles.
 #' @param init_fn A function that initializes the particle states. It should
-#' accept an integer (the number of particles) as its first argument and return
+#' take the current particles as its first argument and return
 #' a vector or matrix of initial particle states.
 #' @param transition_fn A function describing the state transition model. It
 #' should take the current particles and the current time step as arguments and
@@ -42,7 +44,7 @@
 #'   }
 #' @param threshold A numeric value specifying the ESS threshold for triggering
 #' resampling in the \code{"SISAR"} algorithm. If not provided, it defaults to
-#' \code{n / 2}.
+#' \code{particles / 2}.
 #' @param return_particles A logical value indicating whether to return the full
 #' particle history. Defaults to \code{TRUE}.
 #' @param ... Additional arguments passed to \code{init_fn},
@@ -50,8 +52,8 @@
 #'
 #' @return A list containing:
 #'   \describe{
-#'     \item{state_est}{A numeric vector of estimated states over time,
-#'     computed as the weighted average of particles.}
+#'     \item{state_est}{A numeric vector of estimated states over
+#'     time, computed as the weighted average of particles.}
 #'     \item{ess}{A numeric vector of the Effective Sample Size (ESS) at each
 #'     time step.}
 #'     \item{loglike}{The accumulated log-likelihood of the observations given
@@ -77,11 +79,12 @@
 #'   weight degeneracy.
 #'   \item \strong{SISAR:} Resampling is performed adaptively; particles are
 #'   resampled only when the Effective Sample Size (ESS) falls below a
-#'   specified threshold (defaulting to \code{n / 2}).
+#'   specified threshold (defaulting to \code{particles / 2}).
 #' }
 #' The Effective Sample Size (ESS) in context of particle filters is defined as
-#' \deqn{ESS = \left(\sum_{i=1}^n w_i^2\right)^{-1},}
-#' where \eqn{w_i} are the normalized weights of the particles.
+#' \deqn{ESS = \left(\sum_{i=1}^{\text{n}} w_i^2\right)^{-1},}
+#' where \eqn{n} is the number of particles and \eqn{w_i} are the
+#' normalized weights of the particles.
 #'
 #' The default resampling method is stratified resampling, as Douc et al., 2005
 #' showed that it always gives a lower variance compared to
@@ -94,46 +97,90 @@
 #' @export
 #'
 #' @examples
-#' init_fn <- function(n) rnorm(n, 0, 1)
+#' init_fn <- function(particles) rnorm(particles, 0, 1)
 #' transition_fn <- function(particles) particles + rnorm(length(particles))
 #' log_likelihood_fn <- function(y, particles) {
-#'   dnorm(y, mean = particles, sd = 1, log = TRUE)
+#'   stats::dnorm(y, mean = particles, sd = 1, log = TRUE)
 #' }
 #'
 #' # Generate data.
 #' y <- cumsum(rnorm(50))
-#' n <- 100
+#' num_particles <- 100
 #'
 #' # Run the particle filter using default settings.
-#' result <- particle_filter(y, n, init_fn, transition_fn, log_likelihood_fn)
+#' result <- result <- particle_filter(
+#'   y = y,
+#'   num_particles = num_particles,
+#'   init_fn = init_fn,
+#'   transition_fn = transition_fn,
+#'   log_likelihood_fn = log_likelihood_fn
+#' )
 #' plot(result$state_est, type = "l", col = "blue", main = "State Estimates")
 particle_filter <- function(
-    y, n, init_fn, transition_fn, log_likelihood_fn,
+    y, num_particles, init_fn, transition_fn, log_likelihood_fn,
     algorithm = c("SISAR", "SISR", "SIS"),
     resample_fn = c("stratified", "systematic", "multinomial"),
     threshold = NULL, return_particles = TRUE, ...) {
-  # Validate input: ensure n is a positive integer
-  if (!is.numeric(n) || n <= 0) {
-    stop("n must be a positive integer")
+  # Validate num_particles: must be a positive integer
+  if (!is.numeric(num_particles) || num_particles <= 0) {
+    stop("num_particles must be a positive integer")
   }
+  if (num_particles != as.integer(num_particles)) {
+    stop("num_particles must be a positive integer")
+  }
+
+  # Ensure y is a matrix.
+  if (is.vector(y)) {
+    y <- matrix(y, ncol = 1)
+  }
+
+  # Each row of y is an observation, so set num_steps to the number of rows.
+  num_steps <- nrow(y)
 
   # Match provided algorithm and resampling method to valid options
   algorithm <- match.arg(algorithm)
   resample_fn <- match.arg(resample_fn)
 
   resample_func <- switch(resample_fn,
-                          multinomial = .resample_multinomial,
-                          stratified = .resample_stratified,
-                          systematic = .resample_systematic
+    multinomial = .resample_multinomial,
+    stratified = .resample_stratified,
+    systematic = .resample_systematic
   )
 
-  num_steps <- length(y)
-  state_est <- numeric(num_steps)
+  # Initialization: obtain initial particles and ensure they are in matrix form.
+  particles <- init_fn(num_particles, ...)
+  if (is.null(dim(particles))) {
+    # If particles come as a vector, treat it as 1-dimensional.
+    if (length(particles) != num_particles) {
+      stop("init_fn must return a vector of length num_particles")
+    }
+    particles <- matrix(particles, nrow = num_particles, byrow = TRUE)
+  }
+
+  # Check that init_fn returns exactly num_particles rows
+  if (nrow(particles) != num_particles) {
+    stop("init_fn must return a vector/matrix with num_particles rows")
+  }
+
+  # Save state dimension d
+  d <- ncol(particles)
+
+  # Decide whether the state is 1-dim or multi-dim.
+  one_dim <- (d == 1)
+
+  # Initialize state estimates:
+  if (one_dim) {
+    state_est <- numeric(num_steps)
+  } else {
+    state_est <- matrix(NA, nrow = num_steps, ncol = d)
+  }
   ess_vec <- numeric(num_steps)
   loglike <- 0 # log-likelihood accumulator
+
+  # To store history, use lists (each element is an num_particles x d matrix)
   if (return_particles) {
-    particles_history <- matrix(NA, nrow = num_steps, ncol = n)
-    weights_history <- matrix(NA, nrow = num_steps, ncol = n)
+    particles_history <- vector("list", num_steps)
+    weights_history <- vector("list", num_steps)
   }
 
   # Helper function: log-sum-exp trick for numerical stability
@@ -142,73 +189,109 @@ particle_filter <- function(
     max_lw + log(sum(exp(lw - max_lw)))
   }
 
-  # Initialization at time step 1
-  particles <- init_fn(n, ...)
-  log_weights <- log_likelihood_fn(y[1], particles, ...)
+  # ---------------------------
+  # Time step 1 initialization
+  # ---------------------------
+  # Evaluate log-likelihood function at the first observation.
+  log_weights <- log_likelihood_fn(y[1, ], particles, ...)
 
-  # Compute incremental log likelihood l_1 and normalize weights
-  log_l_1 <- logsumexp(log_weights) - log(n)
+  # Check that log_likelihood_fn returns a log-likelihood of correct dimensions.
+  if (!is.numeric(log_weights) || length(log_weights) != num_particles) {
+    stop("log_likelihood_fn must return dimensions matching num_particles")
+  }
+
+  log_l_1 <- logsumexp(log_weights) - log(num_particles)
   loglike <- log_l_1
   log_normalizer <- logsumexp(log_weights)
   log_weights <- log_weights - log_normalizer
   weights <- exp(log_weights)
 
-  state_est[1] <- sum(particles * weights)
+  # Compute the weighted average for the first time step
+  if (one_dim) {
+    state_est[1] <- sum(particles * weights)
+  } else {
+    state_est[1, ] <- colSums(particles * weights)
+  }
   ess_vec[1] <- 1 / sum(weights^2)
   if (return_particles) {
-    particles_history[1, ] <- particles
-    weights_history[1, ] <- weights
+    particles_history[[1]] <- particles
+    weights_history[[1]] <- weights
   }
 
   # Set adaptive resampling threshold if needed
   if (algorithm == "SISAR" && is.null(threshold)) {
-    threshold <- n / 2
+    threshold <- num_particles / 2
   }
 
-  # Main loop over remaining time steps (using 'i' as the index)
+  # ----------------------------
+  # Main loop over time steps
+  # ----------------------------
   for (i in 2:num_steps) {
-    # Propagate particles through the (time-invariant) state transition model
-    particles <- transition_fn(particles, ...)
+    # Transition: update particles
+    particles_new <- transition_fn(particles, ...)
+    if (is.null(dim(particles_new))) {
+      # Check that transition_fn preserves correct output dimensions
+      if (length(particles_new) != num_particles || ncol(particles_new) != d) {
+        stop(paste0(
+          "transistion_fn must return the same dimensions as",
+          " the initial particles"
+        ))
+      }
+      particles_new <- matrix(particles_new, nrow = num_particles, byrow = TRUE)
+    } else {
+      if (nrow(particles_new) != num_particles || ncol(particles_new) != d) {
+        stop(paste0(
+          "transistion_fn must return the same dimensions as",
+          " the initial particles"
+        ))
+      }
+    }
 
-    # Compute log likelihoods for the current observation
-    log_likelihoods <- log_likelihood_fn(y[i], particles, ...)
+    particles <- particles_new
 
-    # Update log weights: previous log(weights) plus new log likelihoods
+    # Evaluate log-likelihood function for the i-th observation.
+    log_likelihoods <- log_likelihood_fn(y[i, ], particles, ...)
+    if (!is.numeric(log_likelihoods) ||
+          length(log_likelihoods) != num_particles) {
+      stop(paste0("log_likelihood_fn must return a numeric vector of",
+                  "length num_particles"))
+    }
+
     log_weights <- log(weights) + log_likelihoods
-
-    # Compute the incremental log likelihood for this time step
-    log_l_i <- logsumexp(log_weights) - log(n)
+    log_l_i <- logsumexp(log_weights) - log(num_particles)
     loglike <- loglike + log_l_i
 
-    # Normalize weights using the log-sum-exp trick
     log_normalizer <- logsumexp(log_weights)
     log_weights <- log_weights - log_normalizer
     weights <- exp(log_weights)
 
-    # Compute Effective Sample Size (ESS)
     ess_current <- 1 / sum(weights^2)
     ess_vec[i] <- ess_current
 
-    # Resampling based on chosen algorithm
+    # Resampling step for SISR and SISAR
     if (algorithm == "SISR") {
       particles <- resample_func(particles, weights)
-      weights <- rep(1 / n, n)
-      ess_vec[i] <- n # Reset ESS after resampling
+      weights <- rep(1 / num_particles, num_particles)
+      ess_vec[i] <- num_particles
     } else if (algorithm == "SISAR" && ess_current < threshold) {
       particles <- resample_func(particles, weights)
-      weights <- rep(1 / n, n)
-      ess_vec[i] <- n # Reset ESS after resampling
+      weights <- rep(1 / num_particles, num_particles)
+      ess_vec[i] <- num_particles
     }
 
-    # Update the state estimate as the weighted average of particles
-    state_est[i] <- sum(particles * weights)
+    # Compute state estimates
+    if (one_dim) {
+      state_est[i] <- sum(particles * weights)
+    } else {
+      state_est[i, ] <- colSums(particles * weights)
+    }
+
     if (return_particles) {
-      particles_history[i, ] <- particles
-      weights_history[i, ] <- weights
+      particles_history[[i]] <- particles
+      weights_history[[i]] <- weights
     }
   }
 
-  # Return results as a list
   result <- list(
     state_est = state_est,
     ess = ess_vec,
@@ -221,4 +304,3 @@ particle_filter <- function(
   }
   result
 }
-

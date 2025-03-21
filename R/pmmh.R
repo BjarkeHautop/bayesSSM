@@ -89,7 +89,10 @@ default_tune_control <- function(
 #' pilot_run tuning. Defaults to \code{FALSE}.
 #' @param seed An optional integer to set the seed for reproducibility.
 #'
-#' @details The PMMH algorithm proceeds in two main steps:
+#' @details The PMMH algorithm is essentially a Metropolis Hastings algorithm
+#' where instead of using the exact likelihood it is estimated using a particle
+#' filter (see also \code{\link{particle_filter}}). This implementation
+#' has two main steps:
 #' \enumerate{
 #'   \item \strong{Pilot Chain:} A pilot particle chain is run using the
 #'   settings provided in \code{tune_control} to obtain initial estimates for
@@ -205,16 +208,20 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
     # If param_transform is provided as a list, convert it to a named vector.
     if (is.list(param_transform)) {
       if (!all(names(log_priors) %in% names(param_transform))) {
-        stop(paste0("param_transform must include an entry for every parameter",
-                    "in log_priors."))
+        stop(paste0(
+          "param_transform must include an entry for every parameter",
+          "in log_priors."
+        ))
       }
       # Order the transformation list to match the order of log_priors.
       param_transform <- unlist(param_transform[names(log_priors)])
     } else {
       # If it's a vector, ensure it is named (or warn the user).
       if (is.null(names(param_transform))) {
-        warning(paste0("param_transform is not named. It is recommended to",
-                       "supply a named list matching log_priors."))
+        warning(paste0(
+          "param_transform is not named. It is recommended to",
+          "supply a named list matching log_priors."
+        ))
       }
     }
     # Validate that only 'log' and 'identity' are used.

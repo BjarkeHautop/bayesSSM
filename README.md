@@ -53,8 +53,10 @@ y <- numeric(t_val)
 x[1] <- rnorm(1, mean = 0, sd = sigma_x_val)
 y[1] <- rnorm(1, mean = x[1], sd = sigma_y_val)
 for (t in 2:t_val) {
-  x[t] <- phi_val * x[t - 1] + sin(x[t - 1]) + rnorm(1, mean = 0, 
-                                                     sd = sigma_x_val)
+  x[t] <- phi_val * x[t - 1] + sin(x[t - 1]) + rnorm(1,
+    mean = 0,
+    sd = sigma_x_val
+  )
   y[t] <- x[t] + rnorm(1, mean = 0, sd = sigma_y_val)
 }
 ```
@@ -147,9 +149,9 @@ result <- pmmh(
 #> Running particle MCMC chains with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat
-#>        phi 0.86 0.13   0.90    0.56     1.06   1 1.000
-#>    sigma_x 0.83 0.50   0.75    0.05     1.60  16 1.042
-#>    sigma_y 1.05 0.51   1.16    0.27     1.93  12 1.011
+#>        phi 0.53 0.13   0.50    0.35     0.77  14 1.007
+#>    sigma_x 0.81 0.33   0.87    0.13     1.40   1 1.162
+#>    sigma_y 0.66 0.30   0.67    0.13     1.23   2 1.235
 #> Warning in pmmh(y = y, m = 200, init_fn_ssm = init_fn_ssm, transition_fn_ssm =
 #> transition_fn_ssm, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.

@@ -340,3 +340,52 @@ test_that("pmmh works with valid arguments", {
     regexp = NA
   ) # Expects that no errors are thrown
 })
+
+# Multi-dimensional example
+test_that("Multi dimensional works", {
+  set.seed(1405)
+
+  init_fn <- function(particles) matrix(stats::rnorm(particles * 2), ncol = 2)
+  transition_fn <- function(particles, phi) {
+    particles + stats::rnorm(nrow(particles) * 2, mean = phi)
+  }
+  log_likelihood_fn <- function(y, particles) rep(1, nrow(particles))
+
+  # A vector of observation
+  y <- rep(0, 20)
+
+  log_prior_phi <- function(phi) {
+    stats::dnorm(phi, mean = 0, sd = 1, log = TRUE)
+  }
+
+  log_priors <- list(
+    phi = log_prior_phi
+  )
+
+  expect_error(
+    {
+      suppressWarnings({
+        pmmh_result <- pmmh(
+          y = y,
+          m = 1000,
+          init_fn_ssm = init_fn,
+          transition_fn_ssm = transition_fn,
+          log_likelihood_fn_ssm = log_likelihood_fn,
+          log_priors = log_priors,
+          init_params = c(phi = 0.8),
+          burn_in = 100,
+          num_chains = 2,
+          param_transform = list(
+            phi = "identity"
+          ),
+          seed = 1405
+        )
+      })
+    },
+    regexp = NA
+  ) # Expects that no errors are thrown
+  phi_chains <- as.data.frame(pmmh_result$theta_chain)
+  phi_est <- mean(phi_chains$phi)
+
+  expect_equal(phi_est, 0, tolerance = 0.1)
+})

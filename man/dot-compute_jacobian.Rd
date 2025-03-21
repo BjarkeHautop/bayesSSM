@@ -7,12 +7,12 @@
 .compute_jacobian(theta, transform)
 }
 \arguments{
-\item{theta}{parameter vector}
+\item{theta}{parameter vector (on original scale)}
 
 \item{transform}{transformation type for each parameter}
 }
 \value{
-Jacobian of the transformation
+log-Jacobian of the transformation
 }
 \description{
 Internal function to compute the Jacobian of the transformation

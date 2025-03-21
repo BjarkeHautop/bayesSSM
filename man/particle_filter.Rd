@@ -2,11 +2,11 @@
 % Please edit documentation in R/particle_filter.R
 \name{particle_filter}
 \alias{particle_filter}
-\title{Particle Filter Implementation with Log-Sum-Exp Trick}
+\title{Particle Filter}
 \usage{
 particle_filter(
   y,
-  n,
+  num_particles,
   init_fn,
   transition_fn,
   log_likelihood_fn,
@@ -18,12 +18,12 @@ particle_filter(
 )
 }
 \arguments{
-\item{y}{A numeric vector of observations.}
+\item{y}{A numeric vector or matrix of observations.}
 
-\item{n}{A positive integer specifying the number of particles.}
+\item{num_particles}{A positive integer specifying the number of particles.}
 
 \item{init_fn}{A function that initializes the particle states. It should
-accept an integer (the number of particles) as its first argument and return
+take the current particles as its first argument and return
 a vector or matrix of initial particle states.}
 
 \item{transition_fn}{A function describing the state transition model. It
@@ -55,7 +55,7 @@ algorithm. Options are:
 
 \item{threshold}{A numeric value specifying the ESS threshold for triggering
 resampling in the \code{"SISAR"} algorithm. If not provided, it defaults to
-\code{n / 2}.}
+\code{particles / 2}.}
 
 \item{return_particles}{A logical value indicating whether to return the full
 particle history. Defaults to \code{TRUE}.}
@@ -66,8 +66,8 @@ particle history. Defaults to \code{TRUE}.}
 \value{
 A list containing:
   \describe{
-    \item{state_est}{A numeric vector of estimated states over time,
-    computed as the weighted average of particles.}
+    \item{state_est}{A numeric vector of estimated states over
+    time, computed as the weighted average of particles.}
     \item{ess}{A numeric vector of the Effective Sample Size (ESS) at each
     time step.}
     \item{loglike}{The accumulated log-likelihood of the observations given
@@ -92,8 +92,9 @@ variants are supported:
   every time step.
   \item \strong{SISAR:} SIS with adaptive resampling based on the Effective
   Sample Size (ESS). Resampling is triggered when the ESS falls below a
-  given threshold (default \code{n / 2}).
+  given threshold (default \code{particles / 2}).
 }
+It is recommended to use either SISR or SISAR to avoid weight degenracy.
 }
 \details{
 The particle filter is a sequential Monte Carlo method that approximates the
@@ -106,29 +107,36 @@ supported algorithms differ in their approach to resampling:
   weight degeneracy.
   \item \strong{SISAR:} Resampling is performed adaptively; particles are
   resampled only when the Effective Sample Size (ESS) falls below a
-  specified threshold (defaulting to \code{n / 2}).
+  specified threshold (defaulting to \code{particles / 2}).
 }
 The Effective Sample Size (ESS) in context of particle filters is defined as
-\deqn{ESS = \left(\sum_{i=1}^n w_i^2\right)^{-1},}
-where \eqn{w_i} are the normalized weights of the particles.
+\deqn{ESS = \left(\sum_{i=1}^{\text{n}} w_i^2\right)^{-1},}
+where \eqn{n} is the number of particles and \eqn{w_i} are the
+normalized weights of the particles.
 
 The default resampling method is stratified resampling, as Douc et al., 2005
 showed that it always gives a lower variance compared to
 multinomial resampling.
 }
 \examples{
-init_fn <- function(n) rnorm(n, 0, 1)
+init_fn <- function(particles) rnorm(particles, 0, 1)
 transition_fn <- function(particles) particles + rnorm(length(particles))
 log_likelihood_fn <- function(y, particles) {
-  dnorm(y, mean = particles, sd = 1, log = TRUE)
+  stats::dnorm(y, mean = particles, sd = 1, log = TRUE)
 }
 
 # Generate data.
 y <- cumsum(rnorm(50))
-n <- 100
+num_particles <- 100
 
 # Run the particle filter using default settings.
-result <- particle_filter(y, n, init_fn, transition_fn, log_likelihood_fn)
+result <- result <- particle_filter(
+  y = y,
+  num_particles = num_particles,
+  init_fn = init_fn,
+  transition_fn = transition_fn,
+  log_likelihood_fn = log_likelihood_fn
+)
 plot(result$state_est, type = "l", col = "blue", main = "State Estimates")
 }
 \references{

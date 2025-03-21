@@ -63,8 +63,10 @@ y <- numeric(t_val)
 x[1] <- rnorm(1, mean = 0, sd = sigma_x_val)
 y[1] <- rnorm(1, mean = x[1], sd = sigma_y_val)
 for (t in 2:t_val) {
-  x[t] <- phi_val * x[t - 1] + sin(x[t - 1]) + rnorm(1, mean = 0, 
-                                                     sd = sigma_x_val)
+  x[t] <- phi_val * x[t - 1] + sin(x[t - 1]) + rnorm(1,
+    mean = 0,
+    sd = sigma_x_val
+  )
   y[t] <- x[t] + rnorm(1, mean = 0, sd = sigma_y_val)
 }
 ```

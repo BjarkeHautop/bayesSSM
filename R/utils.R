@@ -66,7 +66,6 @@
 # Helper functions for parameter transformation
 # ---------------------------
 
-
 #' Internal function to transform parameters
 #'
 #' @param theta parameter vector
@@ -75,11 +74,15 @@
 #' @returns transformed parameter vector
 #'
 #' @keywords internal
-
 .transform_params <- function(theta, transform) {
-  # Applies the specified transformation to each parameter.
   sapply(seq_along(theta), function(j) {
-    if (transform[j] == "log") log(theta[j]) else theta[j]
+    if (transform[j] == "log") {
+      log(theta[j])
+    } else if (transform[j] == "logit") {
+      log(theta[j] / (1 - theta[j]))
+    } else {
+      theta[j]
+    }
   })
 }
 
@@ -92,24 +95,33 @@
 #'
 #' @keywords internal
 .back_transform_params <- function(theta_trans, transform) {
-  # Inverse transforms parameters back to the original scale.
   sapply(seq_along(theta_trans), function(j) {
-    if (transform[j] == "log") exp(theta_trans[j]) else theta_trans[j]
+    if (transform[j] == "log") {
+      exp(theta_trans[j])
+    } else if (transform[j] == "logit") {
+      exp(theta_trans[j]) / (1 + exp(theta_trans[j])) # inverse logit (expit)
+    } else {
+      theta_trans[j]
+    }
   })
 }
 
-
 #' Internal function to compute the Jacobian of the transformation
 #'
-#' @param theta parameter vector
+#' @param theta parameter vector (on original scale)
 #' @param transform transformation type for each parameter
 #'
-#' @returns Jacobian of the transformation
+#' @returns log-Jacobian of the transformation
 #'
 #' @keywords internal
 .compute_jacobian <- function(theta, transform) {
-  # For a log transform, |dx/dz| = x, so log|dx/dz| = log(x); otherwise zero.
   sum(sapply(seq_along(theta), function(j) {
-    if (transform[j] == "log") log(theta[j]) else 0
+    if (transform[j] == "log") {
+      log(theta[j]) # log|dx/dz| = log(x)
+    } else if (transform[j] == "logit") {
+      log(theta[j] * (1 - theta[j])) # log|dx/dz| = log(x (1 - x))
+    } else {
+      0 # no transformation
+    }
   }))
 }

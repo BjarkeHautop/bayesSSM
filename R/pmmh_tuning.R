@@ -40,7 +40,7 @@
   for (i in seq_len(pilot_reps)) {
     pf_result <- particle_filter(
       y = y,
-      n = pilot_n,
+      num_particles = pilot_n,
       init_fn = init_fn_ssm,
       transition_fn = transition_fn_ssm,
       log_likelihood_fn = log_likelihood_fn_ssm,
@@ -177,8 +177,10 @@
     # If param_transform is provided as a list, convert it to a named vector.
     if (is.list(param_transform)) {
       if (!all(names(log_priors) %in% names(param_transform))) {
-        stop(paste0("param_transform must include an entry for every parameter",
-                    "in log_priors."))
+        stop(paste0(
+          "param_transform must include an entry for every parameter",
+          "in log_priors."
+        ))
       }
       # Order the transformation list to match the order of log_priors.
       param_transform <- unlist(param_transform[names(log_priors)])

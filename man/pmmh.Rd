@@ -84,7 +84,10 @@ runs a pilot chain to tune the proposal distribution and the number of
 particles for the particle filter, and then runs the main PMMH chain.
 }
 \details{
-The PMMH algorithm proceeds in two main steps:
+The PMMH algorithm is essentially a Metropolis Hastings algorithm
+where instead of using the exact likelihood it is estimated using a particle
+filter (see also \code{\link{particle_filter}}). This implementation
+has two main steps:
 \enumerate{
   \item \strong{Pilot Chain:} A pilot particle chain is run using the
   settings provided in \code{tune_control} to obtain initial estimates for
