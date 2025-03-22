@@ -9,8 +9,8 @@
 #' @param pilot_n An integer specifying the initial number of particles to use.
 #' @param pilot_reps An integer specifying the number of repetitions for the
 #' pilot run.
-#' @param ... Additional arguments passed to `init_fn_ssm`,
-#' `transition_fn_ssm`, and `log_likelihood_fn_ssm`.
+#' @param ... Additional arguments passed to `init_fn`,
+#' `transition_fn`, and `log_likelihood_fn`.
 #'
 #' @return A list containing:
 #' \describe{
@@ -28,8 +28,8 @@
 #' the scaled value with a minimum of 50 and a maximum of 1000.
 #'
 #' @keywords internal
-.pilot_run <- function(y, pilot_n, pilot_reps, init_fn_ssm,
-                       transition_fn_ssm, log_likelihood_fn_ssm,
+.pilot_run <- function(y, pilot_n, pilot_reps, init_fn,
+                       transition_fn, log_likelihood_fn,
                        algorithm = c("SISAR", "SISR", "SIS"),
                        resample_fn = c(
                          "stratified", "systematic",
@@ -41,9 +41,9 @@
     pf_result <- particle_filter(
       y = y,
       num_particles = pilot_n,
-      init_fn = init_fn_ssm,
-      transition_fn = transition_fn_ssm,
-      log_likelihood_fn = log_likelihood_fn_ssm,
+      init_fn = init_fn,
+      transition_fn = transition_fn,
+      log_likelihood_fn = log_likelihood_fn,
       algorithm = "SISAR",
       resample_fn = "stratified",
       return_particles = FALSE,
@@ -72,10 +72,10 @@
 #' filter.
 #' @param pilot_reps An integer specifying the number of repetitions for the
 #' pilot run.
-#' @param init_fn_ssm A function to initialize the state space model.
-#' @param transition_fn_ssm A function that defines the state transition
+#' @param init_fn A function to initialize the state space model.
+#' @param transition_fn A function that defines the state transition
 #' dynamics in the state space model.
-#' @param log_likelihood_fn_ssm A function that computes the log-likelihood of
+#' @param log_likelihood_fn A function that computes the log-likelihood of
 #' the observations given the model parameters.
 #' @param log_priors A list of functions representing the log-priors for each
 #' model parameter.
@@ -116,8 +116,8 @@
 #' particles for the Particle Marginal Metropolis Hastings (PMMH) algorithm.
 #'
 #' @keywords internal
-.run_pilot_chain <- function(y, pilot_m, pilot_n, pilot_reps, init_fn_ssm,
-                             transition_fn_ssm, log_likelihood_fn_ssm,
+.run_pilot_chain <- function(y, pilot_m, pilot_n, pilot_reps, init_fn,
+                             transition_fn, log_likelihood_fn,
                              log_priors, proposal_sd,
                              algorithm = c("SISAR", "SISR", "SIS"),
                              resample_fn = c(
@@ -157,9 +157,9 @@
   current_theta_list <- as.list(current_theta)
   pf_result <- do.call(particle_filter, c(
     list(
-      y = y, n = pilot_n, init_fn = init_fn_ssm,
-      transition_fn = transition_fn_ssm,
-      log_likelihood_fn = log_likelihood_fn_ssm,
+      y = y, n = pilot_n, init_fn = init_fn,
+      transition_fn = transition_fn,
+      log_likelihood_fn = log_likelihood_fn,
       algorithm = algorithm,
       resample_fn = "stratified"
     ),
@@ -250,9 +250,9 @@
     proposed_theta_list <- as.list(proposed_theta)
     pf_prop <- do.call(particle_filter, c(
       list(
-        y = y, n = pilot_n, init_fn = init_fn_ssm,
-        transition_fn = transition_fn_ssm,
-        log_likelihood_fn = log_likelihood_fn_ssm,
+        y = y, n = pilot_n, init_fn = init_fn,
+        transition_fn = transition_fn,
+        log_likelihood_fn = log_likelihood_fn,
         algorithm = algorithm,
         resample_fn = resample_fn
       ),
@@ -311,9 +311,9 @@
   pilot_result <- do.call(.pilot_run, c(
     list(
       y = y, pilot_n = pilot_n, pilot_reps = pilot_reps,
-      init_fn_ssm = init_fn_ssm,
-      transition_fn_ssm = transition_fn_ssm,
-      log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+      init_fn = init_fn,
+      transition_fn = transition_fn,
+      log_likelihood_fn = log_likelihood_fn,
       algorithm = algorithm,
       resample_fn = resample_fn
     ),

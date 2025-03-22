@@ -8,9 +8,9 @@
   y,
   pilot_n,
   pilot_reps,
-  init_fn_ssm,
-  transition_fn_ssm,
-  log_likelihood_fn_ssm,
+  init_fn,
+  transition_fn,
+  log_likelihood_fn,
   algorithm = c("SISAR", "SISR", "SIS"),
   resample_fn = c("stratified", "systematic", "multinomial"),
   ...
@@ -24,8 +24,8 @@
 \item{pilot_reps}{An integer specifying the number of repetitions for the
 pilot run.}
 
-\item{...}{Additional arguments passed to `init_fn_ssm`,
-`transition_fn_ssm`, and `log_likelihood_fn_ssm`.}
+\item{...}{Additional arguments passed to `init_fn`,
+`transition_fn`, and `log_likelihood_fn`.}
 }
 \value{
 A list containing:

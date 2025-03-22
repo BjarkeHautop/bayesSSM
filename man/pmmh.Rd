@@ -7,9 +7,9 @@
 pmmh(
   y,
   m,
-  init_fn_ssm,
-  transition_fn_ssm,
-  log_likelihood_fn_ssm,
+  init_fn,
+  transition_fn,
+  log_likelihood_fn,
   log_priors,
   init_params,
   burn_in,
@@ -27,12 +27,12 @@ pmmh(
 
 \item{m}{An integer specifying the total number of MCMC iterations.}
 
-\item{init_fn_ssm}{A function to initialize the state-space model.}
+\item{init_fn}{A function to initialize the state-space model.}
 
-\item{transition_fn_ssm}{A function that defines the state transition of the
+\item{transition_fn}{A function that defines the state transition of the
 state-space model.}
 
-\item{log_likelihood_fn_ssm}{A function that calculates the log-likelihood
+\item{log_likelihood_fn}{A function that calculates the log-likelihood
 for the state-space model given latent states.}
 
 \item{log_priors}{A list of functions for computing the log-prior of each
@@ -98,14 +98,14 @@ has two main steps:
 }
 }
 \examples{
-init_fn_ssm <- function(particles) {
+init_fn <- function(particles) {
   stats::rnorm(particles, mean = 0, sd = 1)
 }
-transition_fn_ssm <- function(particles, phi, sigma_x) {
+transition_fn <- function(particles, phi, sigma_x) {
   phi * particles + sin(particles) +
     stats::rnorm(length(particles), mean = 0, sd = sigma_x)
 }
-log_likelihood_fn_ssm <- function(y, particles, sigma_y) {
+log_likelihood_fn <- function(y, particles, sigma_y) {
   stats::dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
 }
 log_prior_phi <- function(phi) {
@@ -136,9 +136,9 @@ for (t in 2:t_val) {
 pmmh_result <- pmmh(
   y = y,
   m = 1000,
-  init_fn_ssm = init_fn_ssm,
-  transition_fn_ssm = transition_fn_ssm,
-  log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+  init_fn = init_fn,
+  transition_fn = transition_fn,
+  log_likelihood_fn = log_likelihood_fn,
   log_priors = log_priors,
   init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
   burn_in = 100,

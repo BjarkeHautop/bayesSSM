@@ -5,20 +5,20 @@
 \title{Helper function to validate input of user-defined functions and priors}
 \usage{
 .check_params_match(
-  init_fn_ssm,
-  transition_fn_ssm,
-  log_likelihood_fn_ssm,
+  init_fn,
+  transition_fn,
+  log_likelihood_fn,
   init_params,
   log_priors
 )
 }
 \arguments{
-\item{init_fn_ssm}{A function to initialize the state-space model.}
+\item{init_fn}{A function to initialize the state-space model.}
 
-\item{transition_fn_ssm}{A function that defines the state transition of the
+\item{transition_fn}{A function that defines the state transition of the
 state-space model.}
 
-\item{log_likelihood_fn_ssm}{A function that calculates the log-likelihood
+\item{log_likelihood_fn}{A function that calculates the log-likelihood
 for the state-space model given latent states.}
 
 \item{init_params}{A vector of initial parameter values.}

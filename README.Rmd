@@ -83,10 +83,10 @@ $$
 
 We can use `pmmh` to perform Bayesian inference on this model. To use `pmmh`
 we need to define the functions for the SSM and the priors. The functions 
-`init_fn_ssm`, `transition_fn_ssm` should be functions that simulates the
+`init_fn`, `transition_fn` should be functions that simulates the
 latent state variables and the observed data. They must contain the argument
 `particles` which is a vector of particles, and can contain any other args as
-parameters. The function `log_likelihood_fn_ssm` should be a function that
+parameters. The function `log_likelihood_fn` should be a function that
 calculates the log-likelihood of the observed data given the latent state
 variables. It must contain the arguments `y` and `particles`.
 
@@ -94,14 +94,14 @@ The priors for the parameters must be defined as log-prior functions. Every
 parameter must have a corresponding log-prior function.
 
 ```{r}
-init_fn_ssm <- function(particles) {
+init_fn <- function(particles) {
   stats::rnorm(particles, mean = 0, sd = 1)
 }
-transition_fn_ssm <- function(particles, phi, sigma_x) {
+transition_fn <- function(particles, phi, sigma_x) {
   phi * particles + sin(particles) +
     stats::rnorm(length(particles), mean = 0, sd = sigma_x)
 }
-log_likelihood_fn_ssm <- function(y, particles, sigma_y) {
+log_likelihood_fn <- function(y, particles, sigma_y) {
   stats::dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
 }
 log_prior_phi <- function(phi) {
@@ -121,9 +121,9 @@ log_priors <- list(
 )
 ```
 
-Note, that `init_fn_ssm` must take an argument `particles` and return a vector
-of initial values for the latent state variables. `transition_fn_ssm` must take
-arguments `particles`, and `log_likelihood_fn_ssm` must take arguments `y` and
+Note, that `init_fn` must take an argument `particles` and return a vector
+of initial values for the latent state variables. `transition_fn` must take
+arguments `particles`, and `log_likelihood_fn` must take arguments `y` and
 `particles`. Any parameters for the SSM can be given as additional arguments to
 the functions. Any parameter must have a corresponding log-prior function in
 `log_priors`.
@@ -138,9 +138,9 @@ library(bayesSSM)
 result <- pmmh(
   y = y,
   m = 200, # number of MCMC samples
-  init_fn_ssm = init_fn_ssm,
-  transition_fn_ssm = transition_fn_ssm,
-  log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+  init_fn = init_fn,
+  transition_fn = transition_fn,
+  log_likelihood_fn = log_likelihood_fn,
   log_priors = log_priors,
   init_params = c(phi = 0.5, sigma_x = 0.5, sigma_y = 0.5),
   burn_in = 10,
@@ -172,11 +172,11 @@ Key components include:
   distributions.
   
 - Initial distribution $\mu(X_1)$ that describes the distribution of the 
-  latent state variables at time $t = 1$. Defined by `init_fn_ssm` in `pmmh`.
+  latent state variables at time $t = 1$. Defined by `init_fn` in `pmmh`.
   
 - Log-likelihood $\log p(Y_t | \theta)$ that describes the likelihood of 
   the observed data given the latent state variables. Defined by 
-  `log_likelihood_fn_ssm` in `pmmh`.
+  `log_likelihood_fn` in `pmmh`.
   
 - Log-prior $\log p(\theta)$ that describes the prior distribution of the 
   parameters. Defined by `log_priors` in `pmmh`.

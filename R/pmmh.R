@@ -60,10 +60,10 @@ default_tune_control <- function(
 #'
 #' @param y A numeric vector of observations.
 #' @param m An integer specifying the total number of MCMC iterations.
-#' @param init_fn_ssm A function to initialize the state-space model.
-#' @param transition_fn_ssm A function that defines the state transition of the
+#' @param init_fn A function to initialize the state-space model.
+#' @param transition_fn A function that defines the state transition of the
 #' state-space model.
-#' @param log_likelihood_fn_ssm A function that calculates the log-likelihood
+#' @param log_likelihood_fn A function that calculates the log-likelihood
 #' for the state-space model given latent states.
 #' @param log_priors A list of functions for computing the log-prior of each
 #' parameter.
@@ -114,14 +114,14 @@ default_tune_control <- function(
 #' @export
 #'
 #' @examples
-#' init_fn_ssm <- function(particles) {
+#' init_fn <- function(particles) {
 #'   stats::rnorm(particles, mean = 0, sd = 1)
 #' }
-#' transition_fn_ssm <- function(particles, phi, sigma_x) {
+#' transition_fn <- function(particles, phi, sigma_x) {
 #'   phi * particles + sin(particles) +
 #'     stats::rnorm(length(particles), mean = 0, sd = sigma_x)
 #' }
-#' log_likelihood_fn_ssm <- function(y, particles, sigma_y) {
+#' log_likelihood_fn <- function(y, particles, sigma_y) {
 #'   stats::dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
 #' }
 #' log_prior_phi <- function(phi) {
@@ -152,9 +152,9 @@ default_tune_control <- function(
 #' pmmh_result <- pmmh(
 #'   y = y,
 #'   m = 1000,
-#'   init_fn_ssm = init_fn_ssm,
-#'   transition_fn_ssm = transition_fn_ssm,
-#'   log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+#'   init_fn = init_fn,
+#'   transition_fn = transition_fn,
+#'   log_likelihood_fn = log_likelihood_fn,
 #'   log_priors = log_priors,
 #'   init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
 #'   burn_in = 100,
@@ -167,7 +167,7 @@ default_tune_control <- function(
 #' )
 #' # Convergence warning is expected with such low MCMC iterations.
 #'
-pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
+pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
                  log_priors, init_params, burn_in, num_chains = 4,
                  algorithm = c("SISAR", "SISR", "SIS"),
                  resample_fn = c("stratified", "systematic", "multinomial"),
@@ -192,7 +192,7 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
   }
 
   .check_params_match(
-    init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
+    init_fn, transition_fn, log_likelihood_fn,
     init_params, log_priors
   )
 
@@ -239,15 +239,15 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
     "..." %in% names(formals(fun))
   }
 
-  if (!has_dots(init_fn_ssm)) {
-    formals(init_fn_ssm) <- c(formals(init_fn_ssm), alist(... = ))
+  if (!has_dots(init_fn)) {
+    formals(init_fn) <- c(formals(init_fn), alist(... = ))
   }
-  if (!has_dots(transition_fn_ssm)) {
-    formals(transition_fn_ssm) <- c(formals(transition_fn_ssm), alist(... = ))
+  if (!has_dots(transition_fn)) {
+    formals(transition_fn) <- c(formals(transition_fn), alist(... = ))
   }
-  if (!has_dots(log_likelihood_fn_ssm)) {
-    formals(log_likelihood_fn_ssm) <- c(
-      formals(log_likelihood_fn_ssm),
+  if (!has_dots(log_likelihood_fn)) {
+    formals(log_likelihood_fn) <- c(
+      formals(log_likelihood_fn),
       alist(... = )
     )
   }
@@ -272,9 +272,9 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
       pilot_m = tune_control$pilot_m,
       pilot_n = tune_control$pilot_n,
       pilot_reps = tune_control$pilot_reps,
-      init_fn_ssm = init_fn_ssm,
-      transition_fn_ssm = transition_fn_ssm,
-      log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+      init_fn = init_fn,
+      transition_fn = transition_fn,
+      log_likelihood_fn = log_likelihood_fn,
       log_priors = log_priors,
       proposal_sd = tune_control$pilot_proposal_sd,
       init_params = init_params,
@@ -315,9 +315,9 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
       list(
         y = y,
         n = target_n,
-        init_fn = init_fn_ssm,
-        transition_fn = transition_fn_ssm,
-        log_likelihood_fn = log_likelihood_fn_ssm,
+        init_fn = init_fn,
+        transition_fn = transition_fn,
+        log_likelihood_fn = log_likelihood_fn,
         algorithm = algorithm,
         resample_fn = resample_fn
       ),
@@ -356,9 +356,9 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
         list(
           y = y,
           n = target_n,
-          init_fn = init_fn_ssm,
-          transition_fn = transition_fn_ssm,
-          log_likelihood_fn = log_likelihood_fn_ssm,
+          init_fn = init_fn,
+          transition_fn = transition_fn,
+          log_likelihood_fn = log_likelihood_fn,
           algorithm = algorithm,
           resample_fn = resample_fn
         ),

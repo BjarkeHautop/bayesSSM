@@ -291,9 +291,9 @@ In practice, these should be higher.
 result <- bayesSSM::pmmh(
   y = observations,
   m = 1000,
-  init_fn_ssm = init_fn_epidemic,
-  transition_fn_ssm = transition_fn_gillespie,
-  log_likelihood_fn_ssm = log_likelihood_fn_epidemic,
+  init_fn = init_fn_epidemic,
+  transition_fn = transition_fn_gillespie,
+  log_likelihood_fn = log_likelihood_fn_epidemic,
   log_priors = log_priors,
   init_params = c(lambda = 0.5, gamma = 0.5),
   burn_in = 200,

@@ -73,26 +73,26 @@ $$
 
 We can use `pmmh` to perform Bayesian inference on this model. To use
 `pmmh` we need to define the functions for the SSM and the priors. The
-functions `init_fn_ssm`, `transition_fn_ssm` should be functions that
-simulates the latent state variables and the observed data. They must
-contain the argument `particles` which is a vector of particles, and can
-contain any other args as parameters. The function
-`log_likelihood_fn_ssm` should be a function that calculates the
-log-likelihood of the observed data given the latent state variables. It
-must contain the arguments `y` and `particles`.
+functions `init_fn`, `transition_fn` should be functions that simulates
+the latent state variables and the observed data. They must contain the
+argument `particles` which is a vector of particles, and can contain any
+other args as parameters. The function `log_likelihood_fn` should be a
+function that calculates the log-likelihood of the observed data given
+the latent state variables. It must contain the arguments `y` and
+`particles`.
 
 The priors for the parameters must be defined as log-prior functions.
 Every parameter must have a corresponding log-prior function.
 
 ``` r
-init_fn_ssm <- function(particles) {
+init_fn <- function(particles) {
   stats::rnorm(particles, mean = 0, sd = 1)
 }
-transition_fn_ssm <- function(particles, phi, sigma_x) {
+transition_fn <- function(particles, phi, sigma_x) {
   phi * particles + sin(particles) +
     stats::rnorm(length(particles), mean = 0, sd = sigma_x)
 }
-log_likelihood_fn_ssm <- function(y, particles, sigma_y) {
+log_likelihood_fn <- function(y, particles, sigma_y) {
   stats::dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
 }
 log_prior_phi <- function(phi) {
@@ -112,13 +112,12 @@ log_priors <- list(
 )
 ```
 
-Note, that `init_fn_ssm` must take an argument `particles` and return a
-vector of initial values for the latent state variables.
-`transition_fn_ssm` must take arguments `particles`, and
-`log_likelihood_fn_ssm` must take arguments `y` and `particles`. Any
-parameters for the SSM can be given as additional arguments to the
-functions. Any parameter must have a corresponding log-prior function in
-`log_priors`.
+Note, that `init_fn` must take an argument `particles` and return a
+vector of initial values for the latent state variables. `transition_fn`
+must take arguments `particles`, and `log_likelihood_fn` must take
+arguments `y` and `particles`. Any parameters for the SSM can be given
+as additional arguments to the functions. Any parameter must have a
+corresponding log-prior function in `log_priors`.
 
 Now we can run the PMMH algorithm using the `pmmh` function. We run 2
 chains for 200 MCMC samples with a burn-in of 10. In practice you would
@@ -130,9 +129,9 @@ library(bayesSSM)
 result <- pmmh(
   y = y,
   m = 200, # number of MCMC samples
-  init_fn_ssm = init_fn_ssm,
-  transition_fn_ssm = transition_fn_ssm,
-  log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+  init_fn = init_fn,
+  transition_fn = transition_fn,
+  log_likelihood_fn = log_likelihood_fn,
   log_priors = log_priors,
   init_params = c(phi = 0.5, sigma_x = 0.5, sigma_y = 0.5),
   burn_in = 10,
@@ -141,7 +140,7 @@ result <- pmmh(
 )
 #> Running chain 1...
 #> Running pilot chain for tuning...
-#> Using 50 particles for PMMH:
+#> Using 75 particles for PMMH:
 #> Running particle MCMC chains with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
@@ -149,16 +148,16 @@ result <- pmmh(
 #> Running particle MCMC chains with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat
-#>        phi 0.53 0.13   0.50    0.35     0.77  14 1.007
-#>    sigma_x 0.81 0.33   0.87    0.13     1.40   1 1.162
-#>    sigma_y 0.66 0.30   0.67    0.13     1.23   2 1.235
-#> Warning in pmmh(y = y, m = 200, init_fn_ssm = init_fn_ssm, transition_fn_ssm =
-#> transition_fn_ssm, : Some ESS values are below 400, indicating poor mixing.
+#>        phi 0.85 0.06   0.86    0.72     0.96  17 1.140
+#>    sigma_x 0.40 0.21   0.38    0.04     0.72   9 1.096
+#>    sigma_y 0.46 0.18   0.50    0.18     0.76  20 1.090
+#> Warning in pmmh(y = y, m = 200, init_fn = init_fn, transition_fn =
+#> transition_fn, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.
-#> Warning in pmmh(y = y, m = 200, init_fn_ssm = init_fn_ssm, transition_fn_ssm =
-#> transition_fn_ssm, : Some Rhat values are above 1.01, indicating that the
-#> chains have not converged. Consider running the chains for more iterations
-#> and/or increase burn_in.
+#> Warning in pmmh(y = y, m = 200, init_fn = init_fn, transition_fn =
+#> transition_fn, : Some Rhat values are above 1.01, indicating that the chains
+#> have not converged. Consider running the chains for more iterations and/or
+#> increase burn_in.
 ```
 
 We get convergence warnings because we only ran the algorithm for a
@@ -187,12 +186,12 @@ Key components include:
   distributions.
 
 - Initial distribution $\mu(X_1)$ that describes the distribution of the
-  latent state variables at time $t = 1$. Defined by `init_fn_ssm` in
+  latent state variables at time $t = 1$. Defined by `init_fn` in
   `pmmh`.
 
 - Log-likelihood $\log p(Y_t | \theta)$ that describes the likelihood of
   the observed data given the latent state variables. Defined by
-  `log_likelihood_fn_ssm` in `pmmh`.
+  `log_likelihood_fn` in `pmmh`.
 
 - Log-prior $\log p(\theta)$ that describes the prior distribution of
   the parameters. Defined by `log_priors` in `pmmh`.

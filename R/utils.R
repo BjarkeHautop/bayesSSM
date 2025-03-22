@@ -1,9 +1,9 @@
 #' Helper function to validate input of user-defined functions and priors
 #'
-#' @param init_fn_ssm A function to initialize the state-space model.
-#' @param transition_fn_ssm A function that defines the state transition of the
+#' @param init_fn A function to initialize the state-space model.
+#' @param transition_fn A function that defines the state transition of the
 #' state-space model.
-#' @param log_likelihood_fn_ssm A function that calculates the log-likelihood
+#' @param log_likelihood_fn A function that calculates the log-likelihood
 #' for the state-space model given latent states.
 #' @param log_priors A list of functions for computing the log-prior of each
 #' parameter.
@@ -13,7 +13,7 @@
 #'
 #' @keywords internal
 .check_params_match <- function(
-    init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm, init_params,
+    init_fn, transition_fn, log_likelihood_fn, init_params,
     log_priors) {
   # Helper function to get parameter names excluding 'particles' and 'y'
   get_fn_params <- function(fn) {
@@ -22,8 +22,8 @@
     fn_args
   }
 
-  # Check if 'particles' is in init_fn_ssm, transition_fn_ssm, and
-  # log_likelihood_fn_ssm
+  # Check if 'particles' is in init_fn, transition_fn, and
+  # log_likelihood_fn
   check_particles <- function(fn, fn_name) {
     fn_args <- get_fn_params(fn)
     if (!"particles" %in% fn_args) {
@@ -31,22 +31,22 @@
     }
   }
 
-  # Check if 'y' is in log_likelihood_fn_ssm
-  if (!"y" %in% get_fn_params(log_likelihood_fn_ssm)) {
-    stop("log_likelihood_fn_ssm does not contain 'y' as an argument")
+  # Check if 'y' is in log_likelihood_fn
+  if (!"y" %in% get_fn_params(log_likelihood_fn)) {
+    stop("log_likelihood_fn does not contain 'y' as an argument")
   }
 
   # Check if 'particles' is in all functions
-  check_particles(init_fn_ssm, "init_fn_ssm")
-  check_particles(transition_fn_ssm, "transition_fn_ssm")
-  check_particles(log_likelihood_fn_ssm, "log_likelihood_fn_ssm")
+  check_particles(init_fn, "init_fn")
+  check_particles(transition_fn, "transition_fn")
+  check_particles(log_likelihood_fn, "log_likelihood_fn")
 
   # Combine parameters from all three functions
   # (ignoring 'particles', 'y' and '...' in the check)
   fn_params <- unique(c(
-    get_fn_params(init_fn_ssm),
-    get_fn_params(transition_fn_ssm),
-    get_fn_params(log_likelihood_fn_ssm)
+    get_fn_params(init_fn),
+    get_fn_params(transition_fn),
+    get_fn_params(log_likelihood_fn)
   ))
   # Drop 'particles', 'y' and '...'
   fn_params <- fn_params[!(fn_params %in% c("particles", "y", "..."))]

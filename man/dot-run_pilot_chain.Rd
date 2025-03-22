@@ -9,9 +9,9 @@
   pilot_m,
   pilot_n,
   pilot_reps,
-  init_fn_ssm,
-  transition_fn_ssm,
-  log_likelihood_fn_ssm,
+  init_fn,
+  transition_fn,
+  log_likelihood_fn,
   log_priors,
   proposal_sd,
   algorithm = c("SISAR", "SISR", "SIS"),
@@ -34,12 +34,12 @@ filter.}
 \item{pilot_reps}{An integer specifying the number of repetitions for the
 pilot run.}
 
-\item{init_fn_ssm}{A function to initialize the state space model.}
+\item{init_fn}{A function to initialize the state space model.}
 
-\item{transition_fn_ssm}{A function that defines the state transition
+\item{transition_fn}{A function that defines the state transition
 dynamics in the state space model.}
 
-\item{log_likelihood_fn_ssm}{A function that computes the log-likelihood of
+\item{log_likelihood_fn}{A function that computes the log-likelihood of
 the observations given the model parameters.}
 
 \item{log_priors}{A list of functions representing the log-priors for each
