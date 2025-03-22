@@ -1,11 +1,11 @@
 test_that("particle_filter returns errors on wrong input", {
-  init_fn <- function(particles, ...) rep(0, particles)
-  transition_fn <- function(particles, ...) particles + 1
-  log_likelihood_fn <- function(y, particles, ...) rep(1, length(particles))
+  init_fn <- function(particles) rep(0, particles)
+  transition_fn <- function(particles) particles + 1
+  log_likelihood_fn <- function(y, particles) rep(1, length(particles))
 
-  wrong_init_fn <- function(particles, ...) rep(0, particles + 1)
-  wrong_transition_fn <- function(particles, ...) c(particles, 1)
-  wrong_log_likelihood_fn <- function(y, particles, ...) {
+  wrong_init_fn <- function(particles) rep(0, particles + 1)
+  wrong_transition_fn <- function(particles) c(particles, 1)
+  wrong_log_likelihood_fn <- function(y, particles) {
     rep(1, length(particles) + 1)
   }
   # A simple observation vector for testing (5 time steps)
@@ -46,9 +46,9 @@ test_that("particle_filter returns errors on wrong input", {
 
 
 test_that("particle_filter returns correct structure", {
-  init_fn <- function(particles, ...) rep(0, particles)
-  transition_fn <- function(particles, ...) particles + 1
-  log_likelihood_fn <- function(y, particles, ...) rep(1, length(particles))
+  init_fn <- function(particles) rep(0, particles)
+  transition_fn <- function(particles) particles + 1
+  log_likelihood_fn <- function(y, particles) rep(1, length(particles))
 
   # A simple observation vector for testing (5 time steps)
   y <- rep(0, 5)
@@ -65,9 +65,9 @@ test_that("particle_filter returns correct structure", {
 })
 
 test_that("particle_filter returns no particles_history when requested", {
-  init_fn <- function(particles, ...) rep(0, particles)
-  transition_fn <- function(particles, ...) particles + 1
-  log_likelihood_fn <- function(y, particles, ...) rep(1, length(particles))
+  init_fn <- function(particles) rep(0, particles)
+  transition_fn <- function(particles) particles + 1
+  log_likelihood_fn <- function(y, particles) rep(1, length(particles))
 
   # A simple observation vector for testing (5 time steps)
   y <- rep(0, 5)
@@ -81,17 +81,17 @@ test_that("particle_filter returns no particles_history when requested", {
 
 test_that("particle_filter works non-trivial setup", {
   # Works with more complicated setup
-  init_fn_ssm <- function(particles, ...) {
+  init_fn_ssm <- function(particles) {
     rnorm(particles, mean = 0, sd = 1)
   }
 
-  transition_fn_ssm <- function(particles, phi, sigma_x, ...) {
+  transition_fn_ssm <- function(particles, phi, sigma_x) {
     # X_t = phi*X_{t-1} + sin(X_{t-1}) + sigma_x*V_t,  V_t ~ N(0,1)
     phi * particles + sin(particles) +
       rnorm(length(particles), mean = 0, sd = sigma_x)
   }
 
-  log_likelihood_fn_ssm <- function(y, particles, sigma_y, ...) {
+  log_likelihood_fn_ssm <- function(y, particles, sigma_y) {
     dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
   }
 
@@ -127,11 +127,11 @@ test_that("particle_filter works non-trivial setup", {
 
 # Check works with matrix
 test_that("Multi-dim particle filter works", {
-  init_fn <- function(particles, ...) matrix(rnorm(particles * 2), ncol = 2)
-  transition_fn <- function(particles, ...) {
+  init_fn <- function(particles) matrix(rnorm(particles * 2), ncol = 2)
+  transition_fn <- function(particles) {
     particles + rnorm(nrow(particles) * 2)
   }
-  log_likelihood_fn <- function(y, particles, ...) rep(1, nrow(particles))
+  log_likelihood_fn <- function(y, particles) rep(1, nrow(particles))
 
   # A vector of observation
   y <- rep(0, 5)

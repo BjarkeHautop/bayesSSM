@@ -125,9 +125,6 @@ particle_filter <- function(
   if (!is.numeric(num_particles) || num_particles <= 0) {
     stop("num_particles must be a positive integer")
   }
-  if (num_particles != as.integer(num_particles)) {
-    stop("num_particles must be a positive integer")
-  }
 
   # Add ... as arg to functions if not present
   has_dots <- function(fun) {
