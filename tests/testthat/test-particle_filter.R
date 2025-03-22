@@ -8,6 +8,10 @@ test_that("particle_filter returns errors on wrong input", {
   wrong_log_likelihood_fn <- function(y, particles) {
     rep(1, length(particles) + 1)
   }
+
+  wrong_init_fn_matrix <- function(particles) {
+    matrix(rep(0, particles * 2), ncol = 5)
+  }
   # A simple observation vector for testing (5 time steps)
   y <- rep(0, 5)
 
@@ -25,6 +29,14 @@ test_that("particle_filter returns errors on wrong input", {
       log_likelihood_fn, algorithm = "SIS"
     ),
     "init_fn must return a vector of length num_particles"
+  )
+
+  expect_error(
+    particle_filter(y,
+                    num_particles = 10, wrong_init_fn_matrix, transition_fn,
+                    log_likelihood_fn, algorithm = "SIS"
+    ),
+    "init_fn must return a matrix with num_particles rows"
   )
 
   expect_error(

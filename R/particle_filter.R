@@ -174,7 +174,7 @@ particle_filter <- function(
 
   # Check that init_fn returns exactly num_particles rows
   if (nrow(particles) != num_particles) {
-    stop("init_fn must return a vector/matrix with num_particles rows")
+    stop("init_fn must return a matrix with num_particles rows")
   }
 
   # Save state dimension d
