@@ -1,7 +1,7 @@
 test_that(".pilot_run works non-trivial setup", {
   set.seed(1405)
-  init_fn_ssm <- function(n, ...) {
-    rnorm(n, mean = 0, sd = 1)
+  init_fn_ssm <- function(particles, ...) {
+    rnorm(particles, mean = 0, sd = 1)
   }
 
   transition_fn_ssm <- function(particles, t, phi, sigma_x, ...) {
@@ -45,8 +45,8 @@ test_that(".pilot_run works non-trivial setup", {
 # .run_pilot_chain works
 test_that(".run_pilot_chain works", {
   set.seed(1405)
-  init_fn_ssm <- function(n, ...) {
-    rnorm(n, mean = 0, sd = 1)
+  init_fn_ssm <- function(particles, ...) {
+    rnorm(particles, mean = 0, sd = 1)
   }
 
   transition_fn_ssm <- function(particles, t, phi, ...) {
@@ -87,11 +87,111 @@ test_that(".run_pilot_chain works", {
     log_likelihood_fn_ssm = log_likelihood_fn_ssm,
     log_priors = log_priors,
     proposal_sd = c(0.1),
-    init_params = c(phi = 0.8),
     algorithm = "SISR",
     resample_fn = "systematic"
   )
   expect_lt(result$target_n, 500)
+
+  # Expect error if init_param outside of log_priors domain
+  log_prior_phi <- function(phi) {
+    dunif(phi, min = 0, max = 1, log = TRUE)
+  }
+  log_priors <- list(
+    phi = log_prior_phi
+  )
+  expect_error(.run_pilot_chain(
+    y = my_data$y,
+    pilot_m = 100,
+    pilot_n = 100,
+    pilot_reps = 10,
+    init_fn_ssm = init_fn_ssm,
+    transition_fn_ssm = transition_fn_ssm,
+    log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+    log_priors = log_priors,
+    proposal_sd = c(0.1),
+    init_params = c(phi = 1.5),
+    algorithm = "SISR",
+    resample_fn = "systematic"
+  ), "Invalid initial parameters:")
+
+  # Expect error if param_transform does not have phi
+  expect_error(.run_pilot_chain(
+    y = my_data$y,
+    pilot_m = 100,
+    pilot_n = 100,
+    pilot_reps = 10,
+    init_fn_ssm = init_fn_ssm,
+    transition_fn_ssm = transition_fn_ssm,
+    log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+    log_priors = log_priors,
+    proposal_sd = c(0.1),
+    init_params = c(phi = 0.5),
+    algorithm = "SISR",
+    resample_fn = "systematic",
+    param_transform = list(
+      sigma_x = "log"
+    )
+  ), "param_transform must include an entry")
+
+  # Expect error if param_transform not a list
+  expect_error(.run_pilot_chain(
+    y = my_data$y,
+    pilot_m = 100,
+    pilot_n = 100,
+    pilot_reps = 10,
+    init_fn_ssm = init_fn_ssm,
+    transition_fn_ssm = transition_fn_ssm,
+    log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+    log_priors = log_priors,
+    proposal_sd = c(0.1),
+    init_params = c(phi = 0.5),
+    algorithm = "SISR",
+    resample_fn = "systematic",
+    param_transform = "log"
+  ), "param_transform must be a list")
+
+  # Check verbose works
+  expect_message(
+    .run_pilot_chain(
+      y = my_data$y,
+      pilot_m = 100,
+      pilot_n = 100,
+      pilot_reps = 10,
+      init_fn_ssm = init_fn_ssm,
+      transition_fn_ssm = transition_fn_ssm,
+      log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+      log_priors = log_priors,
+      proposal_sd = c(0.1),
+      init_params = c(phi = 0.5),
+      algorithm = "SISR",
+      resample_fn = "systematic",
+      verbose = TRUE
+    ),
+    "Pilot chain posterior variance:"
+  )
+
+  # Check works with transformation
+  expect_message(
+    .run_pilot_chain(
+      y = my_data$y,
+      pilot_m = 100,
+      pilot_n = 100,
+      pilot_reps = 10,
+      init_fn_ssm = init_fn_ssm,
+      transition_fn_ssm = transition_fn_ssm,
+      log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+      log_priors = log_priors,
+      proposal_sd = c(0.1),
+      init_params = c(phi = 0.5),
+      algorithm = "SISR",
+      resample_fn = "systematic",
+      param_transform = list(
+        phi = "log"
+      ),
+      verbose = TRUE
+    ),
+    "Pilot chain posterior variance \\(on transformed space\\):"
+  )
 })
 
 

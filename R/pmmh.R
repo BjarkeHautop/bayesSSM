@@ -3,7 +3,7 @@
 #' This function creates a list of tuning parameters used by the pmmh function.
 #'
 #' @param pilot_proposal_sd Standard deviation for pilot proposals. Default is
-#' 1.
+#' 0.5.
 #' @param pilot_n Number of pilot particles for particle filter. Default is 100.
 #' @param pilot_m Number of iterations for MCMC. Default is 2000.
 #' @param pilot_target_var The target variance for the posterior log-likelihood
@@ -18,7 +18,7 @@
 #' @return A list of tuning control parameters.
 #' @export
 default_tune_control <- function(
-    pilot_proposal_sd = 1, pilot_n = 100, pilot_m = 2000,
+    pilot_proposal_sd = 0.5, pilot_n = 100, pilot_m = 2000,
     pilot_target_var = 1, pilot_burn_in = 1000, pilot_reps = 100,
     pilot_algorithm = c("SISAR", "SISR", "SIS"),
     pilot_resample_fn = c("stratified", "systematic", "multinomial")) {
@@ -200,40 +200,39 @@ pmmh <- function(y, m, init_fn_ssm, transition_fn_ssm, log_likelihood_fn_ssm,
   resample_fn <- match.arg(resample_fn)
 
   num_params <- length(init_params)
-  # Ensure param_transform is set correctly.
+  if (num_params == 0) {
+    stop("init_params must contain at least one parameter.")
+  }
+
+  # Create default transformation if none provided.
   if (is.null(param_transform)) {
     param_transform <- rep("identity", num_params)
     names(param_transform) <- names(log_priors)
-  } else {
-    # If param_transform is provided as a list, convert it to a named vector.
-    if (is.list(param_transform)) {
-      if (!all(names(log_priors) %in% names(param_transform))) {
-        stop(paste0(
-          "param_transform must include an entry for every parameter",
-          "in log_priors."
-        ))
-      }
-      # Order the transformation list to match the order of log_priors.
-      param_transform <- unlist(param_transform[names(log_priors)])
-    } else {
-      # If it's a vector, ensure it is named (or warn the user).
-      if (is.null(names(param_transform))) {
-        warning(paste0(
-          "param_transform is not named. It is recommended to",
-          "supply a named list matching log_priors."
-        ))
-      }
+  } else if (is.list(param_transform)) {
+    # Ensure every parameter in log_priors has a corresponding transform.
+    if (!all(names(log_priors) %in% names(param_transform))) {
+      stop(paste0(
+        "param_transform must include an entry for every ",
+        "parameter in log_priors."
+      ))
     }
-    # Validate that only 'log' and 'identity' are used.
-    invalid_transform <- which(!(param_transform %in% c("log", "identity")))
-    if (length(invalid_transform) > 0) {
+
+    # Validate transformations and replace any invalid entries.
+    invalid <- !(param_transform %in% c("log", "identity"))
+    if (any(invalid)) {
       warning(paste0(
         "Only 'log' and 'identity' transformations are supported.",
-        " Using 'identity' for invalid entries."
+        "Using 'identity' for invalid entries."
       ))
-      param_transform[invalid_transform] <- "identity"
+      param_transform[invalid] <- "identity"
     }
+  } else {
+    stop("param_transform must be a list.")
   }
+
+  # Reorder param_transform to match the order of log_priors
+  param_transform <- as.list(unlist(param_transform[names(log_priors)]))
+
 
   # Add ... as arg to functions if not present
   has_dots <- function(fun) {

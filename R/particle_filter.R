@@ -129,6 +129,24 @@ particle_filter <- function(
     stop("num_particles must be a positive integer")
   }
 
+  # Add ... as arg to functions if not present
+  has_dots <- function(fun) {
+    "..." %in% names(formals(fun))
+  }
+
+  if (!has_dots(init_fn)) {
+    formals(init_fn) <- c(formals(init_fn), alist(... = ))
+  }
+  if (!has_dots(transition_fn)) {
+    formals(transition_fn) <- c(formals(transition_fn), alist(... = ))
+  }
+  if (!has_dots(log_likelihood_fn)) {
+    formals(log_likelihood_fn) <- c(
+      formals(log_likelihood_fn),
+      alist(... = )
+    )
+  }
+
   # Ensure y is a matrix.
   if (is.vector(y)) {
     y <- matrix(y, ncol = 1)
@@ -148,7 +166,7 @@ particle_filter <- function(
   )
 
   # Initialization: obtain initial particles and ensure they are in matrix form.
-  particles <- init_fn(num_particles, ...)
+  particles <- init_fn(particles = num_particles, ...)
   if (is.null(dim(particles))) {
     # If particles come as a vector, treat it as 1-dimensional.
     if (length(particles) != num_particles) {
@@ -193,7 +211,7 @@ particle_filter <- function(
   # Time step 1 initialization
   # ---------------------------
   # Evaluate log-likelihood function at the first observation.
-  log_weights <- log_likelihood_fn(y[1, ], particles, ...)
+  log_weights <- log_likelihood_fn(y = y[1, ], particles = particles, ...)
 
   # Check that log_likelihood_fn returns a log-likelihood of correct dimensions.
   if (!is.numeric(log_weights) || length(log_weights) != num_particles) {
@@ -205,7 +223,6 @@ particle_filter <- function(
   log_normalizer <- logsumexp(log_weights)
   log_weights <- log_weights - log_normalizer
   weights <- exp(log_weights)
-
   # Compute the weighted average for the first time step
   if (one_dim) {
     state_est[1] <- sum(particles * weights)
@@ -228,7 +245,7 @@ particle_filter <- function(
   # ----------------------------
   for (i in 2:num_steps) {
     # Transition: update particles
-    particles_new <- transition_fn(particles, ...)
+    particles_new <- transition_fn(particles = particles, ...)
     if (is.null(dim(particles_new))) {
       # Check that transition_fn preserves correct output dimensions
       if (length(particles_new) != num_particles || ncol(particles_new) != d) {
@@ -250,22 +267,32 @@ particle_filter <- function(
     particles <- particles_new
 
     # Evaluate log-likelihood function for the i-th observation.
-    log_likelihoods <- log_likelihood_fn(y[i, ], particles, ...)
-    if (!is.numeric(log_likelihoods) ||
-          length(log_likelihoods) != num_particles) {
-      stop(paste0("log_likelihood_fn must return a numeric vector of",
-                  "length num_particles"))
+    log_likelihood <- log_likelihood_fn(y = y[i, ], particles = particles, ...)
+    if (!is.numeric(log_likelihood) ||
+          length(log_likelihood) != num_particles) {
+      stop(paste0(
+        "log_likelihood_fn must return a numeric vector of",
+        "length num_particles"
+      ))
     }
 
-    log_weights <- log(weights) + log_likelihoods
+    log_weights <- log(weights) + log_likelihood
     log_l_i <- logsumexp(log_weights) - log(num_particles)
     loglike <- loglike + log_l_i
 
     log_normalizer <- logsumexp(log_weights)
     log_weights <- log_weights - log_normalizer
     weights <- exp(log_weights)
+    if (is.nan(sum(weights))) {
+      stop(paste0(
+        "Weights are NaN because of zero likelihoods.",
+        "Consider increasing number of particles, and/or change.",
+        "the proposal standardeviation in tune_control()"
+      ))
+    }
 
     ess_current <- 1 / sum(weights^2)
+
     ess_vec[i] <- ess_current
 
     # Resampling step for SISR and SISAR

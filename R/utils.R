@@ -42,14 +42,14 @@
   check_particles(log_likelihood_fn_ssm, "log_likelihood_fn_ssm")
 
   # Combine parameters from all three functions
-  # (ignoring 'particles' and 'y' in the check)
+  # (ignoring 'particles', 'y' and '...' in the check)
   fn_params <- unique(c(
     get_fn_params(init_fn_ssm),
     get_fn_params(transition_fn_ssm),
     get_fn_params(log_likelihood_fn_ssm)
   ))
-  # Drop 'particles' and 'y'
-  fn_params <- fn_params[!(fn_params %in% c("particles", "y"))]
+  # Drop 'particles', 'y' and '...'
+  fn_params <- fn_params[!(fn_params %in% c("particles", "y", "..."))]
 
   # Check if the parameters match init_params
   if (!all(fn_params %in% names(init_params))) {

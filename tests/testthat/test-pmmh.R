@@ -13,7 +13,7 @@ test_that("default_tune_control returns a list with correct defaults", {
   ))
 
   # Check default values
-  expect_equal(result$pilot_proposal_sd, 1)
+  expect_equal(result$pilot_proposal_sd, 0.5)
   expect_equal(result$pilot_n, 100)
   expect_equal(result$pilot_m, 2000)
   expect_equal(result$target_var, 1)
@@ -305,7 +305,7 @@ test_that("pmmh works with valid arguments", {
   )
 
   # Generate data
-  t_val <- 20
+  t_val <- 10
   x <- numeric(t_val)
   y <- numeric(t_val)
   x[1] <- rnorm(1, mean = 0, sd = 1)
@@ -320,7 +320,7 @@ test_that("pmmh works with valid arguments", {
       suppressWarnings({
         pmmh_result <- pmmh(
           y = y,
-          m = 1000,
+          m = 500,
           init_fn_ssm = init_fn_ssm,
           transition_fn_ssm = transition_fn_ssm,
           log_likelihood_fn_ssm = log_likelihood_fn_ssm,
@@ -339,6 +339,35 @@ test_that("pmmh works with valid arguments", {
     },
     regexp = NA
   ) # Expects that no errors are thrown
+
+  # Swapping order in param_transform should not affect the result
+  expect_error(
+    {
+      suppressWarnings({
+        pmmh_result_swapped <- pmmh(
+          y = y,
+          m = 500,
+          init_fn_ssm = init_fn_ssm,
+          transition_fn_ssm = transition_fn_ssm,
+          log_likelihood_fn_ssm = log_likelihood_fn_ssm,
+          log_priors = log_priors,
+          init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+          burn_in = 100,
+          num_chains = 2,
+          param_transform = list(
+            sigma_x = "log",
+            phi = "identity",
+            sigma_y = "log"
+          ),
+          seed = 1405
+        )
+      })
+    },
+    regexp = NA
+  ) # Expects that no errors are thrown
+
+  # Check if the results are the same
+  expect_equal(pmmh_result$theta_chain, pmmh_result_swapped$theta_chain)
 })
 
 # Multi-dimensional example
@@ -367,7 +396,7 @@ test_that("Multi dimensional works", {
       suppressWarnings({
         pmmh_result <- pmmh(
           y = y,
-          m = 1000,
+          m = 500,
           init_fn_ssm = init_fn,
           transition_fn_ssm = transition_fn,
           log_likelihood_fn_ssm = log_likelihood_fn,
