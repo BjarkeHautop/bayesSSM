@@ -23,8 +23,14 @@ rhat <- function(chains) {
   m <- nrow(chains)
   k <- ncol(chains)
 
+  # Ensure even number of iterations
+  if (m %% 2 == 1) {
+    chains <- chains[-m, ]  # Drop last iteration
+    m <- nrow(chains)       # Update m
+  }
+
   # Split each chain into two parts
-  chains_split <- matrix(NA, nrow = m, ncol = 2 * k)
+  chains_split <- matrix(NA, nrow = m %/% 2, ncol = 2 * k)
   for (i in 1:k) {
     # Split the k-th chain into two parts
     chains_split[, 2 * i - 1] <- chains[1:(m %/% 2), k]
