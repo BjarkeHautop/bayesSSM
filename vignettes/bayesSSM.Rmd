@@ -54,6 +54,8 @@ for (t in 2:t_val) {
 Let's visualize the data:
 
 ```{r}
+#| fig.alt: "The blue line represents the latent state, and red points represent
+#| observed values."
 ggplot() +
   geom_line(aes(x = 1:t_val, y = x), color = "blue", linewidth = 1) + # Latent
   geom_point(aes(x = 1:t_val, y = y), color = "red", size = 2) + # Observed
@@ -164,6 +166,7 @@ chain_2 <- chains[[2]]
 Let's collect the chains for phi from the chains and visualize the densities
 
 ```{r}
+#| fig.alt: "Density plot of phi chains."
 phi_chains <- cbind(
   chain_1$phi, chain_2$phi
 )
@@ -179,6 +182,8 @@ ggplot2::ggplot() +
   ) +
   theme_minimal()
 ```
+
+
 
 We have now fitted a simple SSM model using `bayesSSM`. Feel free to explore the
 package further and try out different models.

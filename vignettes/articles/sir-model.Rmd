@@ -168,6 +168,7 @@ print(data.frame(
 And plot it:
 
 ```{r}
+#| fig.alt: "Simulated epidemic data"
 # Function to create a tidy dataset for ggplot
 prepare_data_for_plot <- function(states, observations, t_max) {
   # Organize the data into a tidy format
@@ -319,6 +320,7 @@ chain_2 <- chains[[2]]
 For $\lambda$:
 
 ```{r}
+#| fig.alt: "Density plot of lambda chains"
 lambda_chains <- cbind(
   chain_1$lambda, chain_2$lambda
 )
@@ -337,6 +339,7 @@ ggplot2::ggplot() +
 And for $\gamma$:
 
 ```{r}
+#| fig.alt: "Density plot of gamma chains"
 gamma_chains <- cbind(
   chain_1$gamma, chain_2$gamma
 )
