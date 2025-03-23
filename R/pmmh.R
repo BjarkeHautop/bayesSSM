@@ -106,9 +106,10 @@ default_tune_control <- function(
 
 #' \describe{
 #'   \item{\code{theta_chain}}{A matrix of post burn-in parameter samples.}
-#'   \item{\code{latent_state_chain}}{A list containg mean and variance
+#'   \item{\code{latent_state_chain}}{A list containing mean and variance
 #'   of latent state estimates for each time step.}
-#'   \item{\code{latent_state_estimate}}{diagnostics containing ESS and Rhat.}
+#'   \item{\code{latent_state_estimate}}{Diagnostics containing ESS and Rhat
+#'   for each parameter.}
 #' }
 #'
 #' @export
