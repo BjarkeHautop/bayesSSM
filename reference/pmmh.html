@@ -66,6 +66,7 @@ particles for the particle filter, and then runs the main PMMH chain.</p>
 <span>  param_transform <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  tune_control <span class="op">=</span> <span class="fu"><a href="default_tune_control.html">default_tune_control</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  return_latent_state_est <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  seed <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -145,6 +146,11 @@ containing tuning parameters for the pilot chain, such as <code>pilot_m</code>,
 pilot_run tuning. Defaults to <code>FALSE</code>.</p></dd>
 
 
+<dt id="arg-return-latent-state-est">return_latent_state_est<a class="anchor" aria-label="anchor" href="#arg-return-latent-state-est"></a></dt>
+<dd><p>A logical value indicating whether to return
+the latent state estimates for each time step. Defaults to <code>FALSE</code>.</p></dd>
+
+
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>An optional integer to set the seed for reproducibility.</p></dd>
 
@@ -155,11 +161,12 @@ pilot_run tuning. Defaults to <code>FALSE</code>.</p></dd>
 <dd><p>A matrix of post burn-in parameter samples.</p></dd>
 
   <dt><code>latent_state_chain</code></dt>
-<dd><p>A list containg mean and variance
+<dd><p>A list containing mean and variance
   of latent state estimates for each time step.</p></dd>
 
   <dt><code>latent_state_estimate</code></dt>
-<dd><p>diagnostics containing ESS and Rhat.</p></dd>
+<dd><p>Diagnostics containing ESS and Rhat
+  for each parameter.</p></dd>
 
 
 </dl></div>
@@ -231,17 +238,17 @@ has two main steps:</p><ol><li><p><strong>Pilot Chain:</strong> A pilot particle
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running chain 1...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running pilot chain for tuning...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 50 particles for PMMH:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Running particle MCMC chains with tuned settings...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 100 particles for PMMH:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running particle MCMC chain with tuned settings...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running chain 2...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running pilot chain for tuning...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 117 particles for PMMH:</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Running particle MCMC chains with tuned settings...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 100 particles for PMMH:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running particle MCMC chain with tuned settings...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> PMMH Results Summary:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        phi 0.88 0.10   0.89    0.68     1.07  66 1.023</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_x 1.10 0.27   1.09    0.65     1.66   5 1.004</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_y 0.42 0.30   0.36    0.11     1.09   7 1.161</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        phi 0.87 0.12   0.90    0.59     1.07  42 1.023</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_x 1.05 0.25   1.05    0.46     1.46  94 1.026</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_y 0.48 0.33   0.47    0.02     1.42   8 1.037</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some ESS values are below 400, indicating poor mixing. Consider running the chains for more iterations.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some Rhat values are above 1.01, indicating that the chains have not converged. Consider running the chains for more iterations and/or increase burn_in.</span>
 <span class="r-in"><span><span class="co"># Convergence warning is expected with such low MCMC iterations.</span></span></span>

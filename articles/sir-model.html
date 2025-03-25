@@ -117,7 +117,7 @@ Note, that under these assumptions
 infection event is exponential distributed (since time to next event of
 a Poisson process is exponential) and so is the removal event, thus
 <em>memoryless</em>.</p>
-<p>. The infection and removal events have the following rates:</p>
+<p>The infection and removal events have the following rates:</p>
 <ul>
 <li><p><strong>Infection Event:</strong> The transition
 <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mo>,</mo><mi>i</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>→</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mo>−</mo><mn>1</mn><mo>,</mo><mi>i</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
@@ -408,23 +408,23 @@ chains. In practice, these should be higher.</p>
 <span><span class="co">#&gt;              lambda        gamma</span></span>
 <span><span class="co">#&gt; lambda 0.0045648972 0.0009780776</span></span>
 <span><span class="co">#&gt; gamma  0.0009780776 0.0004481566</span></span>
-<span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
-<span><span class="co">#&gt; Running particle MCMC chains with tuned settings...</span></span>
+<span><span class="co">#&gt; Using 100 particles for PMMH:</span></span>
+<span><span class="co">#&gt; Running particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; Running chain 2...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
 <span><span class="co">#&gt; Pilot chain posterior mean:</span></span>
 <span><span class="co">#&gt;    lambda     gamma </span></span>
-<span><span class="co">#&gt; 0.5821204 0.2145504</span></span>
+<span><span class="co">#&gt; 0.5303249 0.1992298</span></span>
 <span><span class="co">#&gt; Pilot chain posterior covariance (on transformed space):</span></span>
-<span><span class="co">#&gt;             lambda       gamma</span></span>
-<span><span class="co">#&gt; lambda 0.006579079 0.001119440</span></span>
-<span><span class="co">#&gt; gamma  0.001119440 0.000435979</span></span>
-<span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
-<span><span class="co">#&gt; Running particle MCMC chains with tuned settings...</span></span>
+<span><span class="co">#&gt;             lambda        gamma</span></span>
+<span><span class="co">#&gt; lambda 0.007712153 0.0019398601</span></span>
+<span><span class="co">#&gt; gamma  0.001939860 0.0007560087</span></span>
+<span><span class="co">#&gt; Using 100 particles for PMMH:</span></span>
+<span><span class="co">#&gt; Running particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
 <span><span class="co">#&gt;  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;     lambda 0.55 0.08   0.55    0.40     0.72 117 1.020</span></span>
-<span><span class="co">#&gt;      gamma 0.21 0.02   0.21    0.16     0.26 123 1.001</span></span>
+<span><span class="co">#&gt;     lambda 0.55 0.08   0.55    0.40     0.71  85 1.063</span></span>
+<span><span class="co">#&gt;      gamma 0.20 0.02   0.20    0.16     0.25 145 1.008</span></span>
 <span><span class="co">#&gt; Warning in bayesSSM::pmmh(y = observations, m = 1000, init_fn =</span></span>
 <span><span class="co">#&gt; init_fn_epidemic, : Some ESS values are below 400, indicating poor mixing.</span></span>
 <span><span class="co">#&gt; Consider running the chains for more iterations.</span></span>
