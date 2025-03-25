@@ -46,7 +46,7 @@ is a Markov process, since the infection event is exponential distributed
 (since time to next event of a Poisson process is exponential) and
 so is the removal event, thus *memoryless*.
 
-. The infection and removal events have the following rates:
+The infection and removal events have the following rates:
 
 - **Infection Event:** The transition
 	$$

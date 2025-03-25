@@ -247,16 +247,16 @@ particle_filter <- function(
       # Check that transition_fn preserves correct output dimensions
       if (length(particles_new) != num_particles || ncol(particles_new) != d) {
         stop(paste0(
-          "transistion_fn must return the same dimensions as",
-          " the initial particles"
+          "transistion_fn must return the same dimensions as ",
+          "the initial particles"
         ))
       }
       particles_new <- matrix(particles_new, nrow = num_particles, byrow = TRUE)
     } else {
       if (nrow(particles_new) != num_particles || ncol(particles_new) != d) {
         stop(paste0(
-          "transistion_fn must return the same dimensions as",
-          " the initial particles"
+          "transistion_fn must return the same dimensions as ",
+          "the initial particles"
         ))
       }
     }
@@ -268,7 +268,7 @@ particle_filter <- function(
     if (!is.numeric(log_likelihood) ||
           length(log_likelihood) != num_particles) {
       stop(paste0(
-        "log_likelihood_fn must return a numeric vector of",
+        "log_likelihood_fn must return a numeric vector of ",
         "length num_particles"
       ))
     }
@@ -282,9 +282,8 @@ particle_filter <- function(
     weights <- exp(log_weights)
     if (is.nan(sum(weights))) {
       stop(paste0(
-        "Weights are NaN because of zero likelihoods.",
-        "Consider increasing number of particles, and/or change.",
-        "the proposal standardeviation in tune_control()"
+        "Weights are NaN because of zero likelihoods. ",
+        "Recheck model and consider modifying arguments in tune_control()."
       ))
     }
 

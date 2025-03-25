@@ -48,6 +48,6 @@ The function performs \code{pilot_reps} evaluations of the particle
 filter using the provided parameter vector \code{theta}. It then estimates
 the variance of the log-likelihoods and scales the initial particle number
 by this variance. The final number of particles is taken as the ceiling of
-the scaled value with a minimum of 50 and a maximum of 1000.
+the scaled value with a minimum of 100 and a maximum of 1000.
 }
 \keyword{internal}

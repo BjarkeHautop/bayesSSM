@@ -19,6 +19,7 @@ pmmh(
   param_transform = NULL,
   tune_control = default_tune_control(),
   verbose = FALSE,
+  return_latent_state_est = FALSE,
   seed = NULL
 )
 }
@@ -66,15 +67,19 @@ containing tuning parameters for the pilot chain, such as \code{pilot_m},
 \item{verbose}{A logical value indicating whether to print information about
 pilot_run tuning. Defaults to \code{FALSE}.}
 
+\item{return_latent_state_est}{A logical value indicating whether to return
+the latent state estimates for each time step. Defaults to \code{FALSE}.}
+
 \item{seed}{An optional integer to set the seed for reproducibility.}
 }
 \value{
 A list containing:
 \describe{
   \item{\code{theta_chain}}{A matrix of post burn-in parameter samples.}
-  \item{\code{latent_state_chain}}{A list containg mean and variance
+  \item{\code{latent_state_chain}}{A list containing mean and variance
   of latent state estimates for each time step.}
-  \item{\code{latent_state_estimate}}{diagnostics containing ESS and Rhat.}
+  \item{\code{latent_state_estimate}}{Diagnostics containing ESS and Rhat
+  for each parameter.}
 }
 }
 \description{

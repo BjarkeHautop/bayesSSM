@@ -8,7 +8,7 @@
 #' @param pilot_m Number of iterations for MCMC. Default is 2000.
 #' @param pilot_target_var The target variance for the posterior log-likelihood
 #' evaluated at estimated posterior mean. Default is 1.
-#' @param pilot_burn_in Number of burn-in iterations for MCMC. Default is 1000.
+#' @param pilot_burn_in Number of burn-in iterations for MCMC. Default is 500.
 #' @param pilot_reps Number of times a particle filter is run. Default is 100.
 #' @param pilot_algorithm The algorithm used for the pilot particle filter.
 #' Default is "SISAR".
@@ -19,7 +19,7 @@
 #' @export
 default_tune_control <- function(
     pilot_proposal_sd = 0.5, pilot_n = 100, pilot_m = 2000,
-    pilot_target_var = 1, pilot_burn_in = 1000, pilot_reps = 100,
+    pilot_target_var = 1, pilot_burn_in = 500, pilot_reps = 100,
     pilot_algorithm = c("SISAR", "SISR", "SIS"),
     pilot_resample_fn = c("stratified", "systematic", "multinomial")) {
   if (!is.numeric(pilot_proposal_sd) || pilot_proposal_sd <= 0) {
@@ -87,6 +87,8 @@ default_tune_control <- function(
 #' \code{pilot_algorithm}, and \code{pilot_resample_fn}.
 #' @param verbose A logical value indicating whether to print information about
 #' pilot_run tuning. Defaults to \code{FALSE}.
+#' @param return_latent_state_est A logical value indicating whether to return
+#' the latent state estimates for each time step. Defaults to \code{FALSE}.
 #' @param seed An optional integer to set the seed for reproducibility.
 #'
 #' @details The PMMH algorithm is essentially a Metropolis Hastings algorithm
@@ -175,6 +177,7 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
                  param_transform = NULL,
                  tune_control = default_tune_control(),
                  verbose = FALSE,
+                 return_latent_state_est = FALSE,
                  seed = NULL) {
   if (!is.null(seed)) set.seed(seed)
   # ---------------------------
@@ -302,9 +305,7 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     # Step 2: Run the PMMH chains using the tuned settings
     # ---------------------------
 
-    message("Running particle MCMC chains with tuned settings...")
-
-
+    message("Running particle MCMC chain with tuned settings...")
 
     current_theta <- init_theta
     theta_chain <- matrix(NA, nrow = m, ncol = num_params)
@@ -412,12 +413,27 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     state_est_chains, function(chain) chain[(burn_in + 1):m]
   )
 
-  # Combine latent state estimates from all chains and compute column means.
-  all_state_estimates <- do.call(
-    rbind, unlist(state_est_chain_post, recursive = FALSE)
-  )
-  latent_state_estimate <- colMeans(all_state_estimates)
-  latent_state_variance <- apply(all_state_estimates, 2, stats::var)
+  # Flatten the list: now all_state_estimates is a list of matrices
+  all_state_estimates <- do.call(c, state_est_chain_post)
+
+  mat_dim <- dim(all_state_estimates[[1]])
+  n_matrices <- length(all_state_estimates)
+
+  # Convert list of matrices into a 3D array where the 3rd dimension
+  # indexes each matrix.
+  combined_array <- array(unlist(all_state_estimates),
+                          dim = c(mat_dim[1], mat_dim[2], n_matrices))
+
+  if (length(dim(combined_array)) == 1) {
+    dim(combined_array) <- c(length(combined_array), 1, 1) # Make it at least 3D
+  }
+
+  # Compute the element-wise mean across chains/iterations
+  # (over the 3rd dimension)
+  latent_state_estimate <- apply(combined_array, c(1, 2), mean)
+
+  # Compute the element-wise variance similarly
+  latent_state_variance <- apply(combined_array, c(1, 2), stats::var)
 
 
   # ---------------------------
@@ -484,6 +500,10 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     diagnostics = list(ess = param_ess, rhat = param_rhat)
   )
 
+  if (return_latent_state_est) {
+    result$latent_state_chain <- state_est_chain_post
+  }
+
   # Assign class
   class(result) <- "pmmh_output"
 
@@ -508,10 +528,11 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
 
   # If any Rhat<0.99 Bug?
   if (any(sapply(param_rhat, function(x) x < 0.99 && !is.na(x)))) {
-    message("Some Rhat values are below 0.99, please increase iterations or/and
-          particles.
-          If the issue persists it could be a bug,
-          please submit an issue to Github.")
+    message(paste0(
+      "Some Rhat values are below 0.99, please increase iterations or/and ",
+      "particles. If the issue persists it could be a bug, please submit ",
+      "an issue to Github."
+    ))
   }
 
   result
