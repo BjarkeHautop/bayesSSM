@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -170,20 +170,24 @@ particles and proposal distribution for the parameters. The tuning can
 be modified by the the function <code>default_tune_control</code>. We
 will use the default settings.</p>
 <p>We fit 2 chains with
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mo>=</mo><mn>2000</mn></mrow><annotation encoding="application/x-tex">m=2000</annotation></semantics></math>
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>m</mi><mo>=</mo><mn>1000</mn></mrow><annotation encoding="application/x-tex">m=1000</annotation></semantics></math>
 iterations for each, with a burn_in of
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>500</mn><annotation encoding="application/x-tex">500</annotation></semantics></math>.
-In practice you should run more iterations and chains. To improve
-sampling we specify that metropolis hastings should specify
+We also modify the tuning to only use a pilot run of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>100</mn><annotation encoding="application/x-tex">100</annotation></semantics></math>
+iterations and
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>10</mn><annotation encoding="application/x-tex">10</annotation></semantics></math>
+burn-in iterations. In practice you should run more iterations and
+chains. To improve sampling we specify that proposals for
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>σ</mi><mi>x</mi></msub><annotation encoding="application/x-tex">\sigma_x</annotation></semantics></math>
 and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>σ</mi><mi>y</mi></msub><annotation encoding="application/x-tex">\sigma_y</annotation></semantics></math>
-on the
+should be on the
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mo>log</mo><annotation encoding="application/x-tex">\log</annotation></semantics></math>-scale.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pmmh.html">pmmh</a></span><span class="op">(</span></span>
 <span>  y <span class="op">=</span> <span class="va">y</span>,</span>
-<span>  m <span class="op">=</span> <span class="fl">2000</span>,</span>
+<span>  m <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  init_fn <span class="op">=</span> <span class="va">init_fn</span>,</span>
 <span>  transition_fn <span class="op">=</span> <span class="va">transition_fn</span>,</span>
 <span>  log_likelihood_fn <span class="op">=</span> <span class="va">log_likelihood_fn</span>,</span>
@@ -197,40 +201,45 @@ on the
 <span>    sigma_x <span class="op">=</span> <span class="st">"log"</span>,</span>
 <span>    sigma_y <span class="op">=</span> <span class="st">"log"</span></span>
 <span>  <span class="op">)</span>,</span>
+<span>  tune_control <span class="op">=</span> <span class="fu"><a href="../reference/default_tune_control.html">default_tune_control</a></span><span class="op">(</span>pilot_m <span class="op">=</span> <span class="fl">100</span>, pilot_burn_in <span class="op">=</span> <span class="fl">10</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Running chain 1...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
 <span><span class="co">#&gt; Pilot chain posterior mean:</span></span>
 <span><span class="co">#&gt;       phi   sigma_x   sigma_y </span></span>
-<span><span class="co">#&gt; 0.8202326 0.9126852 0.5095414</span></span>
+<span><span class="co">#&gt; 0.8544286 0.7186304 0.5237435</span></span>
 <span><span class="co">#&gt; Pilot chain posterior covariance (on transformed space):</span></span>
-<span><span class="co">#&gt;                  phi      sigma_x      sigma_y</span></span>
-<span><span class="co">#&gt; phi      0.004138967 -0.003826011  0.002425618</span></span>
-<span><span class="co">#&gt; sigma_x -0.003826011  0.017718196 -0.008860731</span></span>
-<span><span class="co">#&gt; sigma_y  0.002425618 -0.008860731  0.022968484</span></span>
-<span><span class="co">#&gt; Using 128 particles for PMMH:</span></span>
+<span><span class="co">#&gt;                   phi       sigma_x      sigma_y</span></span>
+<span><span class="co">#&gt; phi      0.0022127563  0.0007426653 -0.002837817</span></span>
+<span><span class="co">#&gt; sigma_x  0.0007426653  0.0004378663 -0.002457423</span></span>
+<span><span class="co">#&gt; sigma_y -0.0028378172 -0.0024574227  0.015648225</span></span>
+<span><span class="co">#&gt; Using 276 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; Running chain 2...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
 <span><span class="co">#&gt; Pilot chain posterior mean:</span></span>
 <span><span class="co">#&gt;       phi   sigma_x   sigma_y </span></span>
-<span><span class="co">#&gt; 0.8425068 0.9447028 0.4638934</span></span>
+<span><span class="co">#&gt; 0.8184567 1.0644745 0.3392965</span></span>
 <span><span class="co">#&gt; Pilot chain posterior covariance (on transformed space):</span></span>
-<span><span class="co">#&gt;                  phi       sigma_x       sigma_y</span></span>
-<span><span class="co">#&gt; phi     0.0036710898  0.0006502838  0.0007375195</span></span>
-<span><span class="co">#&gt; sigma_x 0.0006502838  0.0171536749 -0.0107139660</span></span>
-<span><span class="co">#&gt; sigma_y 0.0007375195 -0.0107139660  0.0255870433</span></span>
-<span><span class="co">#&gt; Using 160 particles for PMMH:</span></span>
+<span><span class="co">#&gt;                 phi      sigma_x      sigma_y</span></span>
+<span><span class="co">#&gt; phi     0.003821179 0.0028295500 0.0011276751</span></span>
+<span><span class="co">#&gt; sigma_x 0.002829550 0.0032576751 0.0007982934</span></span>
+<span><span class="co">#&gt; sigma_y 0.001127675 0.0007982934 0.0004036178</span></span>
+<span><span class="co">#&gt; Using 212 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
 <span><span class="co">#&gt;  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;        phi 0.84 0.06   0.84    0.72     0.96 155 1.000</span></span>
-<span><span class="co">#&gt;    sigma_x 0.92 0.14   0.93    0.65     1.20  34 1.001</span></span>
-<span><span class="co">#&gt;    sigma_y 0.42 0.19   0.41    0.11     0.82   5 1.010</span></span>
-<span><span class="co">#&gt; Warning in pmmh(y = y, m = 2000, init_fn = init_fn, transition_fn =</span></span>
+<span><span class="co">#&gt;        phi 0.85 0.06   0.85    0.75     0.97  61 1.008</span></span>
+<span><span class="co">#&gt;    sigma_x 0.81 0.12   0.75    0.69     1.11   1 1.049</span></span>
+<span><span class="co">#&gt;    sigma_y 0.49 0.10   0.47    0.34     0.75   3 1.000</span></span>
+<span><span class="co">#&gt; Warning in pmmh(y = y, m = 1000, init_fn = init_fn, transition_fn =</span></span>
 <span><span class="co">#&gt; transition_fn, : Some ESS values are below 400, indicating poor mixing.</span></span>
-<span><span class="co">#&gt; Consider running the chains for more iterations.</span></span></code></pre></div>
+<span><span class="co">#&gt; Consider running the chains for more iterations.</span></span>
+<span><span class="co">#&gt; Warning in pmmh(y = y, m = 1000, init_fn = init_fn, transition_fn =</span></span>
+<span><span class="co">#&gt; transition_fn, : Some Rhat values are above 1.01, indicating that the chains</span></span>
+<span><span class="co">#&gt; have not converged. Consider running the chains for more iterations and/or</span></span>
+<span><span class="co">#&gt; increase burn_in.</span></span></code></pre></div>
 <p>We see that the chains gives convergence issues, indicating that we
 should run it for more iterations, but we ignore this issue in this
 Vignette.</p>
@@ -241,9 +250,9 @@ be printed from any <code>pmmh_output</code> object by calling
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
 <span><span class="co">#&gt;  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;        phi 0.84 0.06   0.84    0.72     0.96 155 1.000</span></span>
-<span><span class="co">#&gt;    sigma_x 0.92 0.14   0.93    0.65     1.20  34 1.001</span></span>
-<span><span class="co">#&gt;    sigma_y 0.42 0.19   0.41    0.11     0.82   5 1.010</span></span></code></pre></div>
+<span><span class="co">#&gt;        phi 0.85 0.06   0.85    0.75     0.97  61 1.008</span></span>
+<span><span class="co">#&gt;    sigma_x 0.81 0.12   0.75    0.69     1.11   1 1.049</span></span>
+<span><span class="co">#&gt;    sigma_y 0.49 0.10   0.47    0.34     0.75   3 1.000</span></span></code></pre></div>
 <p>The chains are saved as <code>theta_chain</code></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chains</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">theta_chain</span></span>

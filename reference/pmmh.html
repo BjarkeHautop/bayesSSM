@@ -13,7 +13,7 @@ particles for the particle filter, and then runs the main PMMH chain."><meta pro
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -130,8 +130,8 @@ Must be one of <code>"stratified"</code>, <code>"systematic"</code>, or
 <dt id="arg-param-transform">param_transform<a class="anchor" aria-label="anchor" href="#arg-param-transform"></a></dt>
 <dd><p>An optional character vector that specifies the
 transformation applied to each parameter. Currently supports
-<code>"log"</code> and <code>"identity"</code>. If <code>NULL</code>, the <code>"identity"</code>
-transformation is used for all parameters.</p></dd>
+<code>"log"</code>, <code>"logit"</code>, and <code>"identity"</code>. If <code>NULL</code>, the
+<code>"identity"</code> transformation is used for all parameters.</p></dd>
 
 
 <dt id="arg-tune-control">tune_control<a class="anchor" aria-label="anchor" href="#arg-tune-control"></a></dt>
