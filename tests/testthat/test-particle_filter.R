@@ -32,24 +32,24 @@ test_that("particle_filter returns errors on wrong input", {
   )
 
   expect_error(
-    particle_filter(y,
-                    num_particles = 10, wrong_init_fn_matrix, transition_fn,
-                    log_likelihood_fn, algorithm = "SIS"
+    particle_filter(
+      y, num_particles = 10, wrong_init_fn_matrix, transition_fn,
+      log_likelihood_fn, algorithm = "SIS"
     ),
     "init_fn must return a matrix with num_particles rows"
   )
 
   expect_error(
-    particle_filter(y,
-      num_particles = 10, init_fn, wrong_transition_fn,
+    particle_filter(
+      y, num_particles = 10, init_fn, wrong_transition_fn,
       log_likelihood_fn, algorithm = "SIS"
     ),
     "transistion_fn must return the same dimensions as"
   )
 
   expect_error(
-    particle_filter(y,
-      num_particles = 10, init_fn, transition_fn,
+    particle_filter(
+      y, num_particles = 10, init_fn, transition_fn,
       wrong_log_likelihood_fn, algorithm = "SIS"
     ),
     "log_likelihood_fn must return dimensions matching num_particles"

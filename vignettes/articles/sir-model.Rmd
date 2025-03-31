@@ -285,8 +285,9 @@ log_likelihood_fn_epidemic <- function(y, particles) {
 ```
 
 Now we can run the PMMH algorithm to estimate the parameters. For this 
-vignette we only use a small number of iterations (1000) and 2 chains.
-In practice, these should be higher.
+vignette we only use a small number of iterations (1000) and 2 chains (and
+we also modify the tuning to only use 100 iterations with a burn-in of 10).
+In practice, these should be much higher.
 
 ```{r}
 result <- bayesSSM::pmmh(
@@ -300,7 +301,7 @@ result <- bayesSSM::pmmh(
   burn_in = 200,
   num_chains = 2,
   param_transform = list(lambda = "log", gamma = "log"),
-  tune_control = default_tune_control(pilot_proposal_sd = 0.1),
+  tune_control = default_tune_control(pilot_m = 100, pilot_burn_in = 10),
   verbose = TRUE,
   seed = 1405,
 )

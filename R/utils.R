@@ -114,7 +114,7 @@
 #' @returns log-Jacobian of the transformation
 #'
 #' @keywords internal
-.compute_jacobian <- function(theta, transform) {
+.compute_log_jacobian <- function(theta, transform) {
   sum(sapply(seq_along(theta), function(j) {
     if (transform[j] == "log") {
       log(theta[j]) # log|dx/dz| = log(x)

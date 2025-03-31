@@ -8,9 +8,19 @@
 #' @export
 #'
 #' @examples
-#' \dontrun{
-#' print(pmmh_output)
-#' }
+#' # Create dummy chains for two parameters across two chains
+#' set.seed(1405)
+#' chain1 <- data.frame(param1 = rnorm(100), param2 = rnorm(100))
+#' chain2 <- data.frame(param1 = rnorm(100), param2 = rnorm(100))
+#' dummy_output <- list(
+#'   theta_chain = list(chain1, chain2),
+#'   diagnostics = list(
+#'     ess = c(param1 = 200, param2 = 190),
+#'     rhat = c(param1 = 1.01, param2 = 1.00)
+#'   )
+#' )
+#' class(dummy_output) <- "pmmh_output"
+#' print(dummy_output)
 print.pmmh_output <- function(x, ...) {
   # Extract parameter names from the first chain's columns
   param_names <- colnames(x$theta_chain[[1]])

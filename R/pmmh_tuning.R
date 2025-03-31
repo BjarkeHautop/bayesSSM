@@ -220,11 +220,11 @@
       )
 
       # Compute the Jacobian adjustments.
-      log_jacobian_proposed <- .compute_jacobian(
+      log_jacobian_proposed <- .compute_log_jacobian(
         theta = proposed_theta,
         transform = param_transform
       )
-      log_jacobian_current <- .compute_jacobian(
+      log_jacobian_current <- .compute_log_jacobian(
         theta = current_theta,
         transform = param_transform
       )

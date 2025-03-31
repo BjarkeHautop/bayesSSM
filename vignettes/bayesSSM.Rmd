@@ -117,15 +117,17 @@ The `pmmh` function automatically tunes the number of particles and
 proposal distribution for the parameters. The tuning can be modified by the 
 the function `default_tune_control`. We will use the default settings.
 
-We fit 2 chains with $m=2000$ iterations for each, with a burn_in of $500$.
+We fit 2 chains with $m=1000$ iterations for each, with a burn_in of $500$. 
+We also modify the tuning to only use a pilot run of $100$ iterations and
+$10$ burn-in iterations. 
 In practice you should run more iterations and chains. To improve sampling
-we specify that metropolis hastings should specify $\sigma_x$ and $\sigma_y$ on
-the $\log$-scale. 
+we specify that proposals for $\sigma_x$ and $\sigma_y$ should be on
+the $\log$-scale.
 
 ```{r}
 result <- pmmh(
   y = y,
-  m = 2000,
+  m = 1000,
   init_fn = init_fn,
   transition_fn = transition_fn,
   log_likelihood_fn = log_likelihood_fn,
@@ -139,6 +141,7 @@ result <- pmmh(
     sigma_x = "log",
     sigma_y = "log"
   ),
+  tune_control = default_tune_control(pilot_m = 100, pilot_burn_in = 10),
   verbose = TRUE
 )
 ```

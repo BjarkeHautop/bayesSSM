@@ -265,14 +265,6 @@ particle_filter <- function(
     # Evaluate log-likelihood function for the i-th observation.
     log_likelihood <- log_likelihood_fn(y = y[i, ], particles = particles, ...)
 
-    if (!is.numeric(log_likelihood) ||
-        length(log_likelihood) != num_particles) {
-      stop(paste0(
-        "log_likelihood_fn must return a numeric vector of ",
-        "length num_particles"
-      ))
-    }
-
     # If all likelihoods are 0 return loglike as -Inf
     if (all(log_likelihood < -1e8)) {
       loglike <- -Inf
@@ -296,12 +288,6 @@ particle_filter <- function(
     log_normalizer <- logsumexp(log_weights)
     log_weights <- log_weights - log_normalizer
     weights <- exp(log_weights)
-    if (is.nan(sum(weights))) {
-      stop(paste0(
-        "Weights are NaN because of zero likelihoods. ",
-        "Recheck model and consider modifying arguments in tune_control()."
-      ))
-    }
 
     ess_current <- 1 / sum(weights^2)
 
