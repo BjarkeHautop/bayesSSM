@@ -1,6 +1,8 @@
 #' Create Tuning Control Parameters
 #'
-#' This function creates a list of tuning parameters used by the pmmh function.
+#' This function creates a list of tuning parameters used by the
+#' \code{\link{pmmh}} function. The tuning choices are inspired by Pitt et al.
+#' [2012] and Dahlin and Schön [2019].
 #'
 #' @param pilot_proposal_sd Standard deviation for pilot proposals. Default is
 #' 0.5.
@@ -16,6 +18,16 @@
 #' filter. Default is "stratified".
 #'
 #' @return A list of tuning control parameters.
+#'
+#' @references M. K. Pitt, R. d. S. Silva, P. Giordani, and R. Kohn.
+#' On some properties of Markov chain Monte Carlo simulation methods based on
+#' the particle filter. Journal of Econometrics, 171(2):134–151, 2012.
+#' doi: https://doi.org/10.1016/j.jeconom.2012.06.004
+#'
+#' J. Dahlin and T. B. Schön. Getting started with particle
+#' Metropolis-Hastings for inference in nonlinear dynamical models. Journal
+#' of Statistical Software, 88(2):1–41, 2019. doi: 10.18637/jss.v088.c02
+#'
 #' @export
 default_tune_control <- function(
     pilot_proposal_sd = 0.5, pilot_n = 100, pilot_m = 2000,
@@ -43,7 +55,7 @@ default_tune_control <- function(
     pilot_proposal_sd = pilot_proposal_sd,
     pilot_n = pilot_n,
     pilot_m = pilot_m,
-    target_var = pilot_target_var,
+    pilot_target_var = pilot_target_var,
     pilot_burn_in = pilot_burn_in,
     pilot_reps = pilot_reps,
     pilot_algorithm = pilot_algorithm,
@@ -108,11 +120,16 @@ default_tune_control <- function(
 
 #' \describe{
 #'   \item{\code{theta_chain}}{A matrix of post burn-in parameter samples.}
-#'   \item{\code{latent_state_chain}}{A list containing mean and variance
-#'   of latent state estimates for each time step.}
-#'   \item{\code{latent_state_estimate}}{Diagnostics containing ESS and Rhat
+#'   \item{\code{latent_state_chain}}{If \code{return_latent_state_est} is
+#'   \code{TRUE}, a list of matrices containing the latent state estimates
+#'   for each time step.}
+#'   \item{\code{diagnostics}}{Diagnostics containing ESS and Rhat
 #'   for each parameter.}
 #' }
+#'
+#' @references Andrieu et al. (2010). Particle Markov chain Monte Carlo methods.
+#' Journal of the Royal Statistical Society: Series B (Statistical Methodology),
+#' 72(3):269–342. doi: 10.1111/j.1467-9868.2009.00736.x
 #'
 #' @export
 #'
@@ -166,7 +183,8 @@ default_tune_control <- function(
 #'     phi = "identity",
 #'     sigma_x = "log",
 #'     sigma_y = "log"
-#'   )
+#'   ),
+#'   tune_control = default_tune_control(pilot_m = 500, pilot_burn_in = 100)
 #' )
 #' # Convergence warning is expected with such low MCMC iterations.
 #'
@@ -493,10 +511,6 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
   theta_chain_post <- lapply(theta_chain_post, as.data.frame)
   result <- list(
     theta_chain = theta_chain_post,
-    latent_state_estimate = list(
-      mean = latent_state_estimate,
-      var = latent_state_variance
-    ),
     diagnostics = list(ess = param_ess, rhat = param_rhat)
   )
 

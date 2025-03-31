@@ -83,9 +83,9 @@ A list containing:
   }
 }
 \description{
-This function implements a particle filter for estimating the hidden states
-in a state space model using sequential Monte Carlo methods. Three filtering
-variants are supported:
+This function implements a bootstrap particle filter for estimating the
+hidden states in a state space model using sequential Monte Carlo methods.
+Three filtering variants are supported:
 \enumerate{
   \item \strong{SIS:} Sequential Importance Sampling (without resampling).
   \item \strong{SISR:} Sequential Importance Sampling with resampling at
@@ -94,7 +94,7 @@ variants are supported:
   Sample Size (ESS). Resampling is triggered when the ESS falls below a
   given threshold (default \code{particles / 2}).
 }
-It is recommended to use either SISR or SISAR to avoid weight degenracy.
+It is recommended to use either SISR or SISAR to avoid weight degeneracy.
 }
 \details{
 The particle filter is a sequential Monte Carlo method that approximates the

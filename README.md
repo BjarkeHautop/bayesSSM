@@ -14,9 +14,6 @@ bayesSSM is an R package offering a set of tools for performing Bayesian
 inference in state-space models (SSMs). It implements the Particle
 Marginal Metropolis-Hastings (PMMH) for Bayesian inference.
 
-> **Note:** This package is under active development and may undergo
-> significant changes. It is not yet recommended for production use.
-
 ## Installation
 
 You can install the development version of bayesSSM from
@@ -120,8 +117,9 @@ as additional arguments to the functions. Any parameter must have a
 corresponding log-prior function in `log_priors`.
 
 Now we can run the PMMH algorithm using the `pmmh` function. We run 2
-chains for 200 MCMC samples with a burn-in of 10. In practice you would
-want to run it for a much larger number of samples.
+chains for 200 MCMC samples with a burn-in of 10. We also modify the
+tuning to only use 100 pilot samples and a burn-in of 10. In practice
+you would want to run it for a much larger number of samples.
 
 ``` r
 library(bayesSSM)
@@ -136,21 +134,22 @@ result <- pmmh(
   init_params = c(phi = 0.5, sigma_x = 0.5, sigma_y = 0.5),
   burn_in = 10,
   num_chains = 2,
-  seed = 1405
+  seed = 1405,
+  tune_control = default_tune_control(pilot_m = 100, pilot_burn_in = 10)
 )
 #> Running chain 1...
 #> Running pilot chain for tuning...
-#> Using 75 particles for PMMH:
-#> Running particle MCMC chains with tuned settings...
+#> Using 100 particles for PMMH:
+#> Running particle MCMC chain with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
-#> Using 50 particles for PMMH:
-#> Running particle MCMC chains with tuned settings...
+#> Using 100 particles for PMMH:
+#> Running particle MCMC chain with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat
-#>        phi 0.85 0.06   0.86    0.72     0.96  17 1.140
-#>    sigma_x 0.40 0.21   0.38    0.04     0.72   9 1.096
-#>    sigma_y 0.46 0.18   0.50    0.18     0.76  20 1.090
+#>        phi 0.79 0.15   0.79    0.53     1.07  25 1.000
+#>    sigma_x 1.18 0.55   1.26    0.02     2.15  27 1.072
+#>    sigma_y 1.03 0.46   0.92    0.37     2.12   3 1.079
 #> Warning in pmmh(y = y, m = 200, init_fn = init_fn, transition_fn =
 #> transition_fn, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.
@@ -203,5 +202,5 @@ Metropolis-Hastings, which is an algorithm that first generates a set of
 $N$ particles to approximate the likelihood and then uses these
 particles to perform MCMC sampling of the parameters $\theta$. The
 implementation automatically tunes the number of particles and the
-proposal distribution for the parameters, which can be modified by
-`default_tune_control`.
+proposal distribution for the parameters. The control of the tuning can
+be modified by the argument `tune_control`.

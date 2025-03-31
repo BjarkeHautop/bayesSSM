@@ -1,8 +1,8 @@
 #' Particle Filter
 #'
-#' This function implements a particle filter for estimating the hidden states
-#' in a state space model using sequential Monte Carlo methods. Three filtering
-#' variants are supported:
+#' This function implements a bootstrap particle filter for estimating the
+#' hidden states in a state space model using sequential Monte Carlo methods.
+#' Three filtering variants are supported:
 #' \enumerate{
 #'   \item \strong{SIS:} Sequential Importance Sampling (without resampling).
 #'   \item \strong{SISR:} Sequential Importance Sampling with resampling at
@@ -11,8 +11,7 @@
 #'   Sample Size (ESS). Resampling is triggered when the ESS falls below a
 #'   given threshold (default \code{particles / 2}).
 #' }
-#' It is recommended to use either SISR or SISAR to avoid weight degenracy.
-#'
+#' It is recommended to use either SISR or SISAR to avoid weight degeneracy.
 #'
 #' @param y A numeric vector or matrix of observations.
 #' @param num_particles A positive integer specifying the number of particles.
@@ -265,12 +264,29 @@ particle_filter <- function(
 
     # Evaluate log-likelihood function for the i-th observation.
     log_likelihood <- log_likelihood_fn(y = y[i, ], particles = particles, ...)
+
     if (!is.numeric(log_likelihood) ||
-          length(log_likelihood) != num_particles) {
+        length(log_likelihood) != num_particles) {
       stop(paste0(
         "log_likelihood_fn must return a numeric vector of ",
         "length num_particles"
       ))
+    }
+
+    # If all likelihoods are 0 return loglike as -Inf
+    if (all(log_likelihood < -1e8)) {
+      loglike <- -Inf
+      result <- list(
+        state_est = state_est,
+        ess = ess_vec,
+        loglike = loglike,
+        algorithm = algorithm
+      )
+      if (return_particles) {
+        result$particles_history <- particles_history
+        result$weights_history <- weights_history
+      }
+      return(result)
     }
 
     log_weights <- log(weights) + log_likelihood

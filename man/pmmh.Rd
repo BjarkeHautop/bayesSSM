@@ -76,9 +76,10 @@ the latent state estimates for each time step. Defaults to \code{FALSE}.}
 A list containing:
 \describe{
   \item{\code{theta_chain}}{A matrix of post burn-in parameter samples.}
-  \item{\code{latent_state_chain}}{A list containing mean and variance
-  of latent state estimates for each time step.}
-  \item{\code{latent_state_estimate}}{Diagnostics containing ESS and Rhat
+  \item{\code{latent_state_chain}}{If \code{return_latent_state_est} is
+  \code{TRUE}, a list of matrices containing the latent state estimates
+  for each time step.}
+  \item{\code{diagnostics}}{Diagnostics containing ESS and Rhat
   for each parameter.}
 }
 }
@@ -152,8 +153,14 @@ pmmh_result <- pmmh(
     phi = "identity",
     sigma_x = "log",
     sigma_y = "log"
-  )
+  ),
+  tune_control = default_tune_control(pilot_m = 500, pilot_burn_in = 100)
 )
 # Convergence warning is expected with such low MCMC iterations.
 
+}
+\references{
+Andrieu et al. (2010). Particle Markov chain Monte Carlo methods.
+Journal of the Royal Statistical Society: Series B (Statistical Methodology),
+72(3):269–342. doi: 10.1111/j.1467-9868.2009.00736.x
 }

@@ -40,5 +40,17 @@ filter. Default is "stratified".}
 A list of tuning control parameters.
 }
 \description{
-This function creates a list of tuning parameters used by the pmmh function.
+This function creates a list of tuning parameters used by the
+\code{\link{pmmh}} function. The tuning choices are inspired by Pitt et al.
+[2012] and Dahlin and Schön [2019].
+}
+\references{
+M. K. Pitt, R. d. S. Silva, P. Giordani, and R. Kohn.
+On some properties of Markov chain Monte Carlo simulation methods based on
+the particle filter. Journal of Econometrics, 171(2):134–151, 2012.
+doi: https://doi.org/10.1016/j.jeconom.2012.06.004
+
+J. Dahlin and T. B. Schön. Getting started with particle
+Metropolis-Hastings for inference in nonlinear dynamical models. Journal
+of Statistical Software, 88(2):1–41, 2019. doi: 10.18637/jss.v088.c02
 }

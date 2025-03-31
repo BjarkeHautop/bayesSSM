@@ -8,7 +8,7 @@ test_that("default_tune_control returns a list with correct defaults", {
   # Check result type and names
   expect_type(result, "list")
   expect_named(result, c(
-    "pilot_proposal_sd", "pilot_n", "pilot_m", "target_var",
+    "pilot_proposal_sd", "pilot_n", "pilot_m", "pilot_target_var",
     "pilot_burn_in", "pilot_reps", "pilot_algorithm", "pilot_resample_fn"
   ))
 
@@ -16,7 +16,7 @@ test_that("default_tune_control returns a list with correct defaults", {
   expect_equal(result$pilot_proposal_sd, 0.5)
   expect_equal(result$pilot_n, 100)
   expect_equal(result$pilot_m, 2000)
-  expect_equal(result$target_var, 1)
+  expect_equal(result$pilot_target_var, 1)
   expect_equal(result$pilot_burn_in, 500)
   expect_equal(result$pilot_reps, 100)
   expect_equal(result$pilot_algorithm, "SISAR")
@@ -34,7 +34,7 @@ test_that("default_tune_control handles valid inputs", {
   expect_equal(result$pilot_proposal_sd, 0.5)
   expect_equal(result$pilot_n, 500)
   expect_equal(result$pilot_m, 5000)
-  expect_equal(result$target_var, 2)
+  expect_equal(result$pilot_target_var, 2)
   expect_equal(result$pilot_burn_in, 2000)
   expect_equal(result$pilot_reps, 5)
   expect_equal(result$pilot_algorithm, "SISR")
