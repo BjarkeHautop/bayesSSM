@@ -431,21 +431,13 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
   # ---------------------------
   # Run chains (in parallel if more than one core is requested)
   # ---------------------------
-  chain_results <- NULL
   if (num_cores > 1) {
-    if (.Platform$OS.type == "windows") {
-      cl <- parallel::makeCluster(num_cores)
-      # Export the current environment variables/functions that are needed
-      parallel::clusterExport(
-        cl, varlist = ls(environment()), envir = environment()
-      )
-      chain_results <- parallel::parLapply(cl, 1:num_chains, chain_result)
-      parallel::stopCluster(cl)
-    } else {
-      chain_results <- parallel::mclapply(
-        1:num_chains, chain_result, mc.cores = num_cores
-      )
-    }
+    future::plan(future::multisession, workers = num_cores)
+    chain_results <- future.apply::future_lapply(
+      1:num_chains, chain_result, future.seed = TRUE
+    )
+    # Reset to sequential plan after execution
+    future::plan(future::sequential)
   } else {
     chain_results <- lapply(1:num_chains, chain_result)
   }
