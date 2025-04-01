@@ -13,6 +13,22 @@ test_that("Throws error if particles dim doesn't match weight", {
     .resample_systematic(particles, weights),
     "Number of particles must match the length of weights"
   )
+
+  # Matrix case
+  particles <- matrix(1:6, nrow = 3)
+  weights <- c(0.1, 0.2, 0.3, 0.2)
+  expect_error(
+    .resample_multinomial(particles, weights),
+    "Number of particles must match the length of weights"
+  )
+  expect_error(
+    .resample_stratified(particles, weights),
+    "Number of particles must match the length of weights"
+  )
+  expect_error(
+    .resample_systematic(particles, weights),
+    "Number of particles must match the length of weights"
+  )
 })
 
 test_that("Multinomial resampling produces valid output", {
