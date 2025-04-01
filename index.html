@@ -164,7 +164,7 @@
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Running chain 1...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
-<span><span class="co">#&gt; Using 100 particles for PMMH:</span></span>
+<span><span class="co">#&gt; Using 1000 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; Running chain 2...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
@@ -172,9 +172,9 @@
 <span><span class="co">#&gt; Running particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
 <span><span class="co">#&gt;  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;        phi 0.95 0.09   0.94    0.77     1.16   3 1.111</span></span>
-<span><span class="co">#&gt;    sigma_x 0.74 0.33   0.76    0.07     1.27  37 1.013</span></span>
-<span><span class="co">#&gt;    sigma_y 0.66 0.33   0.67    0.12     1.24  56 1.016</span></span>
+<span><span class="co">#&gt;        phi 0.93 0.07   0.94    0.78     1.05  57 1.000</span></span>
+<span><span class="co">#&gt;    sigma_x 0.81 0.21   0.80    0.35     1.29  49 1.006</span></span>
+<span><span class="co">#&gt;    sigma_y 0.36 0.24   0.32    0.05     0.96   4 1.028</span></span>
 <span><span class="co">#&gt; Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =</span></span>
 <span><span class="co">#&gt; transition_fn, : Some ESS values are below 400, indicating poor mixing.</span></span>
 <span><span class="co">#&gt; Consider running the chains for more iterations.</span></span>
@@ -186,9 +186,8 @@
 <h2 id="state-space-models">State-space Models<a class="anchor" aria-label="anchor" href="#state-space-models"></a>
 </h2>
 <p>A state-space model (SSM) has the structure given in the following directed acyclic graph (DAG):</p>
-<figure><img src="reference/figures/DAG_SSM.png" alt="SSM"><figcaption aria-hidden="true">
-SSM
-</figcaption></figure><p>The core function, <code>pmmh</code>, implements the Particle Marginal Metropolis-Hastings, which is an algorithm that first generates a set of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math> particles to approximate the likelihood and then uses these particles to perform MCMC sampling of the parameters <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>. The implementation automatically tunes the number of particles and the proposal distribution for the parameters.</p>
+<p><img src="reference/figures/DAG_SSM.png"></p>
+<p>The core function, <code>pmmh</code>, implements the Particle Marginal Metropolis-Hastings, which is an algorithm that first generates a set of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math> particles to approximate the likelihood and then uses these particles to perform MCMC sampling of the parameters <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>. The implementation automatically tunes the number of particles and the proposal distribution for the parameters.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
