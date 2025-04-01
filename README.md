@@ -14,6 +14,15 @@ bayesSSM is an R package offering a set of tools for performing Bayesian
 inference in state-space models (SSMs). It implements the Particle
 Marginal Metropolis-Hastings (PMMH) for Bayesian inference.
 
+## Why bayesSSM?
+
+While there are several alternatives available for performing particle
+MCMC, such as the [POMP](https://kingaa.github.io/pomp/) package, I
+designed bayesSSM with ease of use in mind. It was developed as a
+procrastination task during my Master’s thesis about Particle MCMC,
+since I was implementing everything from scratch anyway. Everything is
+written in R, so performance is not the best, but it is easy to use.
+
 ## Installation
 
 You can install the development version of bayesSSM from
@@ -71,15 +80,15 @@ $$
 We can use `pmmh` to perform Bayesian inference on this model. To use
 `pmmh` we need to define the functions for the SSM and the priors. The
 functions `init_fn`, `transition_fn` should be functions that simulates
-the latent state variables and the observed data. They must contain the
-argument `particles` which is a vector of particles, and can contain any
-other args as parameters. The function `log_likelihood_fn` should be a
-function that calculates the log-likelihood of the observed data given
-the latent state variables. It must contain the arguments `y` and
-`particles`.
+the latent states. They must contain the argument `particles`, which is
+a vector of particles, and can contain any other arguments. The function
+`log_likelihood_fn` should be a function that calculates the
+log-likelihood of the observed data given the latent state variables. It
+must contain the arguments `y` and `particles`.
 
 The priors for the parameters must be defined as log-prior functions.
-Every parameter must have a corresponding log-prior function.
+Every parameter from `init_fn`, `transition_fn`, and `log_likelihood_fn`
+must have a corresponding log-prior function.
 
 ``` r
 init_fn <- function(particles) {
@@ -109,13 +118,6 @@ log_priors <- list(
 )
 ```
 
-Note, that `init_fn` must take an argument `particles` and return a
-vector of initial values for the latent state variables. `transition_fn`
-must take arguments `particles`, and `log_likelihood_fn` must take
-arguments `y` and `particles`. Any parameters for the SSM can be given
-as additional arguments to the functions. Any parameter must have a
-corresponding log-prior function in `log_priors`.
-
 Now we can run the PMMH algorithm using the `pmmh` function. We run 2
 chains for 200 MCMC samples with a burn-in of 10. We also modify the
 tuning to only use 100 pilot samples and a burn-in of 10. In practice
@@ -139,20 +141,20 @@ result <- pmmh(
 )
 #> Running chain 1...
 #> Running pilot chain for tuning...
-#> Using 100 particles for PMMH:
+#> Using 119 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
 #> Using 100 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
+#> Warning in ess(param_chain): One or more chains have zero variance.
+#> Warning in ess(param_chain): One or more chains have zero variance.
+#> Warning in ess(param_chain): One or more chains have zero variance.
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat
-#>        phi 0.79 0.15   0.79    0.53     1.07  25 1.000
-#>    sigma_x 1.18 0.55   1.26    0.02     2.15  27 1.072
-#>    sigma_y 1.03 0.46   0.92    0.37     2.12   3 1.079
-#> Warning in pmmh(y = y, m = 200, init_fn = init_fn, transition_fn =
-#> transition_fn, : Some ESS values are below 400, indicating poor mixing.
-#> Consider running the chains for more iterations.
+#>        phi 0.87 0.04   0.85    0.81     1.00  NA 1.000
+#>    sigma_x 0.46 0.25   0.68    0.04     0.68  NA 1.222
+#>    sigma_y 0.36 0.21   0.26    0.16     0.70  NA 1.244
 #> Warning in pmmh(y = y, m = 200, init_fn = init_fn, transition_fn =
 #> transition_fn, : Some Rhat values are above 1.01, indicating that the chains
 #> have not converged. Consider running the chains for more iterations and/or
@@ -164,8 +166,7 @@ small number of samples.
 
 ## State-space Models
 
-State-space models are used to describe systems that evolve over time
-with latent (hidden) state variables. The typical SSM is structured as a
+A state-space model (SSM) has the structure given in the following
 directed acyclic graph (DAG):
 
 <figure>
@@ -173,34 +174,9 @@ directed acyclic graph (DAG):
 <figcaption aria-hidden="true">SSM</figcaption>
 </figure>
 
-Key components include:
-
-- Latent state variables $X_t$ that evolve over time according to a
-  transition distribution $f_\theta(X_t | X_{t-1})$.
-
-- Observed data $Y_t$ that are generated from the latent state variables
-  according to an observation distribution $g_\theta(Y_t | X_t)$.
-
-- Parameters $\theta$ that govern the transition and observation
-  distributions.
-
-- Initial distribution $\mu(X_1)$ that describes the distribution of the
-  latent state variables at time $t = 1$. Defined by `init_fn` in
-  `pmmh`.
-
-- Log-likelihood $\log p(Y_t | \theta)$ that describes the likelihood of
-  the observed data given the latent state variables. Defined by
-  `log_likelihood_fn` in `pmmh`.
-
-- Log-prior $\log p(\theta)$ that describes the prior distribution of
-  the parameters. Defined by `log_priors` in `pmmh`.
-
-## Particle Marginal Metropolis-Hastings
-
 The core function, `pmmh`, implements the Particle Marginal
 Metropolis-Hastings, which is an algorithm that first generates a set of
 $N$ particles to approximate the likelihood and then uses these
 particles to perform MCMC sampling of the parameters $\theta$. The
 implementation automatically tunes the number of particles and the
-proposal distribution for the parameters. The control of the tuning can
-be modified by the argument `tune_control`.
+proposal distribution for the parameters.
