@@ -130,7 +130,7 @@ log_priors <- list(
 
 Now we can run the PMMH algorithm using the `pmmh` function. We run 2 chains for
 200 MCMC samples with a burn-in of 10. We also modify the tuning to only use
-100 pilot samples and a burn-in of 10. 
+200 pilot samples and a burn-in of 10. 
 In practice you would want to run it for a much larger number of samples. 
 
 ```{r example}
@@ -138,16 +138,16 @@ library(bayesSSM)
 
 result <- pmmh(
   y = y,
-  m = 200, # number of MCMC samples
+  m = 500, # number of MCMC samples
   init_fn = init_fn,
   transition_fn = transition_fn,
   log_likelihood_fn = log_likelihood_fn,
   log_priors = log_priors,
   init_params = c(phi = 0.5, sigma_x = 0.5, sigma_y = 0.5),
-  burn_in = 10,
+  burn_in = 50,
   num_chains = 2,
   seed = 1405,
-  tune_control = default_tune_control(pilot_m = 100, pilot_burn_in = 10)
+  tune_control = default_tune_control(pilot_m = 200, pilot_burn_in = 10)
 )
 ```
 

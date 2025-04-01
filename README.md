@@ -120,7 +120,7 @@ log_priors <- list(
 
 Now we can run the PMMH algorithm using the `pmmh` function. We run 2
 chains for 200 MCMC samples with a burn-in of 10. We also modify the
-tuning to only use 100 pilot samples and a burn-in of 10. In practice
+tuning to only use 200 pilot samples and a burn-in of 10. In practice
 you would want to run it for a much larger number of samples.
 
 ``` r
@@ -128,37 +128,35 @@ library(bayesSSM)
 
 result <- pmmh(
   y = y,
-  m = 200, # number of MCMC samples
+  m = 500, # number of MCMC samples
   init_fn = init_fn,
   transition_fn = transition_fn,
   log_likelihood_fn = log_likelihood_fn,
   log_priors = log_priors,
   init_params = c(phi = 0.5, sigma_x = 0.5, sigma_y = 0.5),
-  burn_in = 10,
+  burn_in = 50,
   num_chains = 2,
   seed = 1405,
-  tune_control = default_tune_control(pilot_m = 100, pilot_burn_in = 10)
+  tune_control = default_tune_control(pilot_m = 200, pilot_burn_in = 10)
 )
 #> Running chain 1...
 #> Running pilot chain for tuning...
-#> Using 119 particles for PMMH:
+#> Using 100 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
 #> Using 100 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
-#> Warning in ess(param_chain): One or more chains have zero variance.
-#> Warning in ess(param_chain): One or more chains have zero variance.
-#> Warning in ess(param_chain): One or more chains have zero variance.
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat
-#>        phi 0.87 0.04   0.85    0.81     1.00  NA 1.000
-#>    sigma_x 0.46 0.25   0.68    0.04     0.68  NA 1.222
-#>    sigma_y 0.36 0.21   0.26    0.16     0.70  NA 1.244
-#> Warning in pmmh(y = y, m = 200, init_fn = init_fn, transition_fn =
-#> transition_fn, : Some Rhat values are above 1.01, indicating that the chains
-#> have not converged. Consider running the chains for more iterations and/or
-#> increase burn_in.
+#>        phi 0.95 0.09   0.94    0.77     1.16   3 1.111
+#>    sigma_x 0.74 0.33   0.76    0.07     1.27  37 1.013
+#>    sigma_y 0.66 0.33   0.67    0.12     1.24  56 1.016
+#> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =
+#> transition_fn, : Some ESS values are below 400, indicating poor mixing.
+#> Consider running the chains for more iterations.
+#> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn = transition_fn, : 
+#> Some Rhat values are above 1.01, indicating that the chains have not converged. Consider running the chains for more iterations and/or increase burn_in.
 ```
 
 We get convergence warnings because we only ran the algorithm for a
