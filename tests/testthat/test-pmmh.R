@@ -368,6 +368,92 @@ test_that("pmmh works with valid arguments", {
 
   # Check if the results are the same
   expect_equal(pmmh_result$theta_chain, pmmh_result_swapped$theta_chain)
+
+  # Using several cores
+  expect_error(
+    {
+      suppressWarnings({
+        pmmh_result <- pmmh(
+          y = y,
+          m = 500,
+          init_fn = init_fn,
+          transition_fn = transition_fn,
+          log_likelihood_fn = log_likelihood_fn,
+          log_priors = log_priors,
+          init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+          burn_in = 100,
+          num_chains = 2,
+          param_transform = list(
+            phi = "identity",
+            sigma_x = "log",
+            sigma_y = "log"
+          ),
+          seed = 1405,
+          num_cores = 2
+        )
+      })
+    },
+    regexp = NA
+  ) # Expects that no errors are thrown
+
+  expect_error(
+    pmmh(
+      y = y,
+      m = 500,
+      init_fn = init_fn,
+      transition_fn = transition_fn,
+      log_likelihood_fn = log_likelihood_fn,
+      log_priors = log_priors,
+      init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+      burn_in = 100,
+      num_chains = 2,
+      param_transform = list(
+        phi = "identity",
+        sigma_x = "log",
+        sigma_y = "log"
+      ),
+      seed = 1405,
+      num_cores = 0
+    ),
+    "num_cores must be a positive integer"
+  )
+
+  # Create a container for warnings
+  warning_messages <- character()
+
+  # Wrap your pmmh call with a warning handler
+  pmmh_result <- withCallingHandlers({
+    pmmh(
+      y = y,
+      m = 500,
+      init_fn = init_fn,
+      transition_fn = transition_fn,
+      log_likelihood_fn = log_likelihood_fn,
+      log_priors = log_priors,
+      init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+      burn_in = 100,
+      num_chains = 2,
+      param_transform = list(
+        phi = "identity",
+        sigma_x = "log",
+        sigma_y = "log"
+      ),
+      seed = 1405,
+      num_cores = 3
+    )
+  }, warning = function(w) {
+    warning_messages <<- c(warning_messages, conditionMessage(w))
+  })
+
+  expect_true(
+    any(
+      grepl(
+        "num_cores exceeds num_chains; setting num_cores to num_chains",
+        warning_messages,
+        fixed = TRUE
+      )
+    )
+  )
 })
 
 # Multi-dimensional example

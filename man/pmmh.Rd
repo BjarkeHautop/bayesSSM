@@ -20,7 +20,8 @@ pmmh(
   tune_control = default_tune_control(),
   verbose = FALSE,
   return_latent_state_est = FALSE,
-  seed = NULL
+  seed = NULL,
+  num_cores = 1
 )
 }
 \arguments{
@@ -71,6 +72,9 @@ pilot_run tuning. Defaults to \code{FALSE}.}
 the latent state estimates for each time step. Defaults to \code{FALSE}.}
 
 \item{seed}{An optional integer to set the seed for reproducibility.}
+
+\item{num_cores}{An integer specifying the number of cores to use for
+parallel processing. Defaults to 1.}
 }
 \value{
 A list containing:

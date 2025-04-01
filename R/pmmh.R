@@ -102,6 +102,8 @@ default_tune_control <- function(
 #' @param return_latent_state_est A logical value indicating whether to return
 #' the latent state estimates for each time step. Defaults to \code{FALSE}.
 #' @param seed An optional integer to set the seed for reproducibility.
+#' @param num_cores An integer specifying the number of cores to use for
+#' parallel processing. Defaults to 1.
 #'
 #' @details The PMMH algorithm is essentially a Metropolis Hastings algorithm
 #' where instead of using the exact likelihood it is estimated using a particle
@@ -196,7 +198,8 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
                  tune_control = default_tune_control(),
                  verbose = FALSE,
                  return_latent_state_est = FALSE,
-                 seed = NULL) {
+                 seed = NULL,
+                 num_cores = 1) {
   if (!is.null(seed)) set.seed(seed)
   # ---------------------------
   # Input validation
@@ -211,6 +214,13 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
   }
   if (!is.numeric(num_chains) || num_chains <= 0) {
     stop("num_chains must be a positive integer")
+  }
+  if (!is.numeric(num_cores) || num_cores < 1) {
+    stop("num_cores must be a positive integer")
+  }
+  if (num_cores > num_chains) {
+    warning("num_cores exceeds num_chains; setting num_cores to num_chains")
+    num_cores <- num_chains
   }
 
   .check_params_match(
@@ -244,7 +254,7 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     if (any(invalid)) {
       warning(paste0(
         "Only 'log', 'logit', and 'identity' transformations are supported.",
-        "Using 'identity' for invalid entries."
+        " Using 'identity' for invalid entries."
       ))
       param_transform[invalid] <- "identity"
     }
@@ -254,7 +264,6 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
 
   # Reorder param_transform to match the order of log_priors
   param_transform <- as.list(unlist(param_transform[names(log_priors)]))
-
 
   # Add ... as arg to functions if not present
   has_dots <- function(fun) {
@@ -279,10 +288,10 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     length.out = num_params
   )
 
-  theta_chains <- vector("list", num_chains)
-  state_est_chains <- vector("list", num_chains)
-
-  for (chain in 1:num_chains) {
+  # ---------------------------
+  # Define inner function for a single chain run
+  # ---------------------------
+  chain_result <- function(chain) {
     message("Running chain ", chain, "...")
 
     # ---------------------------
@@ -311,8 +320,6 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     target_n <- pilot_chain$target_n
 
     # Precompute the transformed proposal covariance:
-    # For log-transformed parameters, the scaling is done using the pilot
-    # estimates.
     scale_vec <- sapply(seq_along(init_theta), function(j) {
       if (param_transform[j] == "log") init_theta[j] else 1
     })
@@ -320,7 +327,7 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
       diag(1 / scale_vec)
 
     # ---------------------------
-    # Step 2: Run the PMMH chains using the tuned settings
+    # Step 2: Run the PMMH chain using the tuned settings
     # ---------------------------
 
     message("Running particle MCMC chain with tuned settings...")
@@ -417,9 +424,35 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
       state_est_chain[[i]] <- current_state_est
     }
 
-    theta_chains[[chain]] <- theta_chain
-    state_est_chains[[chain]] <- state_est_chain
+    list(theta_chain = theta_chain,
+         state_est_chain = state_est_chain)
   }
+
+  # ---------------------------
+  # Run chains (in parallel if more than one core is requested)
+  # ---------------------------
+  chain_results <- NULL
+  if (num_cores > 1) {
+    if (.Platform$OS.type == "windows") {
+      cl <- parallel::makeCluster(num_cores)
+      # Export the current environment variables/functions that are needed
+      parallel::clusterExport(
+        cl, varlist = ls(environment()), envir = environment()
+      )
+      chain_results <- parallel::parLapply(cl, 1:num_chains, chain_result)
+      parallel::stopCluster(cl)
+    } else {
+      chain_results <- parallel::mclapply(
+        1:num_chains, chain_result, mc.cores = num_cores
+      )
+    }
+  } else {
+    chain_results <- lapply(1:num_chains, chain_result)
+  }
+
+  # Unpack the results from each chain
+  theta_chains <- lapply(chain_results, function(res) res$theta_chain)
+  state_est_chains <- lapply(chain_results, function(res) res$state_est_chain)
 
   # ---------------------------
   # Step 3: Post-processing - discard burn-in and compute latent state estimate.
@@ -440,13 +473,11 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     result <- list()
 
     for (param in param_names) {
-      # Extract and bind the values of the parameter for each chain
       param_combined <- do.call(
         cbind, lapply(seq_along(theta_chain_post), function(i) {
           chain_data <- theta_chain_post[[i]]
           param_data <- chain_data[, param, drop = FALSE]
           colnames(param_data) <- paste(param, "chain", i, sep = "_")
-
           param_data
         })
       )
@@ -461,8 +492,6 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
   param_rhat <- list()
 
   num_chains <- length(theta_chain_post)
-
-  # Initialize flag for ESS message
   ess_message_shown <- FALSE
 
   for (param in names(theta_chain_per_param)) {
@@ -472,11 +501,9 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
       param_ess[[param]] <- ess(param_chain)
     } else {
       param_ess[[param]] <- NA
-      # Show the message only once
       if (!ess_message_shown) {
-        message(paste0(
-          "ESS cannot be computed with only one chain. Run at least 2 chains."
-        ))
+        message(paste0("ESS cannot be computed with only one chain ",
+                       "Run at least 2 chains."))
         ess_message_shown <- TRUE
       }
     }
@@ -484,7 +511,6 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     param_rhat[[param]] <- rhat(param_chain)
   }
 
-  # Convert chains to data frames
   theta_chain_post <- lapply(theta_chain_post, as.data.frame)
   result <- list(
     theta_chain = theta_chain_post,
@@ -495,7 +521,6 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     result$latent_state_chain <- state_est_chain_post
   }
 
-  # Assign class
   class(result) <- "pmmh_output"
 
   print(result)
@@ -514,15 +539,6 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
       "\nSome Rhat values are above 1.01, indicating that the chains ",
       "have not converged. Consider running the chains for more iterations ",
       "and/or increase burn_in."
-    ))
-  }
-
-  # If any Rhat<0.99 Bug?
-  if (any(sapply(param_rhat, function(x) x < 0.99 && !is.na(x)))) {
-    message(paste0(
-      "Some Rhat values are below 0.99, please increase iterations or/and ",
-      "particles. If the issue persists it could be a bug, please submit ",
-      "an issue to Github."
     ))
   }
 
