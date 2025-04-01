@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -429,10 +429,8 @@ burn-in of 10). In practice, these should be much higher.</p>
 <span><span class="co">#&gt; Warning in bayesSSM::pmmh(y = observations, m = 1000, init_fn =</span></span>
 <span><span class="co">#&gt; init_fn_epidemic, : Some ESS values are below 400, indicating poor mixing.</span></span>
 <span><span class="co">#&gt; Consider running the chains for more iterations.</span></span>
-<span><span class="co">#&gt; Warning in bayesSSM::pmmh(y = observations, m = 1000, init_fn =</span></span>
-<span><span class="co">#&gt; init_fn_epidemic, : Some Rhat values are above 1.01, indicating that the chains</span></span>
-<span><span class="co">#&gt; have not converged. Consider running the chains for more iterations and/or</span></span>
-<span><span class="co">#&gt; increase burn_in.</span></span></code></pre></div>
+<span><span class="co">#&gt; Warning in bayesSSM::pmmh(y = observations, m = 1000, init_fn = init_fn_epidemic, : </span></span>
+<span><span class="co">#&gt; Some Rhat values are above 1.01, indicating that the chains have not converged. Consider running the chains for more iterations and/or increase burn_in.</span></span></code></pre></div>
 <p>We get convergence warnings as expected, but we still recover the
 true values.</p>
 <p>We can access the chains and plot the densities:</p>

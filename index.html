@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -145,43 +145,41 @@
 <span>  sigma_x <span class="op">=</span> <span class="va">log_prior_sigma_x</span>,</span>
 <span>  sigma_y <span class="op">=</span> <span class="va">log_prior_sigma_y</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Now we can run the PMMH algorithm using the <code>pmmh</code> function. We run 2 chains for 200 MCMC samples with a burn-in of 10. We also modify the tuning to only use 100 pilot samples and a burn-in of 10. In practice you would want to run it for a much larger number of samples.</p>
+<p>Now we can run the PMMH algorithm using the <code>pmmh</code> function. We run 2 chains for 200 MCMC samples with a burn-in of 10. We also modify the tuning to only use 200 pilot samples and a burn-in of 10. In practice you would want to run it for a much larger number of samples.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/BjarkeHautop/bayesSSM" class="external-link">bayesSSM</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pmmh.html">pmmh</a></span><span class="op">(</span></span>
 <span>  y <span class="op">=</span> <span class="va">y</span>,</span>
-<span>  m <span class="op">=</span> <span class="fl">200</span>, <span class="co"># number of MCMC samples</span></span>
+<span>  m <span class="op">=</span> <span class="fl">500</span>, <span class="co"># number of MCMC samples</span></span>
 <span>  init_fn <span class="op">=</span> <span class="va">init_fn</span>,</span>
 <span>  transition_fn <span class="op">=</span> <span class="va">transition_fn</span>,</span>
 <span>  log_likelihood_fn <span class="op">=</span> <span class="va">log_likelihood_fn</span>,</span>
 <span>  log_priors <span class="op">=</span> <span class="va">log_priors</span>,</span>
 <span>  init_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>phi <span class="op">=</span> <span class="fl">0.5</span>, sigma_x <span class="op">=</span> <span class="fl">0.5</span>, sigma_y <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span>
-<span>  burn_in <span class="op">=</span> <span class="fl">10</span>,</span>
+<span>  burn_in <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  num_chains <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>  seed <span class="op">=</span> <span class="fl">1405</span>,</span>
-<span>  tune_control <span class="op">=</span> <span class="fu"><a href="reference/default_tune_control.html">default_tune_control</a></span><span class="op">(</span>pilot_m <span class="op">=</span> <span class="fl">100</span>, pilot_burn_in <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
+<span>  tune_control <span class="op">=</span> <span class="fu"><a href="reference/default_tune_control.html">default_tune_control</a></span><span class="op">(</span>pilot_m <span class="op">=</span> <span class="fl">200</span>, pilot_burn_in <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Running chain 1...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
-<span><span class="co">#&gt; Using 119 particles for PMMH:</span></span>
+<span><span class="co">#&gt; Using 100 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; Running chain 2...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
 <span><span class="co">#&gt; Using 100 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running particle MCMC chain with tuned settings...</span></span>
-<span><span class="co">#&gt; Warning in ess(param_chain): One or more chains have zero variance.</span></span>
-<span><span class="co">#&gt; Warning in ess(param_chain): One or more chains have zero variance.</span></span>
-<span><span class="co">#&gt; Warning in ess(param_chain): One or more chains have zero variance.</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
 <span><span class="co">#&gt;  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;        phi 0.87 0.04   0.85    0.81     1.00  NA 1.000</span></span>
-<span><span class="co">#&gt;    sigma_x 0.46 0.25   0.68    0.04     0.68  NA 1.222</span></span>
-<span><span class="co">#&gt;    sigma_y 0.36 0.21   0.26    0.16     0.70  NA 1.244</span></span>
-<span><span class="co">#&gt; Warning in pmmh(y = y, m = 200, init_fn = init_fn, transition_fn =</span></span>
-<span><span class="co">#&gt; transition_fn, : Some Rhat values are above 1.01, indicating that the chains</span></span>
-<span><span class="co">#&gt; have not converged. Consider running the chains for more iterations and/or</span></span>
-<span><span class="co">#&gt; increase burn_in.</span></span></code></pre></div>
+<span><span class="co">#&gt;        phi 0.95 0.09   0.94    0.77     1.16   3 1.111</span></span>
+<span><span class="co">#&gt;    sigma_x 0.74 0.33   0.76    0.07     1.27  37 1.013</span></span>
+<span><span class="co">#&gt;    sigma_y 0.66 0.33   0.67    0.12     1.24  56 1.016</span></span>
+<span><span class="co">#&gt; Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =</span></span>
+<span><span class="co">#&gt; transition_fn, : Some ESS values are below 400, indicating poor mixing.</span></span>
+<span><span class="co">#&gt; Consider running the chains for more iterations.</span></span>
+<span><span class="co">#&gt; Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn = transition_fn, : </span></span>
+<span><span class="co">#&gt; Some Rhat values are above 1.01, indicating that the chains have not converged. Consider running the chains for more iterations and/or increase burn_in.</span></span></code></pre></div>
 <p>We get convergence warnings because we only ran the algorithm for a small number of samples.</p>
 </div>
 <div class="section level2">
