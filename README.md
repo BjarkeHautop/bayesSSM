@@ -141,7 +141,7 @@ result <- pmmh(
 )
 #> Running chain 1...
 #> Running pilot chain for tuning...
-#> Using 100 particles for PMMH:
+#> Using 1000 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
@@ -149,9 +149,9 @@ result <- pmmh(
 #> Running particle MCMC chain with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat
-#>        phi 0.95 0.09   0.94    0.77     1.16   3 1.111
-#>    sigma_x 0.74 0.33   0.76    0.07     1.27  37 1.013
-#>    sigma_y 0.66 0.33   0.67    0.12     1.24  56 1.016
+#>        phi 0.93 0.07   0.94    0.78     1.05  57 1.000
+#>    sigma_x 0.81 0.21   0.80    0.35     1.29  49 1.006
+#>    sigma_y 0.36 0.24   0.32    0.05     0.96   4 1.028
 #> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =
 #> transition_fn, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.
@@ -167,10 +167,7 @@ small number of samples.
 A state-space model (SSM) has the structure given in the following
 directed acyclic graph (DAG):
 
-<figure>
-<img src="man/figures/DAG_SSM.png" alt="SSM" />
-<figcaption aria-hidden="true">SSM</figcaption>
-</figure>
+![](man/figures/DAG_SSM.png)
 
 The core function, `pmmh`, implements the Particle Marginal
 Metropolis-Hastings, which is an algorithm that first generates a set of

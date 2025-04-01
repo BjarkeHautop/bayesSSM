@@ -159,7 +159,7 @@ of samples.
 A state-space model (SSM) has the structure given in the following
 directed acyclic graph (DAG):
 
-![SSM](man/figures/DAG_SSM.png)
+![](man/figures/DAG_SSM.png)
 
 The core function, `pmmh`, implements the Particle Marginal Metropolis-Hastings, 
 which is an algorithm that first generates a set of $N$ particles to approximate
