@@ -13,7 +13,7 @@ particles for the particle filter, and then runs the main PMMH chain."><meta pro
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -67,7 +67,8 @@ particles for the particle filter, and then runs the main PMMH chain.</p>
 <span>  tune_control <span class="op">=</span> <span class="fu"><a href="default_tune_control.html">default_tune_control</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  return_latent_state_est <span class="op">=</span> <span class="cn">FALSE</span>,</span>
-<span>  seed <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  seed <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  num_cores <span class="op">=</span> <span class="fl">1</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -153,6 +154,11 @@ the latent state estimates for each time step. Defaults to <code>FALSE</code>.</
 
 <dt id="arg-seed">seed<a class="anchor" aria-label="anchor" href="#arg-seed"></a></dt>
 <dd><p>An optional integer to set the seed for reproducibility.</p></dd>
+
+
+<dt id="arg-num-cores">num_cores<a class="anchor" aria-label="anchor" href="#arg-num-cores"></a></dt>
+<dd><p>An integer specifying the number of cores to use for
+parallel processing. Defaults to 1.</p></dd>
 
 </dl></div>
     <div class="section level2">
