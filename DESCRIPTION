@@ -9,7 +9,7 @@ Authors@R: c(
       role = c("aut", "cre")
     )
   )
-Description: Implements methods for bayesian analysis of State Space Models.
+Description: Implements methods for Bayesian analysis of State Space Models.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

@@ -103,7 +103,10 @@ default_tune_control <- function(
 #' the latent state estimates for each time step. Defaults to \code{FALSE}.
 #' @param seed An optional integer to set the seed for reproducibility.
 #' @param num_cores An integer specifying the number of cores to use for
-#' parallel processing. Defaults to 1.
+#' parallel processing. Defaults to 1. Each chain is assigned to its own core,
+#' so the number of cores cannot exceed the number of chains
+#' (\code{num_chains}). The progress information is limited if using more
+#' than one core.
 #'
 #' @details The PMMH algorithm is essentially a Metropolis Hastings algorithm
 #' where instead of using the exact likelihood it is estimated using a particle
