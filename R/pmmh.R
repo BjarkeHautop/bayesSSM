@@ -105,8 +105,8 @@ default_tune_control <- function(
 #' @param num_cores An integer specifying the number of cores to use for
 #' parallel processing. Defaults to 1. Each chain is assigned to its own core,
 #' so the number of cores cannot exceed the number of chains
-#' (\code{num_chains}). The progress information is limited if using more
-#' than one core.
+#' (\code{num_chains}). The progress information given to user is limited if
+#' using more than one core.
 #'
 #' @details The PMMH algorithm is essentially a Metropolis Hastings algorithm
 #' where instead of using the exact likelihood it is estimated using a particle
