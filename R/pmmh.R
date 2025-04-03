@@ -222,7 +222,7 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     stop("num_cores must be a positive integer")
   }
   if (num_cores > num_chains) {
-    warning("num_cores exceeds num_chains; setting num_cores to num_chains")
+    message("num_cores exceeds num_chains; setting num_cores to num_chains")
     num_cores <- num_chains
   }
 
