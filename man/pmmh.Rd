@@ -74,7 +74,10 @@ the latent state estimates for each time step. Defaults to \code{FALSE}.}
 \item{seed}{An optional integer to set the seed for reproducibility.}
 
 \item{num_cores}{An integer specifying the number of cores to use for
-parallel processing. Defaults to 1.}
+parallel processing. Defaults to 1. Each chain is assigned to its own core,
+so the number of cores cannot exceed the number of chains
+(\code{num_chains}). The progress information given to user is limited if
+using more than one core.}
 }
 \value{
 A list containing:

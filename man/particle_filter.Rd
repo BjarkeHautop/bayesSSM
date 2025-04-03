@@ -72,13 +72,15 @@ A list containing:
     time step.}
     \item{loglike}{The accumulated log-likelihood of the observations given
     the model.}
+    \item{loglike_history}{A numeric vector of the log-likelihood at each time
+    step.}
     \item{algorithm}{A character string indicating the filtering algorithm
     used.}
-    \item{particles_history}{(Optional) A matrix of particle states over
-    time (one row per time step), returned if \code{return_particles}
-    is \code{TRUE}.}
-    \item{weights_history}{(Optional) A matrix of particle weights over time
-    (one row per time step), returned if \code{return_particles} is
+    \item{particles_history}{(Optional) A list of particle state matrices over
+    time (one per time step), returned if \code{return_particles} is
+    \code{TRUE}.}
+    \item{weights_history}{(Optional) A list of particle weight vectors over time
+    (one per time step), returned if \code{return_particles} is
     \code{TRUE}.}
   }
 }
@@ -130,7 +132,7 @@ y <- cumsum(rnorm(50))
 num_particles <- 100
 
 # Run the particle filter using default settings.
-result <- result <- particle_filter(
+result <- particle_filter(
   y = y,
   num_particles = num_particles,
   init_fn = init_fn,
