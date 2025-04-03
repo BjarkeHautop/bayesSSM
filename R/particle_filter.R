@@ -57,13 +57,15 @@
 #'     time step.}
 #'     \item{loglike}{The accumulated log-likelihood of the observations given
 #'     the model.}
+#'     \item{loglike_history}{A numeric vector of the log-likelihood at each time
+#'     step.}
 #'     \item{algorithm}{A character string indicating the filtering algorithm
 #'     used.}
-#'     \item{particles_history}{(Optional) A matrix of particle states over
-#'     time (one row per time step), returned if \code{return_particles}
-#'     is \code{TRUE}.}
-#'     \item{weights_history}{(Optional) A matrix of particle weights over time
-#'     (one row per time step), returned if \code{return_particles} is
+#'     \item{particles_history}{(Optional) A list of particle state matrices over
+#'     time (one per time step), returned if \code{return_particles} is
+#'     \code{TRUE}.}
+#'     \item{weights_history}{(Optional) A list of particle weight vectors over time
+#'     (one per time step), returned if \code{return_particles} is
 #'     \code{TRUE}.}
 #'   }
 #'
@@ -107,7 +109,7 @@
 #' num_particles <- 100
 #'
 #' # Run the particle filter using default settings.
-#' result <- result <- particle_filter(
+#' result <- particle_filter(
 #'   y = y,
 #'   num_particles = num_particles,
 #'   init_fn = init_fn,
@@ -156,9 +158,9 @@ particle_filter <- function(
   resample_fn <- match.arg(resample_fn)
 
   resample_func <- switch(resample_fn,
-    multinomial = .resample_multinomial,
-    stratified = .resample_stratified,
-    systematic = .resample_systematic
+                          multinomial = .resample_multinomial,
+                          stratified = .resample_stratified,
+                          systematic = .resample_systematic
   )
 
   # Initialization: obtain initial particles and ensure they are in matrix form.
@@ -190,6 +192,7 @@ particle_filter <- function(
   }
   ess_vec <- numeric(num_steps)
   loglike <- 0 # log-likelihood accumulator
+  loglike_history <- numeric(num_steps)  # log-likelihood at each time step
 
   # To store history, use lists (each element is an num_particles x d matrix)
   if (return_particles) {
@@ -216,6 +219,8 @@ particle_filter <- function(
 
   log_l_1 <- logsumexp(log_weights) - log(num_particles)
   loglike <- log_l_1
+  loglike_history[1] <- log_l_1
+
   log_normalizer <- logsumexp(log_weights)
   log_weights <- log_weights - log_normalizer
   weights <- exp(log_weights)
@@ -265,13 +270,15 @@ particle_filter <- function(
     # Evaluate log-likelihood function for the i-th observation.
     log_likelihood <- log_likelihood_fn(y = y[i, ], particles = particles, ...)
 
-    # If all likelihoods are 0 return loglike as -Inf
+    # If all likelihoods are extremely low, return loglike as -Inf
     if (all(log_likelihood < -1e8)) {
       loglike <- -Inf
+      loglike_history[i] <- -Inf
       result <- list(
         state_est = state_est,
         ess = ess_vec,
         loglike = loglike,
+        loglike_history = loglike_history,
         algorithm = algorithm
       )
       if (return_particles) {
@@ -284,13 +291,13 @@ particle_filter <- function(
     log_weights <- log(weights) + log_likelihood
     log_l_i <- logsumexp(log_weights) - log(num_particles)
     loglike <- loglike + log_l_i
+    loglike_history[i] <- log_l_i
 
     log_normalizer <- logsumexp(log_weights)
     log_weights <- log_weights - log_normalizer
     weights <- exp(log_weights)
 
     ess_current <- 1 / sum(weights^2)
-
     ess_vec[i] <- ess_current
 
     # Resampling step for SISR and SISAR
@@ -321,6 +328,7 @@ particle_filter <- function(
     state_est = state_est,
     ess = ess_vec,
     loglike = loglike,
+    loglike_history = loglike_history,
     algorithm = algorithm
   )
   if (return_particles) {
