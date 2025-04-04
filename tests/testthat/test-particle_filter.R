@@ -14,6 +14,7 @@ test_that("particle_filter returns errors on wrong input", {
   }
   # A simple observation vector for testing (5 time steps)
   y <- rep(0, 5)
+  wrong_y <- "hi"
 
   expect_error(
     particle_filter(y,
@@ -44,7 +45,7 @@ test_that("particle_filter returns errors on wrong input", {
       y, num_particles = 10, init_fn, wrong_transition_fn,
       log_likelihood_fn, algorithm = "SIS"
     ),
-    "transistion_fn must return the same dimensions as"
+    "transition_fn must return a vector of length num_particles"
   )
 
   expect_error(
@@ -53,6 +54,52 @@ test_that("particle_filter returns errors on wrong input", {
       wrong_log_likelihood_fn, algorithm = "SIS"
     ),
     "log_likelihood_fn must return dimensions matching num_particles"
+  )
+
+  expect_error(
+    particle_filter(
+      wrong_y, num_particles = 10, init_fn, transition_fn,
+      log_likelihood_fn
+    ),
+    "y must be numeric"
+  )
+
+  wrong_len_obs_times <- 1:4
+
+  expect_error(
+    particle_filter(
+      y, num_particles = 10, init_fn, transition_fn, log_likelihood_fn,
+      obs_times = wrong_len_obs_times
+    ),
+    "obs_times must match the number of observations "
+  )
+
+  not_numeric_obs_times <- "hi"
+
+  expect_error(
+    particle_filter(
+      y, num_particles = 10, init_fn, transition_fn, log_likelihood_fn,
+      obs_times = not_numeric_obs_times
+    ),
+    "obs_times must be numeric"
+  )
+
+  non_integer_obs_times <- c(1.5, 2.5, 3.5, 4.5, 5.5)
+  expect_error(
+    particle_filter(
+      y, num_particles = 10, init_fn, transition_fn, log_likelihood_fn,
+      obs_times = non_integer_obs_times
+    ),
+    "obs_times must be integers"
+  )
+
+  non_inc_obs_times <- c(1, 2, 3, 5, 4)
+  expect_error(
+    particle_filter(
+      y, num_particles = 10, init_fn, transition_fn, log_likelihood_fn,
+      obs_times = non_inc_obs_times
+    ),
+    "obs_times must be strictly increasing"
   )
 })
 

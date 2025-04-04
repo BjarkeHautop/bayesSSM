@@ -11,18 +11,44 @@
   init_fn,
   transition_fn,
   log_likelihood_fn,
+  obs_times = NULL,
   algorithm = c("SISAR", "SISR", "SIS"),
   resample_fn = c("stratified", "systematic", "multinomial"),
   ...
 )
 }
 \arguments{
-\item{y}{A numeric vector of observations.}
+\item{y}{A numeric vector or matrix of observations. Each row represents an
+observation at a time step.}
 
 \item{pilot_n}{An integer specifying the initial number of particles to use.}
 
 \item{pilot_reps}{An integer specifying the number of repetitions for the
 pilot run.}
+
+\item{init_fn}{A function that initializes the particle states. It should
+take the current particles as its first argument and return
+a vector or matrix of initial particle states.}
+
+\item{transition_fn}{A function describing the state transition model. It
+should take the current particles and the current time step as arguments and
+return the propagated particles.}
+
+\item{log_likelihood_fn}{A function that computes the log likelihoods for the
+particles. It should accept an observation, the current particles, and the
+current time step as arguments and return a numeric vector of log likelihood
+values.}
+
+\item{obs_times}{A numeric vector of observation times. If not provided,
+the function assumes observations are available at every time step.}
+
+\item{algorithm}{A character string specifying the particle filtering
+algorithm to use. Must be one of \code{"SISAR"}, \code{"SISR"}, or
+\code{"SIS"}. Defaults to \code{"SISAR"}.}
+
+\item{resample_fn}{A character string specifying the resampling method.
+Must be one of \code{"stratified"}, \code{"systematic"}, or
+\code{"multinomial"}. Defaults to \code{"stratified"}.}
 
 \item{...}{Additional arguments passed to `init_fn`,
 `transition_fn`, and `log_likelihood_fn`.}

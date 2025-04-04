@@ -5,6 +5,8 @@
 #'
 #' @returns The object `x` invisibly.
 #'
+#' @importFrom stats sd median quantile
+#'
 #' @export
 #'
 #' @examples
@@ -32,10 +34,10 @@ print.pmmh_output <- function(x, ...) {
 
     # Compute summary statistics
     mean_val <- mean(samples)
-    sd_val <- stats::sd(samples)
-    median_val <- stats::median(samples)
-    ci_lower <- stats::quantile(samples, 0.025)
-    ci_upper <- stats::quantile(samples, 0.975)
+    sd_val <- sd(samples)
+    median_val <- median(samples)
+    ci_lower <- quantile(samples, 0.025)
+    ci_upper <- quantile(samples, 0.975)
 
     # Round these values to 2 decimal places
     c(

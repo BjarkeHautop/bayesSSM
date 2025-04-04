@@ -14,6 +14,7 @@
   log_likelihood_fn,
   log_priors,
   proposal_sd,
+  obs_times = NULL,
   algorithm = c("SISAR", "SISR", "SIS"),
   resample_fn = c("stratified", "systematic", "multinomial"),
   param_transform = NULL,
@@ -47,6 +48,9 @@ model parameter.}
 
 \item{proposal_sd}{A numeric vector specifying the standard deviations for
 the random walk proposal distribution for each parameter.}
+
+\item{obs_times}{A numeric vector of observation times. If not provided,
+the function assumes observations are available at every time step.}
 
 \item{algorithm}{A character string specifying the particle filter algorithm
 to use. One of "SISAR", "SISR", or "SIS". Default is "SISAR".}

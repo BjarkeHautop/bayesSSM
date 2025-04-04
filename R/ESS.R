@@ -9,6 +9,8 @@
 #' @references Vehtari et al. (2021). Rank-normalization, folding, and
 #' localization: An improved R-hat for assessing convergence of MCMC.
 #' Available at: https://doi.org/10.1214/20-BA1221
+#'
+#' @importFrom stats var acf
 #' @export
 #'
 #' @examples
@@ -37,7 +39,7 @@ ess <- function(chains) {
   b <- m / (k - 1) * sum((chain_means - overall_mean)^2)
 
   # Within-chain variances, W
-  chain_vars <- apply(chains, 2, stats::var)
+  chain_vars <- apply(chains, 2, var)
 
   # If any chain_vars is zero give error
   if (any(chain_vars == 0)) {
@@ -52,10 +54,9 @@ ess <- function(chains) {
 
   # --- Compute autocorrelation using the proposed formula ---
   # First, we calculate the autocorrelation function for each chain.
-  # Note: stats::acf returns autocorrelation values.
   acf_matrix <- matrix(NA, nrow = m, ncol = k)
   for (i in 1:k) {
-    acf_obj <- stats::acf(chains[, i], lag.max = m - 1, plot = FALSE)
+    acf_obj <- acf(chains[, i], lag.max = m - 1, plot = FALSE)
     # acf_obj$acf is an array of dimensions (M, 1, 1); extract as a vector.
     acf_matrix[, i] <- acf_obj$acf[, 1, 1]
   }

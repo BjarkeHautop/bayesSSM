@@ -8,6 +8,8 @@
 #'
 #' @references Gelman et al. (2013). Bayesian Data Analysis, 3rd Edition.
 #'
+#' @importFrom stats var
+#'
 #' @export
 #'
 #' @examples
@@ -45,7 +47,7 @@ rhat <- function(chains) {
   b <- m / (2 * k - 1) * sum((chain_means - overall_mean)^2)
 
   # Compute the within-chain variances
-  chain_vars <- apply(chains_split, 2, stats::var)
+  chain_vars <- apply(chains_split, 2, var)
 
   # If any chain_vars is zero give warning and return NA
   if (any(chain_vars == 0)) {

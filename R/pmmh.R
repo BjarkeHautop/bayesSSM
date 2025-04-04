@@ -70,7 +70,8 @@ default_tune_control <- function(
 #' runs a pilot chain to tune the proposal distribution and the number of
 #' particles for the particle filter, and then runs the main PMMH chain.
 #'
-#' @param y A numeric vector of observations.
+#' @param y A numeric vector or matrix of observations. Each row represents an
+#' observation at a time step.
 #' @param m An integer specifying the total number of MCMC iterations.
 #' @param init_fn A function to initialize the state-space model.
 #' @param transition_fn A function that defines the state transition of the
@@ -83,6 +84,8 @@ default_tune_control <- function(
 #' @param burn_in An integer indicating the number of initial MCMC iterations
 #' to discard as burn-in.
 #' @param num_chains An integer specifying the number of PMMH chains to run.
+#' @param obs_times A numeric vector of observation times. If not provided,
+#' the function assumes observations are available at every time step.
 #' @param algorithm A character string specifying the particle filtering
 #' algorithm to use. Must be one of \code{"SISAR"}, \code{"SISR"}, or
 #' \code{"SIS"}. Defaults to \code{"SISAR"}.
@@ -136,27 +139,28 @@ default_tune_control <- function(
 #' Journal of the Royal Statistical Society: Series B (Statistical Methodology),
 #' 72(3):269–342. doi: 10.1111/j.1467-9868.2009.00736.x
 #'
+#' @importFrom stats rnorm dnorm runif dexp
 #' @export
 #'
 #' @examples
 #' init_fn <- function(particles) {
-#'   stats::rnorm(particles, mean = 0, sd = 1)
+#'   rnorm(particles, mean = 0, sd = 1)
 #' }
 #' transition_fn <- function(particles, phi, sigma_x) {
 #'   phi * particles + sin(particles) +
-#'     stats::rnorm(length(particles), mean = 0, sd = sigma_x)
+#'     rnorm(length(particles), mean = 0, sd = sigma_x)
 #' }
 #' log_likelihood_fn <- function(y, particles, sigma_y) {
-#'   stats::dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
+#'   dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
 #' }
 #' log_prior_phi <- function(phi) {
-#'   stats::dnorm(phi, mean = 0, sd = 1, log = TRUE)
+#'   dnorm(phi, mean = 0, sd = 1, log = TRUE)
 #' }
 #' log_prior_sigma_x <- function(sigma) {
-#'   stats::dexp(sigma, rate = 1, log = TRUE)
+#'   dexp(sigma, rate = 1, log = TRUE)
 #' }
 #' log_prior_sigma_y <- function(sigma) {
-#'   stats::dexp(sigma, rate = 1, log = TRUE)
+#'   dexp(sigma, rate = 1, log = TRUE)
 #' }
 #' log_priors <- list(
 #'   phi = log_prior_phi,
@@ -195,6 +199,7 @@ default_tune_control <- function(
 #'
 pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
                  log_priors, init_params, burn_in, num_chains = 4,
+                 obs_times = NULL,
                  algorithm = c("SISAR", "SISR", "SIS"),
                  resample_fn = c("stratified", "systematic", "multinomial"),
                  param_transform = NULL,
@@ -311,6 +316,7 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
       log_likelihood_fn = log_likelihood_fn,
       log_priors = log_priors,
       proposal_sd = tune_control$pilot_proposal_sd,
+      obs_times = obs_times,
       init_params = init_params,
       algorithm = tune_control$pilot_algorithm,
       resample_fn = tune_control$pilot_resample_fn,
@@ -348,6 +354,7 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
         init_fn = init_fn,
         transition_fn = transition_fn,
         log_likelihood_fn = log_likelihood_fn,
+        obs__times = obs_times,
         algorithm = algorithm,
         resample_fn = resample_fn
       ),
@@ -389,6 +396,7 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
           init_fn = init_fn,
           transition_fn = transition_fn,
           log_likelihood_fn = log_likelihood_fn,
+          obs__times = obs_times,
           algorithm = algorithm,
           resample_fn = resample_fn
         ),
@@ -417,7 +425,7 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
                              log_jacobian_current)
       log_accept_ratio <- log_accept_num - log_accept_denom
 
-      if (log(stats::runif(1)) < log_accept_ratio) {
+      if (log(runif(1)) < log_accept_ratio) {
         current_theta <- proposed_theta
         current_loglike <- proposed_loglike
         current_state_est <- pf_proposed$state_est

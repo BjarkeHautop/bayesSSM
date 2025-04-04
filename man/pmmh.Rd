@@ -14,6 +14,7 @@ pmmh(
   init_params,
   burn_in,
   num_chains = 4,
+  obs_times = NULL,
   algorithm = c("SISAR", "SISR", "SIS"),
   resample_fn = c("stratified", "systematic", "multinomial"),
   param_transform = NULL,
@@ -25,7 +26,8 @@ pmmh(
 )
 }
 \arguments{
-\item{y}{A numeric vector of observations.}
+\item{y}{A numeric vector or matrix of observations. Each row represents an
+observation at a time step.}
 
 \item{m}{An integer specifying the total number of MCMC iterations.}
 
@@ -46,6 +48,9 @@ parameter.}
 to discard as burn-in.}
 
 \item{num_chains}{An integer specifying the number of PMMH chains to run.}
+
+\item{obs_times}{A numeric vector of observation times. If not provided,
+the function assumes observations are available at every time step.}
 
 \item{algorithm}{A character string specifying the particle filtering
 algorithm to use. Must be one of \code{"SISAR"}, \code{"SISR"}, or
@@ -112,23 +117,23 @@ has two main steps:
 }
 \examples{
 init_fn <- function(particles) {
-  stats::rnorm(particles, mean = 0, sd = 1)
+  rnorm(particles, mean = 0, sd = 1)
 }
 transition_fn <- function(particles, phi, sigma_x) {
   phi * particles + sin(particles) +
-    stats::rnorm(length(particles), mean = 0, sd = sigma_x)
+    rnorm(length(particles), mean = 0, sd = sigma_x)
 }
 log_likelihood_fn <- function(y, particles, sigma_y) {
-  stats::dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
+  dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
 }
 log_prior_phi <- function(phi) {
-  stats::dnorm(phi, mean = 0, sd = 1, log = TRUE)
+  dnorm(phi, mean = 0, sd = 1, log = TRUE)
 }
 log_prior_sigma_x <- function(sigma) {
-  stats::dexp(sigma, rate = 1, log = TRUE)
+  dexp(sigma, rate = 1, log = TRUE)
 }
 log_prior_sigma_y <- function(sigma) {
-  stats::dexp(sigma, rate = 1, log = TRUE)
+  dexp(sigma, rate = 1, log = TRUE)
 }
 log_priors <- list(
   phi = log_prior_phi,

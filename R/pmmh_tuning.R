@@ -5,10 +5,29 @@
 #' target number of particles for the Particle Marginal Metropolis Hastings
 #' (PMMH) algorithm.
 #'
-#' @param y A numeric vector of observations.
+#' @param y A numeric vector or matrix of observations. Each row represents an
+#' observation at a time step.
 #' @param pilot_n An integer specifying the initial number of particles to use.
 #' @param pilot_reps An integer specifying the number of repetitions for the
 #' pilot run.
+#' @param init_fn A function that initializes the particle states. It should
+#' take the current particles as its first argument and return
+#' a vector or matrix of initial particle states.
+#' @param transition_fn A function describing the state transition model. It
+#' should take the current particles and the current time step as arguments and
+#' return the propagated particles.
+#' @param log_likelihood_fn A function that computes the log likelihoods for the
+#' particles. It should accept an observation, the current particles, and the
+#' current time step as arguments and return a numeric vector of log likelihood
+#' values.
+#' @param obs_times A numeric vector of observation times. If not provided,
+#' the function assumes observations are available at every time step.
+#' @param algorithm A character string specifying the particle filtering
+#' algorithm to use. Must be one of \code{"SISAR"}, \code{"SISR"}, or
+#' \code{"SIS"}. Defaults to \code{"SISAR"}.
+#' @param resample_fn A character string specifying the resampling method.
+#' Must be one of \code{"stratified"}, \code{"systematic"}, or
+#' \code{"multinomial"}. Defaults to \code{"stratified"}.
 #' @param ... Additional arguments passed to `init_fn`,
 #' `transition_fn`, and `log_likelihood_fn`.
 #'
@@ -30,6 +49,7 @@
 #' @keywords internal
 .pilot_run <- function(y, pilot_n, pilot_reps, init_fn,
                        transition_fn, log_likelihood_fn,
+                       obs_times = NULL,
                        algorithm = c("SISAR", "SISR", "SIS"),
                        resample_fn = c(
                          "stratified", "systematic",
@@ -44,6 +64,7 @@
       init_fn = init_fn,
       transition_fn = transition_fn,
       log_likelihood_fn = log_likelihood_fn,
+      obs_times = obs_times,
       algorithm = "SISAR",
       resample_fn = "stratified",
       return_particles = FALSE,
@@ -51,7 +72,7 @@
     )
     pilot_loglikes[i] <- pf_result$loglike
   }
-  variance_estimate <- stats::var(pilot_loglikes)
+  variance_estimate <- var(pilot_loglikes)
   target_n <- ceiling(pilot_n * variance_estimate)
   target_n <- max(target_n, 100) # Ensure a minimum number of particles
   target_n <- min(target_n, 1000) # Limit to 1000 particles
@@ -81,6 +102,8 @@
 #' model parameter.
 #' @param proposal_sd A numeric vector specifying the standard deviations for
 #' the random walk proposal distribution for each parameter.
+#' @param obs_times A numeric vector of observation times. If not provided,
+#' the function assumes observations are available at every time step.
 #' @param algorithm A character string specifying the particle filter algorithm
 #' to use. One of "SISAR", "SISR", or "SIS". Default is "SISAR".
 #' @param resample_fn A character string specifying the resampling method to
@@ -115,10 +138,12 @@
 #' the posterior mean and covariance, which are used to tune the number of
 #' particles for the Particle Marginal Metropolis Hastings (PMMH) algorithm.
 #'
+#' @importFrom stats rnorm runif var cov
 #' @keywords internal
 .run_pilot_chain <- function(y, pilot_m, pilot_n, pilot_reps, init_fn,
                              transition_fn, log_likelihood_fn,
                              log_priors, proposal_sd,
+                             obs_times = NULL,
                              algorithm = c("SISAR", "SISR", "SIS"),
                              resample_fn = c(
                                "stratified", "systematic",
@@ -160,6 +185,7 @@
       y = y, n = pilot_n, init_fn = init_fn,
       transition_fn = transition_fn,
       log_likelihood_fn = log_likelihood_fn,
+      obs_times = obs_times,
       algorithm = algorithm,
       resample_fn = "stratified"
     ),
@@ -212,7 +238,7 @@
       )
       # Propose in the transformed space.
       proposed_theta_trans <- current_theta_trans +
-        stats::rnorm(length(current_theta_trans), mean = 0, sd = proposal_sd)
+        rnorm(length(current_theta_trans), mean = 0, sd = proposal_sd)
       # Back-transform to original scale.
       proposed_theta <- .back_transform_params(
         theta_trans = proposed_theta_trans,
@@ -253,6 +279,7 @@
         y = y, n = pilot_n, init_fn = init_fn,
         transition_fn = transition_fn,
         log_likelihood_fn = log_likelihood_fn,
+        obs_times = obs_times,
         algorithm = algorithm,
         resample_fn = resample_fn
       ),
@@ -268,7 +295,7 @@
       log_jacobian_current
     log_accept_ratio <- log_accept_num - log_accept_denom
 
-    if (log(stats::runif(1)) < log_accept_ratio) {
+    if (log(runif(1)) < log_accept_ratio) {
       current_theta <- proposed_theta
       current_loglike <- proposed_loglike
     }
@@ -282,9 +309,9 @@
   pilot_theta_mean <- colMeans(pilot_theta_post)
 
   if (ncol(pilot_theta_post) > 1) {
-    pilot_theta_cov <- stats::cov(pilot_theta_post)
+    pilot_theta_cov <- cov(pilot_theta_post)
   } else {
-    pilot_theta_cov <- stats::var(pilot_theta_post)
+    pilot_theta_cov <- var(pilot_theta_post)
   }
 
   if (verbose) {
@@ -314,6 +341,7 @@
       init_fn = init_fn,
       transition_fn = transition_fn,
       log_likelihood_fn = log_likelihood_fn,
+      obs_times = obs_times,
       algorithm = algorithm,
       resample_fn = resample_fn
     ),

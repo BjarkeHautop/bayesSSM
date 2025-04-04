@@ -13,7 +13,8 @@
 #' }
 #' It is recommended to use either SISR or SISAR to avoid weight degeneracy.
 #'
-#' @param y A numeric vector or matrix of observations.
+#' @param y A numeric vector or matrix of observations. Each row represents an
+#' observation at a time step.
 #' @param num_particles A positive integer specifying the number of particles.
 #' @param init_fn A function that initializes the particle states. It should
 #' take the current particles as its first argument and return
@@ -25,22 +26,14 @@
 #' particles. It should accept an observation, the current particles, and the
 #' current time step as arguments and return a numeric vector of log likelihood
 #' values.
+#' @param obs_times A numeric vector of observation times. If not provided,
+#' the function assumes observations are available at every time step.
 #' @param algorithm A character string specifying the particle filtering
-#' algorithm. Options are:
-#'   \describe{
-#'     \item{"SIS"}{Sequential Importance Sampling (without resampling).}
-#'     \item{"SISR"}{Sequential Importance Sampling with resampling at every
-#'     time step.}
-#'     \item{"SISAR"}{SIS with adaptive resampling based on ESS.}
-#'   }
-#'   The default is \code{"SISAR"}.
-#' @param resample_fn A character string specifying the resampling method
-#' (used with \code{"SISR"} or \code{"SISAR"}). Options include:
-#'   \describe{
-#'     \item{"stratified"}{(default) Stratified resampling.}
-#'     \item{"systematic"}{Systematic resampling.}
-#'     \item{"multinomial"}{Multinomial resampling.}
-#'   }
+#' algorithm to use. Must be one of \code{"SISAR"}, \code{"SISR"}, or
+#' \code{"SIS"}. Defaults to \code{"SISAR"}.
+#' @param resample_fn A character string specifying the resampling method.
+#' Must be one of \code{"stratified"}, \code{"systematic"}, or
+#' \code{"multinomial"}. Defaults to \code{"stratified"}.
 #' @param threshold A numeric value specifying the ESS threshold for triggering
 #' resampling in the \code{"SISAR"} algorithm. If not provided, it defaults to
 #' \code{particles / 2}.
@@ -57,15 +50,15 @@
 #'     time step.}
 #'     \item{loglike}{The accumulated log-likelihood of the observations given
 #'     the model.}
-#'     \item{loglike_history}{A numeric vector of the log-likelihood at each time
-#'     step.}
+#'     \item{loglike_history}{A numeric vector of the log-likelihood at each
+#'     time step.}
 #'     \item{algorithm}{A character string indicating the filtering algorithm
 #'     used.}
-#'     \item{particles_history}{(Optional) A list of particle state matrices over
-#'     time (one per time step), returned if \code{return_particles} is
+#'     \item{particles_history}{(Optional) A list of particle state matrices
+#'     over time (one per time step), returned if \code{return_particles} is
 #'     \code{TRUE}.}
-#'     \item{weights_history}{(Optional) A list of particle weight vectors over time
-#'     (one per time step), returned if \code{return_particles} is
+#'     \item{weights_history}{(Optional) A list of particle weight vectors over
+#'     time (one per time step), returned if \code{return_particles} is
 #'     \code{TRUE}.}
 #'   }
 #'
@@ -95,16 +88,17 @@
 #' Resampling Schemes for Particle Filtering.
 #' Accessible at: https://arxiv.org/abs/cs/0507025
 #'
+#' @importFrom stats dnorm rnorm
 #' @export
 #'
 #' @examples
 #' init_fn <- function(particles) rnorm(particles, 0, 1)
 #' transition_fn <- function(particles) particles + rnorm(length(particles))
 #' log_likelihood_fn <- function(y, particles) {
-#'   stats::dnorm(y, mean = particles, sd = 1, log = TRUE)
+#'   dnorm(y, mean = particles, sd = 1, log = TRUE)
 #' }
 #'
-#' # Generate data.
+#' # Generate data
 #' y <- cumsum(rnorm(50))
 #' num_particles <- 100
 #'
@@ -117,8 +111,77 @@
 #'   log_likelihood_fn = log_likelihood_fn
 #' )
 #' plot(result$state_est, type = "l", col = "blue", main = "State Estimates")
+#'
+#' # With parameters
+#' init_fn <- function(particles) rnorm(particles, 0, 1)
+#' transition_fn <- function(particles, mu) {
+#'   particles + rnorm(length(particles), mean = mu)
+#' }
+#' log_likelihood_fn <- function(y, particles, sigma) {
+#'   dnorm(y, mean = particles, sd = sigma, log = TRUE)
+#' }
+#'
+#' # Generate data
+#' y <- cumsum(rnorm(50))
+#' num_particles <- 100
+#'
+#' # Run the particle filter using default settings.
+#' result <- particle_filter(
+#'   y = y,
+#'   num_particles = num_particles,
+#'   init_fn = init_fn,
+#'   transition_fn = transition_fn,
+#'   log_likelihood_fn = log_likelihood_fn,
+#'   mu = 1,
+#'   sigma = 1
+#' )
+#' plot(result$state_est, type = "l", col = "blue", main = "State Estimates")
+#'
+#' # With observations gaps
+#' init_fn <- function(particles) rnorm(particles, 0, 1)
+#' transition_fn <- function(particles, mu) {
+#'   particles + rnorm(length(particles), mean = mu)
+#' }
+#' log_likelihood_fn <- function(y, particles, sigma) {
+#'   dnorm(y, mean = particles, sd = sigma, log = TRUE)
+#' }
+#'
+#' # Generate data using DGP
+#' simulate_ssm <- function(num_steps, mu, sigma) {
+#'   x <- numeric(num_steps)
+#'   y <- numeric(num_steps)
+#'   x[1] <- rnorm(1, mean = 0, sd = sigma)
+#'   y[1] <- rnorm(1, mean = x[1], sd = sigma)
+#'   for (t in 2:num_steps) {
+#'     x[t] <- mu * x[t - 1] + sin(x[t - 1]) + rnorm(1, mean = 0, sd = sigma)
+#'     y[t] <- x[t] + rnorm(1, mean = 0, sd = sigma)
+#'   }
+#'   y
+#' }
+#'
+#' data <- simulate_ssm(10, mu = 1, sigma = 1)
+#' # Suppose we have data for t=1,2,3,5,6,7,8,9,10 (i.e., missing at t=4)
+#'
+#' obs_times <- c(1, 2, 3, 5, 6, 7, 8, 9, 10)
+#' data <- data[obs_times]
+#'
+#' num_particles <- 100
+#' # Run the particle filter
+#' # Specify observation times in the particle filter using obs_times
+#' result <- particle_filter(
+#'   y = data,
+#'   num_particles = num_particles,
+#'   init_fn = init_fn,
+#'   transition_fn = transition_fn,
+#'   log_likelihood_fn = log_likelihood_fn,
+#'   obs_times = obs_times,
+#'   mu = 1,
+#'   sigma = 1,
+#' )
+#' plot(result$state_est, type = "l", col = "blue", main = "State Estimates")
 particle_filter <- function(
     y, num_particles, init_fn, transition_fn, log_likelihood_fn,
+    obs_times = NULL,
     algorithm = c("SISAR", "SISR", "SIS"),
     resample_fn = c("stratified", "systematic", "multinomial"),
     threshold = NULL, return_particles = TRUE, ...) {
@@ -145,9 +208,41 @@ particle_filter <- function(
     )
   }
 
+  # ---------------------------
+  # Input validation
+  # ---------------------------
+
+  # Check y matrix or vector
+  if (!is.numeric(y)) {
+    stop("y must be numeric")
+  }
+
   # Ensure y is a matrix.
   if (is.vector(y)) {
     y <- matrix(y, ncol = 1)
+  }
+
+  if (is.null(obs_times)) {
+    obs_times <- seq_len(nrow(y))
+  }
+
+  # Check numeric
+  if (!is.numeric(obs_times)) {
+    stop("obs_times must be numeric")
+  }
+
+  if (length(obs_times) != nrow(y)) {
+    stop("obs_times must match the number of observations (rows in y)")
+  }
+
+  # Check obs_times integers
+  if (!all(obs_times == round(obs_times))) {
+    stop("obs_times must be integers")
+  }
+
+  # Check obs_times increasing
+  if (any(diff(obs_times) < 1)) {
+    stop("obs_times must be strictly increasing")
   }
 
   # Each row of y is an observation, so set num_steps to the number of rows.
@@ -157,10 +252,11 @@ particle_filter <- function(
   algorithm <- match.arg(algorithm)
   resample_fn <- match.arg(resample_fn)
 
-  resample_func <- switch(resample_fn,
-                          multinomial = .resample_multinomial,
-                          stratified = .resample_stratified,
-                          systematic = .resample_systematic
+  resample_func <- switch(
+    resample_fn,
+    multinomial = .resample_multinomial,
+    stratified = .resample_stratified,
+    systematic = .resample_systematic
   )
 
   # Initialization: obtain initial particles and ensure they are in matrix form.
@@ -245,32 +341,39 @@ particle_filter <- function(
   # Main loop over time steps
   # ----------------------------
   for (i in 2:num_steps) {
-    # Transition: update particles
-    particles_new <- transition_fn(particles = particles, ...)
-    if (is.null(dim(particles_new))) {
-      # Check that transition_fn preserves correct output dimensions
-      if (length(particles_new) != num_particles || ncol(particles_new) != d) {
-        stop(paste0(
-          "transistion_fn must return the same dimensions as ",
-          "the initial particles"
-        ))
+    # Determine how many time steps to evolve the particles
+    gap <- obs_times[i] - obs_times[i - 1]
+    if (gap < 1) stop("obs_times must be increasing")
+
+    # Evolve the particles for the gap (if gap > 1, do multiple transitions)
+    for (step in 1:gap) {
+      particles_new <- transition_fn(particles = particles, ...)
+      if (is.null(dim(particles_new))) {
+        if (length(particles_new) != num_particles) {
+          stop("transition_fn must return a vector of length num_particles")
+        }
+        particles_new <- matrix(
+          particles_new,
+          nrow = num_particles,
+          byrow = TRUE
+        )
+      } else {
+        if (nrow(particles_new) != num_particles) {
+          stop(
+            paste0(
+              "transition_fn must return the same number of rows ",
+              "as num_particles"
+            )
+          )
+        }
       }
-      particles_new <- matrix(particles_new, nrow = num_particles, byrow = TRUE)
-    } else {
-      if (nrow(particles_new) != num_particles || ncol(particles_new) != d) {
-        stop(paste0(
-          "transistion_fn must return the same dimensions as ",
-          "the initial particles"
-        ))
-      }
+      particles <- particles_new
     }
 
-    particles <- particles_new
-
-    # Evaluate log-likelihood function for the i-th observation.
+    # Now evaluate the log-likelihood at the current observation time.
     log_likelihood <- log_likelihood_fn(y = y[i, ], particles = particles, ...)
 
-    # If all likelihoods are extremely low, return loglike as -Inf
+    # Check if the likelihood is extremely low.
     if (all(log_likelihood < -1e8)) {
       loglike <- -Inf
       loglike_history[i] <- -Inf

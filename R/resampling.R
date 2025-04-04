@@ -1,6 +1,9 @@
 #' @title Internal Resampling Functions
 #' @description Helper functions for resampling particles in a particle filter.
 #' These functions implement multinomial, stratified, and systematic resampling.
+#'
+#' @importFrom stats runif
+#'
 #' @keywords internal
 
 # Multinomial resampling: samples indices with replacement based on weights.
@@ -33,7 +36,7 @@
     if (n != length(weights)) {
       stop("Number of particles must match the length of weights")
     }
-    positions <- (stats::runif(1) + seq_len(n) - 1) / n
+    positions <- (runif(1) + seq_len(n) - 1) / n
     cumulative_sum <- cumsum(weights)
     indices <- numeric(n)
     i <- 1
@@ -53,7 +56,7 @@
     if (n != length(weights)) {
       stop("Number of particles must match the length of weights")
     }
-    positions <- (stats::runif(1) + seq_len(n) - 1) / n
+    positions <- (runif(1) + seq_len(n) - 1) / n
     cumulative_sum <- cumsum(weights)
     indices <- numeric(n)
     i <- 1
@@ -102,7 +105,7 @@
       stop("Number of particles must match the length of weights")
     }
 
-    start <- stats::runif(1, 0, 1 / n)
+    start <- runif(1, 0, 1 / n)
     positions <- start + ((0:(n - 1)) / n)
     cumulative_sum <- cumsum(weights)
     indices <- rep(NA, n)
