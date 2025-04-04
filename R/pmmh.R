@@ -444,12 +444,17 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
   # Run chains (in parallel if more than one core is requested)
   # ---------------------------
   if (num_cores > 1) {
-    future::plan(future::multisession, workers = num_cores)
-    chain_results <- future.apply::future_lapply(
-      1:num_chains, chain_result, future.seed = TRUE
-    )
-    # Reset to sequential plan after execution
-    future::plan(future::sequential)
+    tryCatch({
+      # Execute the future parallel code
+      chain_results <- future.apply::future_lapply(
+        1:num_chains, chain_result, future.seed = TRUE
+      )
+    }, error = function(e) {
+      message("An error occurred: ", e$message)
+    }, finally = {
+      # Ensure that the plan is reset to sequential
+      future::plan(future::sequential)
+    })
   } else {
     chain_results <- lapply(1:num_chains, chain_result)
   }

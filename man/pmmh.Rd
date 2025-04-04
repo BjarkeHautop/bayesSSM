@@ -92,7 +92,8 @@ A list containing:
   \code{TRUE}, a list of matrices containing the latent state estimates
   for each time step.}
   \item{\code{diagnostics}}{Diagnostics containing ESS and Rhat
-  for each parameter.}
+  for each parameter (see \code{\link{ess}} and \code{\link{rhat}} for
+  documentation).}
 }
 }
 \description{
