@@ -74,6 +74,7 @@ Three filtering variants are supported:</p><ol><li><p><strong>SIS:</strong> Sequ
 <span>  <span class="va">init_fn</span>,</span>
 <span>  <span class="va">transition_fn</span>,</span>
 <span>  <span class="va">log_likelihood_fn</span>,</span>
+<span>  obs_times <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  algorithm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SISAR"</span>, <span class="st">"SISR"</span>, <span class="st">"SIS"</span><span class="op">)</span>,</span>
 <span>  resample_fn <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"stratified"</span>, <span class="st">"systematic"</span>, <span class="st">"multinomial"</span><span class="op">)</span>,</span>
 <span>  threshold <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -87,7 +88,8 @@ Three filtering variants are supported:</p><ol><li><p><strong>SIS:</strong> Sequ
 
 
 <dl><dt id="arg-y">y<a class="anchor" aria-label="anchor" href="#arg-y"></a></dt>
-<dd><p>A numeric vector or matrix of observations.</p></dd>
+<dd><p>A numeric vector or matrix of observations. Each row represents an
+observation at a time step.</p></dd>
 
 
 <dt id="arg-num-particles">num_particles<a class="anchor" aria-label="anchor" href="#arg-num-particles"></a></dt>
@@ -113,35 +115,21 @@ current time step as arguments and return a numeric vector of log likelihood
 values.</p></dd>
 
 
+<dt id="arg-obs-times">obs_times<a class="anchor" aria-label="anchor" href="#arg-obs-times"></a></dt>
+<dd><p>A numeric vector of observation times. If not provided,
+the function assumes observations are available at every time step.</p></dd>
+
+
 <dt id="arg-algorithm">algorithm<a class="anchor" aria-label="anchor" href="#arg-algorithm"></a></dt>
 <dd><p>A character string specifying the particle filtering
-algorithm. Options are:</p><dl><dt>"SIS"</dt>
-<dd><p>Sequential Importance Sampling (without resampling).</p></dd>
-
-    <dt>"SISR"</dt>
-<dd><p>Sequential Importance Sampling with resampling at every
-    time step.</p></dd>
-
-    <dt>"SISAR"</dt>
-<dd><p>SIS with adaptive resampling based on ESS.</p></dd>
-
-
-</dl><p>The default is <code>"SISAR"</code>.</p></dd>
+algorithm to use. Must be one of <code>"SISAR"</code>, <code>"SISR"</code>, or
+<code>"SIS"</code>. Defaults to <code>"SISAR"</code>.</p></dd>
 
 
 <dt id="arg-resample-fn">resample_fn<a class="anchor" aria-label="anchor" href="#arg-resample-fn"></a></dt>
-<dd><p>A character string specifying the resampling method
-(used with <code>"SISR"</code> or <code>"SISAR"</code>). Options include:</p><dl><dt>"stratified"</dt>
-<dd><p>(default) Stratified resampling.</p></dd>
-
-    <dt>"systematic"</dt>
-<dd><p>Systematic resampling.</p></dd>
-
-    <dt>"multinomial"</dt>
-<dd><p>Multinomial resampling.</p></dd>
-
-
-</dl></dd>
+<dd><p>A character string specifying the resampling method.
+Must be one of <code>"stratified"</code>, <code>"systematic"</code>, or
+<code>"multinomial"</code>. Defaults to <code>"stratified"</code>.</p></dd>
 
 
 <dt id="arg-threshold">threshold<a class="anchor" aria-label="anchor" href="#arg-threshold"></a></dt>
@@ -175,21 +163,21 @@ particle history. Defaults to <code>TRUE</code>.</p></dd>
     the model.</p></dd>
 
     <dt>loglike_history</dt>
-<dd><p>A numeric vector of the log-likelihood at each time
-    step.</p></dd>
+<dd><p>A numeric vector of the log-likelihood at each
+    time step.</p></dd>
 
     <dt>algorithm</dt>
 <dd><p>A character string indicating the filtering algorithm
     used.</p></dd>
 
     <dt>particles_history</dt>
-<dd><p>(Optional) A list of particle state matrices over
-    time (one per time step), returned if <code>return_particles</code> is
+<dd><p>(Optional) A list of particle state matrices
+    over time (one per time step), returned if <code>return_particles</code> is
     <code>TRUE</code>.</p></dd>
 
     <dt>weights_history</dt>
-<dd><p>(Optional) A list of particle weight vectors over time
-    (one per time step), returned if <code>return_particles</code> is
+<dd><p>(Optional) A list of particle weight vectors over
+    time (one per time step), returned if <code>return_particles</code> is
     <code>TRUE</code>.</p></dd>
 
 
@@ -225,10 +213,10 @@ Accessible at: https://arxiv.org/abs/cs/0507025</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">init_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">particles</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">particles</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">transition_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">particles</span><span class="op">)</span> <span class="va">particles</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">particles</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">log_likelihood_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">y</span>, <span class="va">particles</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span>, mean <span class="op">=</span> <span class="va">particles</span>, sd <span class="op">=</span> <span class="fl">1</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span>, mean <span class="op">=</span> <span class="va">particles</span>, sd <span class="op">=</span> <span class="fl">1</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Generate data.</span></span></span>
+<span class="r-in"><span><span class="co"># Generate data</span></span></span>
 <span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumsum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">50</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">num_particles</span> <span class="op">&lt;-</span> <span class="fl">100</span></span></span>
 <span class="r-in"><span></span></span>
@@ -242,6 +230,76 @@ Accessible at: https://arxiv.org/abs/cs/0507025</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">state_est</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"blue"</span>, main <span class="op">=</span> <span class="st">"State Estimates"</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="particle_filter-1.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># With parameters</span></span></span>
+<span class="r-in"><span><span class="va">init_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">particles</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">particles</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">transition_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">particles</span>, <span class="va">mu</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">particles</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">particles</span><span class="op">)</span>, mean <span class="op">=</span> <span class="va">mu</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">log_likelihood_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">y</span>, <span class="va">particles</span>, <span class="va">sigma</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span>, mean <span class="op">=</span> <span class="va">particles</span>, sd <span class="op">=</span> <span class="va">sigma</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Generate data</span></span></span>
+<span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cumsum.html" class="external-link">cumsum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">50</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">num_particles</span> <span class="op">&lt;-</span> <span class="fl">100</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Run the particle filter using default settings.</span></span></span>
+<span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">particle_filter</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  y <span class="op">=</span> <span class="va">y</span>,</span></span>
+<span class="r-in"><span>  num_particles <span class="op">=</span> <span class="va">num_particles</span>,</span></span>
+<span class="r-in"><span>  init_fn <span class="op">=</span> <span class="va">init_fn</span>,</span></span>
+<span class="r-in"><span>  transition_fn <span class="op">=</span> <span class="va">transition_fn</span>,</span></span>
+<span class="r-in"><span>  log_likelihood_fn <span class="op">=</span> <span class="va">log_likelihood_fn</span>,</span></span>
+<span class="r-in"><span>  mu <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>  sigma <span class="op">=</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">state_est</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"blue"</span>, main <span class="op">=</span> <span class="st">"State Estimates"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="particle_filter-2.png" alt="" width="700" height="433"></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># With observations gaps</span></span></span>
+<span class="r-in"><span><span class="va">init_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">particles</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">particles</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">transition_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">particles</span>, <span class="va">mu</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">particles</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">particles</span><span class="op">)</span>, mean <span class="op">=</span> <span class="va">mu</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">log_likelihood_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">y</span>, <span class="va">particles</span>, <span class="va">sigma</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span>, mean <span class="op">=</span> <span class="va">particles</span>, sd <span class="op">=</span> <span class="va">sigma</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Generate data using DGP</span></span></span>
+<span class="r-in"><span><span class="va">simulate_ssm</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">num_steps</span>, <span class="va">mu</span>, <span class="va">sigma</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_steps</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">num_steps</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">y</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, sd <span class="op">=</span> <span class="va">sigma</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="kw">for</span> <span class="op">(</span><span class="va">t</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="va">num_steps</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>    <span class="va">x</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">mu</span> <span class="op">*</span> <span class="va">x</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="va">y</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">}</span></span></span>
+<span class="r-in"><span>  <span class="va">y</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="fu">simulate_ssm</span><span class="op">(</span><span class="fl">10</span>, mu <span class="op">=</span> <span class="fl">1</span>, sigma <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Suppose we have data for t=1,2,3,5,6,7,8,9,10 (i.e., missing at t=4)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">obs_times</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">5</span>, <span class="fl">6</span>, <span class="fl">7</span>, <span class="fl">8</span>, <span class="fl">9</span>, <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">data</span> <span class="op">&lt;-</span> <span class="va">data</span><span class="op">[</span><span class="va">obs_times</span><span class="op">]</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">num_particles</span> <span class="op">&lt;-</span> <span class="fl">100</span></span></span>
+<span class="r-in"><span><span class="co"># Run the particle filter</span></span></span>
+<span class="r-in"><span><span class="co"># Specify observation times in the particle filter using obs_times</span></span></span>
+<span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">particle_filter</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  y <span class="op">=</span> <span class="va">data</span>,</span></span>
+<span class="r-in"><span>  num_particles <span class="op">=</span> <span class="va">num_particles</span>,</span></span>
+<span class="r-in"><span>  init_fn <span class="op">=</span> <span class="va">init_fn</span>,</span></span>
+<span class="r-in"><span>  transition_fn <span class="op">=</span> <span class="va">transition_fn</span>,</span></span>
+<span class="r-in"><span>  log_likelihood_fn <span class="op">=</span> <span class="va">log_likelihood_fn</span>,</span></span>
+<span class="r-in"><span>  obs_times <span class="op">=</span> <span class="va">obs_times</span>,</span></span>
+<span class="r-in"><span>  mu <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>  sigma <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">state_est</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"blue"</span>, main <span class="op">=</span> <span class="st">"State Estimates"</span><span class="op">)</span></span></span>
+<span class="r-plt img"><img src="particle_filter-3.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

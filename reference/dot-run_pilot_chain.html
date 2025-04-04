@@ -52,6 +52,7 @@
 <span>  <span class="va">log_likelihood_fn</span>,</span>
 <span>  <span class="va">log_priors</span>,</span>
 <span>  <span class="va">proposal_sd</span>,</span>
+<span>  obs_times <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  algorithm <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"SISAR"</span>, <span class="st">"SISR"</span>, <span class="st">"SIS"</span><span class="op">)</span>,</span>
 <span>  resample_fn <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"stratified"</span>, <span class="st">"systematic"</span>, <span class="st">"multinomial"</span><span class="op">)</span>,</span>
 <span>  param_transform <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -106,6 +107,11 @@ model parameter.</p></dd>
 <dt id="arg-proposal-sd">proposal_sd<a class="anchor" aria-label="anchor" href="#arg-proposal-sd"></a></dt>
 <dd><p>A numeric vector specifying the standard deviations for
 the random walk proposal distribution for each parameter.</p></dd>
+
+
+<dt id="arg-obs-times">obs_times<a class="anchor" aria-label="anchor" href="#arg-obs-times"></a></dt>
+<dd><p>A numeric vector of observation times. If not provided,
+the function assumes observations are available at every time step.</p></dd>
 
 
 <dt id="arg-algorithm">algorithm<a class="anchor" aria-label="anchor" href="#arg-algorithm"></a></dt>
