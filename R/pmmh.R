@@ -132,7 +132,8 @@ default_tune_control <- function(
 #'   \code{TRUE}, a list of matrices containing the latent state estimates
 #'   for each time step.}
 #'   \item{\code{diagnostics}}{Diagnostics containing ESS and Rhat
-#'   for each parameter.}
+#'   for each parameter (see \code{\link{ess}} and \code{\link{rhat}} for
+#'   documentation).}
 #' }
 #'
 #' @references Andrieu et al. (2010). Particle Markov chain Monte Carlo methods.
