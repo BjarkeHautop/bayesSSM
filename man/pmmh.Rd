@@ -87,7 +87,7 @@ using more than one core.}
 \value{
 A list containing:
 \describe{
-  \item{\code{theta_chain}}{A matrix of post burn-in parameter samples.}
+  \item{\code{theta_chain}}{A dataframe of post burn-in parameter samples.}
   \item{\code{latent_state_chain}}{If \code{return_latent_state_est} is
   \code{TRUE}, a list of matrices containing the latent state estimates
   for each time step.}

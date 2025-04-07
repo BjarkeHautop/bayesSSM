@@ -148,10 +148,10 @@ result <- pmmh(
 #> Using 100 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
 #> PMMH Results Summary:
-#>  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat
-#>        phi 0.72 0.11   0.74    0.45     0.92  28 1.007
-#>    sigma_x 0.42 0.29   0.41    0.01     1.04  39 1.026
-#>    sigma_y 0.84 0.20   0.84    0.44     1.19  39 1.019
+#>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat
+#>        phi 0.78 0.11   0.78          0.53           1.00  27 1.054
+#>    sigma_x 1.14 0.20   1.15          0.78           1.59   5 1.008
+#>    sigma_y 0.36 0.22   0.29          0.06           0.91  17 1.143
 #> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =
 #> transition_fn, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.
@@ -159,8 +159,8 @@ result <- pmmh(
 #> Some Rhat values are above 1.01, indicating that the chains have not converged. Consider running the chains for more iterations and/or increase burn_in.
 ```
 
-We get convergence warnings because we only ran the algorithm for a
-small number of samples.
+We get convergence warnings as expected due to the small number of
+iterations.
 
 ## State-space Models
 

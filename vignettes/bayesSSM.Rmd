@@ -88,7 +88,7 @@ log_likelihood_fn <- function(y, particles, sigma_y) {
 }
 ```
 
-Since we are interested in bayesian inference, we need to specify the priors for
+Since we are interested in Bayesian inference, we need to specify the priors for
 our parameters. We will use a normal prior for $\phi$ and exponential priors for
 $\sigma_x$ and $\sigma_y$. `pmmh` needs the priors to be specified on the 
 $\log$-scale and takes the priors as a list of functions.
@@ -161,31 +161,23 @@ The chains are saved as `theta_chain`
 
 ```{r}
 chains <- result$theta_chain
-
-chain_1 <- chains[[1]]
-chain_2 <- chains[[2]]
 ```
 
 Let's collect the chains for phi from the chains and visualize the densities
 
 ```{r}
 #| fig.alt: "Density plot of phi chains."
-phi_chains <- cbind(
-  chain_1$phi, chain_2$phi
-)
 
-ggplot2::ggplot() +
-  geom_density(aes(x = phi_chains[, 1]), fill = "blue", alpha = 0.5) +
-  geom_density(aes(x = phi_chains[, 2]), fill = "red", alpha = 0.5) +
+ggplot(chains, aes(x = phi, fill = factor(chain))) +
+  geom_density(alpha = 0.5) +
   labs(
     title = "Density plot of phi chains",
     x = "Value",
     y = "Density",
-    caption = "Blue: Chain 1, Red: Chain 2"
+    fill = "Chain"
   ) +
   theme_minimal()
 ```
-
 
 
 We have now fitted a simple SSM model using `bayesSSM`. Feel free to explore the

@@ -11,11 +11,10 @@
 #'
 #' @examples
 #' # Create dummy chains for two parameters across two chains
-#' set.seed(1405)
-#' chain1 <- data.frame(param1 = rnorm(100), param2 = rnorm(100))
-#' chain2 <- data.frame(param1 = rnorm(100), param2 = rnorm(100))
+#' chain1 <- data.frame(param1 = rnorm(100), param2 = rnorm(100), chain = 1)
+#' chain2 <- data.frame(param1 = rnorm(100), param2 = rnorm(100), chain = 2)
 #' dummy_output <- list(
-#'   theta_chain = list(chain1, chain2),
+#'   theta_chain = rbind(chain1, chain2),
 #'   diagnostics = list(
 #'     ess = c(param1 = 200, param2 = 190),
 #'     rhat = c(param1 = 1.01, param2 = 1.00)
@@ -24,13 +23,14 @@
 #' class(dummy_output) <- "pmmh_output"
 #' print(dummy_output)
 print.pmmh_output <- function(x, ...) {
-  # Extract parameter names from the first chain's columns
-  param_names <- colnames(x$theta_chain[[1]])
+  # Extract parameter names from the theta_chain dataframe, excluding the 'chain' column
+  param_names <- colnames(x$theta_chain)
+  param_names <- param_names[!(param_names %in% c("chain"))]
 
-  # Compute posterior summaries for each parameter by combining chains
+  # Compute posterior summaries for each parameter
   summary_stats <- t(sapply(param_names, function(param) {
-    # Combine samples for the parameter across all chains
-    samples <- unlist(lapply(x$theta_chain, function(chain) chain[, param]))
+    # Extract samples for the parameter from the dataframe
+    samples <- x$theta_chain[[param]]
 
     # Compute summary statistics
     mean_val <- mean(samples)
@@ -44,8 +44,8 @@ print.pmmh_output <- function(x, ...) {
       Mean = round(mean_val, 2),
       SD = round(sd_val, 2),
       Median = round(median_val, 2),
-      CI = round(ci_lower, 2),
-      CI = round(ci_upper, 2)
+      `CI Lower` = round(ci_lower, 2),
+      `CI Upper` = round(ci_upper, 2)
     )
   }))
 
@@ -74,3 +74,4 @@ print.pmmh_output <- function(x, ...) {
   # Return the object invisibly
   invisible(x)
 }
+

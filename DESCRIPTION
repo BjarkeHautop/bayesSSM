@@ -17,6 +17,7 @@ RoxygenNote: 7.3.2
 Imports: 
     MASS,
     stats,
+    dplyr,
     future,
     future.apply
 Suggests: 

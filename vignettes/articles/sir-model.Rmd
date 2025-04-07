@@ -313,26 +313,20 @@ We can access the chains and plot the densities:
 
 ```{r}
 chains <- result$theta_chain
-
-chain_1 <- chains[[1]]
-chain_2 <- chains[[2]]
 ```
 
 For $\lambda$:
 
 ```{r}
 #| fig.alt: "Density plot of lambda chains"
-lambda_chains <- cbind(
-  chain_1$lambda, chain_2$lambda
-)
 
-ggplot2::ggplot() +
-  geom_density(aes(x = lambda_chains[, 1]), fill = "blue", alpha = 0.5) +
-  geom_density(aes(x = lambda_chains[, 2]), fill = "red", alpha = 0.5) +
+ggplot(chains, aes(x = lambda, fill = factor(chain))) +
+  geom_density(alpha = 0.5) +
   labs(
-    title = "Density plot of phi chains",
+    title = "Density plot of lambda chains",
     x = "Value",
     y = "Density",
+    fill = "Chain"
   ) +
   theme_minimal()
 ```
@@ -341,17 +335,13 @@ And for $\gamma$:
 
 ```{r}
 #| fig.alt: "Density plot of gamma chains"
-gamma_chains <- cbind(
-  chain_1$gamma, chain_2$gamma
-)
-
-ggplot2::ggplot() +
-  geom_density(aes(x = gamma_chains[, 1]), fill = "blue", alpha = 0.5) +
-  geom_density(aes(x = gamma_chains[, 2]), fill = "red", alpha = 0.5) +
+ggplot(chains, aes(x = gamma, fill = factor(chain))) +
+  geom_density(alpha = 0.5) +
   labs(
     title = "Density plot of gamma chains",
     x = "Value",
     y = "Density",
+    fill = "Chain"
   ) +
   theme_minimal()
 ```

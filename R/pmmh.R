@@ -127,7 +127,7 @@ default_tune_control <- function(
 #' @return A list containing:
 
 #' \describe{
-#'   \item{\code{theta_chain}}{A matrix of post burn-in parameter samples.}
+#'   \item{\code{theta_chain}}{A dataframe of post burn-in parameter samples.}
 #'   \item{\code{latent_state_chain}}{If \code{return_latent_state_est} is
 #'   \code{TRUE}, a list of matrices containing the latent state estimates
 #'   for each time step.}
@@ -141,6 +141,8 @@ default_tune_control <- function(
 #' 72(3):269–342. doi: 10.1111/j.1467-9868.2009.00736.x
 #'
 #' @importFrom stats rnorm dnorm runif dexp
+#' @importFrom MASS mvrnorm
+#' @importFrom dplyr bind_rows
 #' @export
 #'
 #' @examples
@@ -370,7 +372,7 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     for (i in 2:m) {
       # --- Propose in the transformed space ---
       current_theta_trans <- .transform_params(current_theta, param_transform)
-      proposed_theta_trans <- MASS::mvrnorm(
+      proposed_theta_trans <- mvrnorm(
         n = 1, mu = current_theta_trans,
         Sigma = proposal_cov_trans
       )
@@ -521,6 +523,8 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
   }
 
   theta_chain_post <- lapply(theta_chain_post, as.data.frame)
+  theta_chain_post <- bind_rows(theta_chain_post, .id = "chain")
+
   result <- list(
     theta_chain = theta_chain_post,
     diagnostics = list(ess = param_ess, rhat = param_rhat)
