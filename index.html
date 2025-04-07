@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -171,16 +171,16 @@
 <span><span class="co">#&gt; Using 100 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
-<span><span class="co">#&gt;  Parameter Mean   SD Median CI.2.5% CI.97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;        phi 0.72 0.11   0.74    0.45     0.92  28 1.007</span></span>
-<span><span class="co">#&gt;    sigma_x 0.42 0.29   0.41    0.01     1.04  39 1.026</span></span>
-<span><span class="co">#&gt;    sigma_y 0.84 0.20   0.84    0.44     1.19  39 1.019</span></span>
+<span><span class="co">#&gt;  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat</span></span>
+<span><span class="co">#&gt;        phi 0.78 0.11   0.78          0.53           1.00  27 1.054</span></span>
+<span><span class="co">#&gt;    sigma_x 1.14 0.20   1.15          0.78           1.59   5 1.008</span></span>
+<span><span class="co">#&gt;    sigma_y 0.36 0.22   0.29          0.06           0.91  17 1.143</span></span>
 <span><span class="co">#&gt; Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =</span></span>
 <span><span class="co">#&gt; transition_fn, : Some ESS values are below 400, indicating poor mixing.</span></span>
 <span><span class="co">#&gt; Consider running the chains for more iterations.</span></span>
 <span><span class="co">#&gt; Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn = transition_fn, : </span></span>
 <span><span class="co">#&gt; Some Rhat values are above 1.01, indicating that the chains have not converged. Consider running the chains for more iterations and/or increase burn_in.</span></span></code></pre></div>
-<p>We get convergence warnings because we only ran the algorithm for a small number of samples.</p>
+<p>We get convergence warnings as expected due to the small number of iterations.</p>
 </div>
 <div class="section level2">
 <h2 id="state-space-models">State-space Models<a class="anchor" aria-label="anchor" href="#state-space-models"></a>
