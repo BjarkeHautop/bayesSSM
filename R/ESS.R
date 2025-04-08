@@ -18,7 +18,12 @@
 #' ess(chains)
 ess <- function(chains) {
   if (!is.matrix(chains)) {
-    stop("Input 'chains' must be a matrix with dimensions M (iterations) x K (chains).")
+    stop(
+      paste0(
+        "Input 'chains' must be a matrix with dimensions M (iterations) ",
+        "x K (chains)."
+      )
+    )
   }
 
   m <- nrow(chains)
@@ -62,7 +67,7 @@ ess <- function(chains) {
 
   hat_rho <- numeric(m)
   for (t in 0:(m - 1)) {
-    term <- (1/k) * sum(chain_vars * acf_matrix[t + 1, ])
+    term <- (1 / k) * sum(chain_vars * acf_matrix[t + 1, ])
     hat_rho[t + 1] <- 1 - (w - term) / var_hat
   }
 
@@ -93,7 +98,7 @@ ess <- function(chains) {
 
   # Sum the pairs until the first negative pair is encountered.
   sum_rho <- 0
-  for (t in 1:length(pairs)) {
+  for (t in seq_along(pairs)) {
     if (pairs[t] < 0) break
     sum_rho <- sum_rho + pairs[t]
   }

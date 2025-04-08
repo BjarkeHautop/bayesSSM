@@ -23,7 +23,8 @@
 #' class(dummy_output) <- "pmmh_output"
 #' print(dummy_output)
 print.pmmh_output <- function(x, ...) {
-  # Extract parameter names from the theta_chain dataframe, excluding the 'chain' column
+  # Extract parameter names from the theta_chain dataframe,
+  # excluding the 'chain' column
   param_names <- colnames(x$theta_chain)
   param_names <- param_names[!(param_names %in% c("chain"))]
 
@@ -74,4 +75,3 @@ print.pmmh_output <- function(x, ...) {
   # Return the object invisibly
   invisible(x)
 }
-
