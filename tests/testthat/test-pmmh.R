@@ -104,12 +104,25 @@ test_that("pmmh checks input types", {
     sigma_y = log_prior_sigma_y
   )
 
-  valid_init_params <- list(phi = 0.8, sigma_x = 1, sigma_y = 0.5)
+  valid_init_params <- list(c(phi = 0.8, sigma_x = 1, sigma_y = 0.5))
   valid_log_priors <- list(
     phi = function(phi) 0,
     sigma_x = function(sigma_x) 0,
     sigma_y = function(sigma_y) 0
   )
+
+  wrong_init_params <- c(phi = 0.8, sigma_x = 1, sigma_y = 0.5)
+
+  wrong_init_params_length <- list(
+    c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+    c(phi = 0.8, sigma_x = 1, sigma_y = 0.5, phi = 0.5)
+  )
+
+  wrong_init_params_names <- list(
+    c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+    c(phi = 0.8, sigma_x = 1, sigma_w = 0.5)
+  )
+
 
 
   # y must be numeric
@@ -118,7 +131,8 @@ test_that("pmmh checks input types", {
       y = "not numeric", m = 10, init_fn = init_fn,
       transition_fn = transition_fn,
       log_likelihood_fn = log_likelihood_fn,
-      log_priors = log_priors, init_params = valid_init_params, burn_in = 2
+      log_priors = log_priors, pilot_init_params = valid_init_params,
+      burn_in = 2, num_chains = 1
     ),
     "y must be a numeric vector"
   )
@@ -129,7 +143,8 @@ test_that("pmmh checks input types", {
       y = rnorm(10), m = -5, init_fn = init_fn,
       transition_fn = transition_fn,
       log_likelihood_fn = log_likelihood_fn,
-      log_priors = log_priors, init_params = valid_init_params, burn_in = 2
+      log_priors = log_priors, pilot_init_params = valid_init_params,
+      burn_in = 2, num_chains = 1
     ),
     "m must be a positive integer"
   )
@@ -140,7 +155,8 @@ test_that("pmmh checks input types", {
       y = rnorm(10), m = 10, burn_in = -1, init_fn = init_fn,
       transition_fn = transition_fn,
       log_likelihood_fn = log_likelihood_fn,
-      log_priors = log_priors, init_params = valid_init_params
+      log_priors = log_priors, pilot_init_params = valid_init_params,
+      num_chains = 1
     ),
     "burn_in must be a positive integer"
   )
@@ -151,7 +167,8 @@ test_that("pmmh checks input types", {
       y = rnorm(10), m = 10, burn_in = 10, init_fn = init_fn,
       transition_fn = transition_fn,
       log_likelihood_fn = log_likelihood_fn,
-      log_priors = log_priors, init_params = valid_init_params
+      log_priors = log_priors, pilot_init_params = valid_init_params,
+      num_chains = 1
     ),
     "burn_in must be smaller than"
   )
@@ -163,7 +180,7 @@ test_that("pmmh checks input types", {
       init_fn = init_fn,
       transition_fn = transition_fn,
       log_likelihood_fn = log_likelihood_fn,
-      log_priors = log_priors, init_params = valid_init_params
+      log_priors = log_priors, pilot_init_params = valid_init_params
     ),
     "num_chains must be a positive integer"
   )
@@ -175,9 +192,55 @@ test_that("pmmh checks input types", {
       init_fn = init_fn,
       transition_fn = transition_fn,
       log_likelihood_fn = function(particles, sigma_y) particles,
-      log_priors = log_priors, init_params = valid_init_params
+      log_priors = log_priors, pilot_init_params = valid_init_params
     ),
     "log_likelihood_fn does not contain 'y'"
+  )
+
+  # Verify init_params
+  expect_error(
+    pmmh(
+      y = rnorm(10), m = 10, burn_in = 2, num_chains = 2,
+      init_fn = init_fn,
+      transition_fn = transition_fn,
+      log_likelihood_fn = log_likelihood_fn,
+      log_priors = log_priors, pilot_init_params = wrong_init_params
+    ),
+    "pilot_init_params must be a list."
+  )
+
+  expect_error(
+    pmmh(
+      y = rnorm(10), m = 10, burn_in = 2, num_chains = 2,
+      init_fn = init_fn,
+      transition_fn = transition_fn,
+      log_likelihood_fn = log_likelihood_fn,
+      log_priors = log_priors, pilot_init_params = wrong_init_params_length
+    ),
+    "pilot_init_params must be a list of vectors of the same length."
+  )
+
+  expect_error(
+    pmmh(
+      y = rnorm(10), m = 10, burn_in = 2, num_chains = 2,
+      init_fn = init_fn,
+      transition_fn = transition_fn,
+      log_likelihood_fn = log_likelihood_fn,
+      log_priors = log_priors, pilot_init_params = wrong_init_params_names
+    ),
+    "pilot_init_params must have the same parameter names."
+  )
+
+  # Pilot_init_param not same length as num_chains
+  expect_error(
+    pmmh(
+      y = rnorm(10), m = 10, burn_in = 2, num_chains = 1,
+      init_fn = init_fn,
+      transition_fn = transition_fn,
+      log_likelihood_fn = log_likelihood_fn,
+      log_priors = log_priors, pilot_init_params = wrong_init_params_names
+    ),
+    "pilot_init_params must be a list of length num_chains."
   )
 })
 
@@ -186,7 +249,7 @@ test_that("pmmh checks input types", {
 # -----------------------------
 
 test_that("pmmh checks function arguments", {
-  valid_init_params <- list(phi = 0.8, sigma_x = 1, sigma_y = 0.5)
+  valid_init_params <- list(c(phi = 0.8, sigma_x = 1, sigma_y = 0.5))
   valid_log_priors <- list(
     phi = function(phi) 0,
     sigma_x = function(sigma_x) 0,
@@ -207,8 +270,9 @@ test_that("pmmh checks function arguments", {
       transition_fn = mock_transition_fn,
       log_likelihood_fn = mock_log_likelihood_fn,
       log_priors = valid_log_priors,
-      init_params = valid_init_params,
-      burn_in = 1
+      pilot_init_params = valid_init_params,
+      burn_in = 1,
+      num_chains = 1
     ),
     "init_fn does not contain 'particles' as an argument"
   )
@@ -219,7 +283,8 @@ test_that("pmmh checks function arguments", {
       transition_fn = function(phi, sigma_x) 0,
       log_likelihood_fn = mock_log_likelihood_fn,
       log_priors = valid_log_priors,
-      init_params = valid_init_params, burn_in = 1
+      pilot_init_params = valid_init_params, burn_in = 1,
+      num_chains = 1
     ),
     "transition_fn does not contain 'particles' as an argument"
   )
@@ -230,7 +295,8 @@ test_that("pmmh checks function arguments", {
       transition_fn = mock_transition_fn,
       log_likelihood_fn = function(y, sigma_y) 0,
       log_priors = valid_log_priors,
-      init_params = valid_init_params, burn_in = 1
+      pilot_init_params = valid_init_params, burn_in = 1,
+      num_chains = 1
     ),
     "log_likelihood_fn does not contain 'particles' as an argument"
   )
@@ -240,8 +306,8 @@ test_that("pmmh checks function arguments", {
 # Parameter Matching Tests for pmmh
 # -----------------------------
 
-test_that("pmmh checks that parameters match init_params and log_priors", {
-  valid_init_params <- list(phi = 0.8, sigma_x = 1, sigma_y = 0.5)
+test_that("pmmh checks that parameters match pilot_init_params and log_priors", {
+  valid_init_params <- list(c(phi = 0.8, sigma_x = 1, sigma_y = 0.5))
   valid_log_priors <- list(
     phi = function(phi) 0,
     sigma_x = function(sigma_x) 0,
@@ -252,16 +318,17 @@ test_that("pmmh checks that parameters match init_params and log_priors", {
   mock_transition_fn <- function(particles, phi, sigma_x) particles
   mock_log_likelihood_fn <- function(y, particles, sigma_y) particles
 
-  invalid_init_params <- list(phi = 0.8, sigma_x = 1)
+  invalid_init_params <- list(c(phi = 0.8, sigma_x = 1, sigmay = 0.5))
   expect_error(
     pmmh(
       y = numeric(50), m = 10, init_fn = mock_init_fn,
       transition_fn = mock_transition_fn,
       log_likelihood_fn = mock_log_likelihood_fn,
       log_priors = valid_log_priors,
-      init_params = invalid_init_params, burn_in = 1
+      pilot_init_params = invalid_init_params, burn_in = 1,
+      num_chains = 1
     ),
-    "Parameters in functions do not match the names in init_params"
+    "Parameters in functions do not match the names in pilot_init_params"
   )
 
   invalid_log_priors <- list(phi = function(phi) 0)
@@ -271,7 +338,8 @@ test_that("pmmh checks that parameters match init_params and log_priors", {
       transition_fn = mock_transition_fn,
       log_likelihood_fn = mock_log_likelihood_fn,
       log_priors = invalid_log_priors,
-      init_params = valid_init_params, burn_in = 1
+      pilot_init_params = valid_init_params, burn_in = 1,
+      num_chains = 1
     ),
     "Parameters in functions do not match the names in log_priors"
   )
@@ -325,7 +393,10 @@ test_that("pmmh works with valid arguments", {
           transition_fn = transition_fn,
           log_likelihood_fn = log_likelihood_fn,
           log_priors = log_priors,
-          init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+          pilot_init_params = list(
+            c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+            c(phi = 0.5, sigma_x = 0.5, sigma_y = 1)
+          ),
           burn_in = 100,
           num_chains = 2,
           param_transform = list(
@@ -351,7 +422,10 @@ test_that("pmmh works with valid arguments", {
           transition_fn = transition_fn,
           log_likelihood_fn = log_likelihood_fn,
           log_priors = log_priors,
-          init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+          pilot_init_params = list(
+            c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+            c(phi = 0.5, sigma_x = 0.5, sigma_y = 1)
+          ),
           burn_in = 100,
           num_chains = 2,
           param_transform = list(
@@ -380,7 +454,10 @@ test_that("pmmh works with valid arguments", {
           transition_fn = transition_fn,
           log_likelihood_fn = log_likelihood_fn,
           log_priors = log_priors,
-          init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+          pilot_init_params = list(
+            c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+            c(phi = 0.5, sigma_x = 0.5, sigma_y = 1)
+          ),
           burn_in = 100,
           num_chains = 2,
           param_transform = list(
@@ -404,7 +481,10 @@ test_that("pmmh works with valid arguments", {
       transition_fn = transition_fn,
       log_likelihood_fn = log_likelihood_fn,
       log_priors = log_priors,
-      init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+      pilot_init_params = list(
+        c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+        c(phi = 0.5, sigma_x = 0.5, sigma_y = 1)
+      ),
       burn_in = 100,
       num_chains = 2,
       param_transform = list(
@@ -450,7 +530,7 @@ test_that("Multi dimensional works", {
           transition_fn = transition_fn,
           log_likelihood_fn = log_likelihood_fn,
           log_priors = log_priors,
-          init_params = c(phi = 0.8),
+          pilot_init_params = list(c(phi = 0.8), c(phi = 0.5)),
           burn_in = 100,
           num_chains = 2,
           param_transform = list(

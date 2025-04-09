@@ -18,7 +18,7 @@
   algorithm = c("SISAR", "SISR", "SIS"),
   resample_fn = c("stratified", "systematic", "multinomial"),
   param_transform = NULL,
-  init_params = NULL,
+  pilot_init_params = NULL,
   verbose = FALSE,
   ...
 )
@@ -65,7 +65,7 @@ Currently only supports "log" for log-transformation and
 "identity" for no transformation. Default is `NULL`, which correspond to
 no transformation ("identity).}
 
-\item{init_params}{A numeric vector of initial parameter values. If `NULL`,
+\item{pilot_init_params}{A numeric vector of initial parameter values. If `NULL`,
 the default is a vector of ones. Default is `NULL`.}
 
 \item{...}{Additional arguments passed to the particle filter function.}

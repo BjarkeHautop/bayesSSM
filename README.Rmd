@@ -143,7 +143,10 @@ result <- pmmh(
   transition_fn = transition_fn,
   log_likelihood_fn = log_likelihood_fn,
   log_priors = log_priors,
-  init_params = c(phi = 0.5, sigma_x = 0.5, sigma_y = 0.5),
+  pilot_init_params = list(
+    c(phi = 0.5, sigma_x = 0.5, sigma_y = 0.5),
+    c(phi = 1, sigma_x = 1, sigma_y = 1)
+  ),
   burn_in = 50,
   num_chains = 2,
   seed = 1405,

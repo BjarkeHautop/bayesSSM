@@ -7,13 +7,13 @@
 #' for the state-space model given latent states.
 #' @param log_priors A list of functions for computing the log-prior of each
 #' parameter.
-#' @param init_params A vector of initial parameter values.
+#' @param pilot_init_params A vector of initial parameter values.
 #'
 #' @returns NULL
 #'
 #' @keywords internal
 .check_params_match <- function(
-    init_fn, transition_fn, log_likelihood_fn, init_params,
+    init_fn, transition_fn, log_likelihood_fn, pilot_init_params,
     log_priors) {
   # Helper function to get parameter names excluding 'particles' and 'y'
   get_fn_params <- function(fn) {
@@ -52,8 +52,8 @@
   fn_params <- fn_params[!(fn_params %in% c("particles", "y", "..."))]
 
   # Check if the parameters match init_params
-  if (!all(fn_params %in% names(init_params))) {
-    stop("Parameters in functions do not match the names in init_params")
+  if (!all(fn_params %in% names(pilot_init_params))) {
+    stop("Parameters in functions do not match the names in pilot_init_params")
   }
 
   # Check if the parameters match log_priors

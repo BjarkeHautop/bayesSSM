@@ -80,7 +80,9 @@ default_tune_control <- function(
 #' for the state-space model given latent states.
 #' @param log_priors A list of functions for computing the log-prior of each
 #' parameter.
-#' @param init_params A vector of initial parameter values.
+#' @param pilot_init_params A list of initial parameter values. Should be a list
+#' of length \code{num_chains} where each element is a named vector of initial
+#' parameter values.
 #' @param burn_in An integer indicating the number of initial MCMC iterations
 #' to discard as burn-in.
 #' @param num_chains An integer specifying the number of PMMH chains to run.
@@ -188,7 +190,10 @@ default_tune_control <- function(
 #'   transition_fn = transition_fn,
 #'   log_likelihood_fn = log_likelihood_fn,
 #'   log_priors = log_priors,
-#'   init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+#'   pilot_init_params = list(
+#'     c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+#'     c(phi = 1, sigma_x = 0.5, sigma_y = 1)
+#'   ),
 #'   burn_in = 100,
 #'   num_chains = 2,
 #'   param_transform = list(
@@ -201,7 +206,7 @@ default_tune_control <- function(
 #' # Convergence warning is expected with such low MCMC iterations.
 #'
 pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
-                 log_priors, init_params, burn_in, num_chains = 4,
+                 log_priors, pilot_init_params, burn_in, num_chains = 4,
                  obs_times = NULL,
                  algorithm = c("SISAR", "SISR", "SIS"),
                  resample_fn = c("stratified", "systematic", "multinomial"),
@@ -234,17 +239,41 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     num_cores <- num_chains
   }
 
+  # Check pilot_init_params is a list
+  if (!is.list(pilot_init_params)) {
+    stop("pilot_init_params must be a list.")
+  }
+
+  # Check pilot_init_params all have same length
+  lengths <- vapply(pilot_init_params, length, FUN.VALUE = integer(1))
+  all_same <- all(lengths == lengths[1])
+  if (!all_same) {
+    stop("pilot_init_params must be a list of vectors of the same length.")
+  }
+
+  # Check pilot_init_params list of length num_chains
+  if (length(lengths) != num_chains) {
+    stop("pilot_init_params must be a list of length num_chains.")
+  }
+
+  # Check pilot_init_params all have same names
+  if (!all(sapply(pilot_init_params, function(x) {
+    all(names(x) == names(pilot_init_params[[1]]))
+  }))) {
+    stop("pilot_init_params must have the same parameter names.")
+  }
+
   .check_params_match(
     init_fn, transition_fn, log_likelihood_fn,
-    init_params, log_priors
+    pilot_init_params[[1]], log_priors
   )
 
   algorithm <- match.arg(algorithm)
   resample_fn <- match.arg(resample_fn)
 
-  num_params <- length(init_params)
+  num_params <- lengths[1]
   if (num_params == 0) {
-    stop("init_params must contain at least one parameter.")
+    stop("pilot_init_params must contain at least one parameter.")
   }
 
   # Create default transformation if none provided.
@@ -302,9 +331,8 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
   # ---------------------------
   # Define inner function for a single chain run
   # ---------------------------
-  chain_result <- function(chain) {
-    message("Running chain ", chain, "...")
-
+  chain_result <- function(chain_index) {
+    message("Running chain ", chain_index, "...")
     # ---------------------------
     # Step 1: Run the pilot (particle) chain for tuning
     # ---------------------------
@@ -320,7 +348,7 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
       log_priors = log_priors,
       proposal_sd = tune_control$pilot_proposal_sd,
       obs_times = obs_times,
-      init_params = init_params,
+      pilot_init_params = pilot_init_params[[chain_index]],
       algorithm = tune_control$pilot_algorithm,
       resample_fn = tune_control$pilot_resample_fn,
       param_transform = param_transform,
@@ -449,7 +477,9 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     tryCatch({
       # Execute the future parallel code
       chain_results <- future.apply::future_lapply(
-        1:num_chains, chain_result, future.seed = TRUE
+        1:num_chains,
+        function(i) chain_result(i), # Pass the current index to chain_result
+        future.seed = TRUE
       )
     }, error = function(e) {
       message("An error occurred: ", e$message)
@@ -458,7 +488,10 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
       future::plan(future::sequential)
     })
   } else {
-    chain_results <- lapply(1:num_chains, chain_result)
+    chain_results <- lapply(
+      1:num_chains,
+      function(i) chain_result(i) # Pass the current index to chain_result
+    )
   }
 
   # Unpack the results from each chain

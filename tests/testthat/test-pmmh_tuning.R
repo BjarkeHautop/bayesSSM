@@ -109,7 +109,7 @@ test_that(".run_pilot_chain works", {
     log_likelihood_fn = log_likelihood_fn,
     log_priors = log_priors,
     proposal_sd = c(0.1),
-    init_params = c(phi = 1.5),
+    pilot_init_params = c(phi = 1.5),
     algorithm = "SISR",
     resample_fn = "systematic"
   ), "Invalid initial parameters:")
@@ -125,7 +125,7 @@ test_that(".run_pilot_chain works", {
     log_likelihood_fn = log_likelihood_fn,
     log_priors = log_priors,
     proposal_sd = c(0.1),
-    init_params = c(phi = 0.5),
+    pilot_init_params = c(phi = 0.5),
     algorithm = "SISR",
     resample_fn = "systematic",
     param_transform = list(
@@ -144,7 +144,7 @@ test_that(".run_pilot_chain works", {
     log_likelihood_fn = log_likelihood_fn,
     log_priors = log_priors,
     proposal_sd = c(0.1),
-    init_params = c(phi = 0.5),
+    pilot_init_params = c(phi = 0.5),
     algorithm = "SISR",
     resample_fn = "systematic",
     param_transform = "log"
@@ -162,7 +162,7 @@ test_that(".run_pilot_chain works", {
       log_likelihood_fn = log_likelihood_fn,
       log_priors = log_priors,
       proposal_sd = c(0.1),
-      init_params = c(phi = 0.5),
+      pilot_init_params = c(phi = 0.5),
       algorithm = "SISR",
       resample_fn = "systematic",
       verbose = TRUE
@@ -182,7 +182,7 @@ test_that(".run_pilot_chain works", {
       log_likelihood_fn = log_likelihood_fn,
       log_priors = log_priors,
       proposal_sd = c(0.1),
-      init_params = c(phi = 0.5),
+      pilot_init_params = c(phi = 0.5),
       algorithm = "SISR",
       resample_fn = "systematic",
       param_transform = list(
@@ -258,7 +258,7 @@ test_that("More complicated example", {
     log_likelihood_fn = log_likelihood_fn,
     log_priors = log_priors,
     proposal_sd = c(0.1, 0.1, 0.1),
-    init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+    pilot_init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
     algorithm = "SISAR",
     resample_fn = "stratified"
   )
@@ -329,7 +329,7 @@ test_that("More complicated example with transformation", {
     log_likelihood_fn = log_likelihood_fn,
     log_priors = log_priors,
     proposal_sd = c(0.1, 0.1, 0.1),
-    init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+    pilot_init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
     algorithm = "SISAR",
     resample_fn = "stratified",
     param_transform = list(
@@ -375,7 +375,7 @@ test_that("Multi dimensional works", {
     log_likelihood_fn = log_likelihood_fn,
     log_priors = log_priors,
     proposal_sd = c(0.1),
-    init_params = c(phi = 0.8),
+    pilot_init_params = c(phi = 0.8),
     algorithm = "SISAR",
     resample_fn = "stratified"
   )

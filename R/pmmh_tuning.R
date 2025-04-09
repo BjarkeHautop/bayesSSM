@@ -44,7 +44,7 @@
 #' filter using the provided parameter vector \code{theta}. It then estimates
 #' the variance of the log-likelihoods and scales the initial particle number
 #' by this variance. The final number of particles is taken as the ceiling of
-#' the scaled value with a minimum of 100 and a maximum of 1000.
+#' the scaled value with a minimum of 50 and a maximum of 1000.
 #'
 #' @keywords internal
 .pilot_run <- function(y, pilot_n, pilot_reps, init_fn,
@@ -74,7 +74,7 @@
   }
   variance_estimate <- var(pilot_loglikes)
   target_n <- ceiling(pilot_n * variance_estimate)
-  target_n <- max(target_n, 100) # Ensure a minimum number of particles
+  target_n <- max(target_n, 50) # Ensure a minimum number of particles
   target_n <- min(target_n, 1000) # Limit to 1000 particles
 
   list(
@@ -114,7 +114,7 @@
 #' Currently only supports "log" for log-transformation and
 #' "identity" for no transformation. Default is `NULL`, which correspond to
 #' no transformation ("identity).
-#' @param init_params A numeric vector of initial parameter values. If `NULL`,
+#' @param pilot_init_params A numeric vector of initial parameter values. If `NULL`,
 #' the default is a vector of ones. Default is `NULL`.
 #' @param ... Additional arguments passed to the particle filter function.
 #'
@@ -150,7 +150,7 @@
                                "multinomial"
                              ),
                              param_transform = NULL,
-                             init_params = NULL,
+                             pilot_init_params = NULL,
                              verbose = FALSE,
                              ...) {
   num_params <- length(log_priors)
@@ -158,24 +158,24 @@
   colnames(pilot_theta_chain) <- names(log_priors)
   pilot_loglike_chain <- numeric(pilot_m)
 
-  if (is.null(init_params)) {
-    init_params <- rep(1, num_params)
-    names(init_params) <- names(log_priors)
+  if (is.null(pilot_init_params)) {
+    pilot_init_params <- rep(1, num_params)
+    names(pilot_init_params) <- names(log_priors)
   }
 
   # Validate initial parameters using user-supplied log-priors.
-  log_prior_init <- sapply(seq_along(init_params), function(i) {
-    log_priors[[i]](init_params[i])
+  log_prior_init <- sapply(seq_along(pilot_init_params), function(i) {
+    log_priors[[i]](pilot_init_params[i])
   })
   if (any(!is.finite(log_prior_init))) {
     stop(paste0(
       "Invalid initial parameters: at least one initial value is",
       "outside the support of its prior. Modify them in the argument",
-      "init_params."
+      "pilot_init_params."
     ))
   }
 
-  current_theta <- init_params
+  current_theta <- pilot_init_params
   pilot_theta_chain[1, ] <- current_theta
 
   # Run particle filter with current parameters.

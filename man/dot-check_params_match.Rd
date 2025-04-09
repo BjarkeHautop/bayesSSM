@@ -8,7 +8,7 @@
   init_fn,
   transition_fn,
   log_likelihood_fn,
-  init_params,
+  pilot_init_params,
   log_priors
 )
 }
@@ -21,7 +21,7 @@ state-space model.}
 \item{log_likelihood_fn}{A function that calculates the log-likelihood
 for the state-space model given latent states.}
 
-\item{init_params}{A vector of initial parameter values.}
+\item{pilot_init_params}{A vector of initial parameter values.}
 
 \item{log_priors}{A list of functions for computing the log-prior of each
 parameter.}

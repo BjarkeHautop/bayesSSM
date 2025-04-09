@@ -133,7 +133,10 @@ result <- pmmh(
   transition_fn = transition_fn,
   log_likelihood_fn = log_likelihood_fn,
   log_priors = log_priors,
-  init_params = c(phi = 0.5, sigma_x = 0.5, sigma_y = 0.5),
+  pilot_init_params = list(
+    c(phi = 0.5, sigma_x = 0.5, sigma_y = 0.5),
+    c(phi = 1, sigma_x = 1, sigma_y = 1)
+  ),
   burn_in = 50,
   num_chains = 2,
   seed = 1405,
@@ -141,20 +144,20 @@ result <- pmmh(
 )
 #> Running chain 1...
 #> Running pilot chain for tuning...
-#> Using 100 particles for PMMH:
+#> Using 1000 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
-#> Using 100 particles for PMMH:
+#> Using 466 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
+#> Warning in ess(param_chain): One or more chains have zero variance.
+#> Warning in ess(param_chain): One or more chains have zero variance.
+#> Warning in ess(param_chain): One or more chains have zero variance.
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat
-#>        phi 0.78 0.11   0.78          0.53           1.00  27 1.054
-#>    sigma_x 1.14 0.20   1.15          0.78           1.59   5 1.008
-#>    sigma_y 0.36 0.22   0.29          0.06           0.91  17 1.143
-#> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =
-#> transition_fn, : Some ESS values are below 400, indicating poor mixing.
-#> Consider running the chains for more iterations.
+#>        phi 0.73 0.14   0.63          0.56           1.03  NA 1.051
+#>    sigma_x 1.84 0.15   1.84          1.42           2.10  NA 1.119
+#>    sigma_y 0.22 0.20   0.14          0.03           0.87  NA 1.124
 #> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn = transition_fn, : 
 #> Some Rhat values are above 1.01, indicating that the chains have not converged. Consider running the chains for more iterations and/or increase burn_in.
 ```

@@ -11,7 +11,7 @@ pmmh(
   transition_fn,
   log_likelihood_fn,
   log_priors,
-  init_params,
+  pilot_init_params,
   burn_in,
   num_chains = 4,
   obs_times = NULL,
@@ -42,7 +42,9 @@ for the state-space model given latent states.}
 \item{log_priors}{A list of functions for computing the log-prior of each
 parameter.}
 
-\item{init_params}{A vector of initial parameter values.}
+\item{pilot_init_params}{A list of initial parameter values. Should be a list
+of length \code{num_chains} where each element is a named vector of initial
+parameter values.}
 
 \item{burn_in}{An integer indicating the number of initial MCMC iterations
 to discard as burn-in.}
@@ -159,7 +161,10 @@ pmmh_result <- pmmh(
   transition_fn = transition_fn,
   log_likelihood_fn = log_likelihood_fn,
   log_priors = log_priors,
-  init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+  pilot_init_params = list(
+    c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+    c(phi = 1, sigma_x = 0.5, sigma_y = 1)
+  ),
   burn_in = 100,
   num_chains = 2,
   param_transform = list(
