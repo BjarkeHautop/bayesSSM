@@ -13,7 +13,7 @@ particles for the particle filter, and then runs the main PMMH chain."><meta pro
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.3.4</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -58,7 +58,7 @@ particles for the particle filter, and then runs the main PMMH chain.</p>
 <span>  <span class="va">transition_fn</span>,</span>
 <span>  <span class="va">log_likelihood_fn</span>,</span>
 <span>  <span class="va">log_priors</span>,</span>
-<span>  <span class="va">init_params</span>,</span>
+<span>  <span class="va">pilot_init_params</span>,</span>
 <span>  <span class="va">burn_in</span>,</span>
 <span>  num_chains <span class="op">=</span> <span class="fl">4</span>,</span>
 <span>  obs_times <span class="op">=</span> <span class="cn">NULL</span>,</span>
@@ -105,8 +105,10 @@ for the state-space model given latent states.</p></dd>
 parameter.</p></dd>
 
 
-<dt id="arg-init-params">init_params<a class="anchor" aria-label="anchor" href="#arg-init-params"></a></dt>
-<dd><p>A vector of initial parameter values.</p></dd>
+<dt id="arg-pilot-init-params">pilot_init_params<a class="anchor" aria-label="anchor" href="#arg-pilot-init-params"></a></dt>
+<dd><p>A list of initial parameter values. Should be a list
+of length <code>num_chains</code> where each element is a named vector of initial
+parameter values.</p></dd>
 
 
 <dt id="arg-burn-in">burn_in<a class="anchor" aria-label="anchor" href="#arg-burn-in"></a></dt>
@@ -251,7 +253,10 @@ Journal of the Royal Statistical Society: Series B (Statistical Methodology),
 <span class="r-in"><span>  transition_fn <span class="op">=</span> <span class="va">transition_fn</span>,</span></span>
 <span class="r-in"><span>  log_likelihood_fn <span class="op">=</span> <span class="va">log_likelihood_fn</span>,</span></span>
 <span class="r-in"><span>  log_priors <span class="op">=</span> <span class="va">log_priors</span>,</span></span>
-<span class="r-in"><span>  init_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>phi <span class="op">=</span> <span class="fl">0.8</span>, sigma_x <span class="op">=</span> <span class="fl">1</span>, sigma_y <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  pilot_init_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>phi <span class="op">=</span> <span class="fl">0.8</span>, sigma_x <span class="op">=</span> <span class="fl">1</span>, sigma_y <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>phi <span class="op">=</span> <span class="fl">1</span>, sigma_x <span class="op">=</span> <span class="fl">0.5</span>, sigma_y <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span>,</span></span>
 <span class="r-in"><span>  burn_in <span class="op">=</span> <span class="fl">100</span>,</span></span>
 <span class="r-in"><span>  num_chains <span class="op">=</span> <span class="fl">2</span>,</span></span>
 <span class="r-in"><span>  param_transform <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
@@ -263,17 +268,17 @@ Journal of the Royal Statistical Society: Series B (Statistical Methodology),
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running chain 1...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running pilot chain for tuning...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 100 particles for PMMH:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 50 particles for PMMH:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running particle MCMC chain with tuned settings...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running chain 2...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running pilot chain for tuning...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 100 particles for PMMH:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 50 particles for PMMH:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running particle MCMC chain with tuned settings...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> PMMH Results Summary:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        phi 0.87 0.08   0.88          0.70           1.00 166 1.023</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_x 0.55 0.35   0.55          0.01           1.26  32 1.002</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_y 0.73 0.30   0.77          0.14           1.25  26 1.011</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        phi 0.88 0.08   0.89          0.71           1.03  81 1.003</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_x 0.52 0.29   0.50          0.05           1.16  70 1.016</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_y 0.83 0.24   0.83          0.35           1.30  82 1.041</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some ESS values are below 400, indicating poor mixing. Consider running the chains for more iterations.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Some Rhat values are above 1.01, indicating that the chains have not converged. Consider running the chains for more iterations and/or increase burn_in.</span>
