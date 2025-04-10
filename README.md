@@ -12,7 +12,8 @@ coverage](https://codecov.io/gh/BjarkeHautop/bayesSSM/graph/badge.svg)](https://
 
 bayesSSM is an R package offering a set of tools for performing Bayesian
 inference in state-space models (SSMs). It implements the Particle
-Marginal Metropolis-Hastings (PMMH) for Bayesian inference.
+Marginal Metropolis-Hastings (PMMH) in the main function `pmmh`  
+for Bayesian inference in SSMs.
 
 ## Why bayesSSM?
 
@@ -144,7 +145,7 @@ result <- pmmh(
 )
 #> Running chain 1...
 #> Running pilot chain for tuning...
-#> Using 109 particles for PMMH:
+#> Using 50 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
@@ -152,14 +153,15 @@ result <- pmmh(
 #> Running particle MCMC chain with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat
-#>        phi 0.71 0.11   0.73          0.51           0.92  13 1.084
-#>    sigma_x 0.95 0.41   1.06          0.09           1.46   9 1.085
-#>    sigma_y 0.54 0.41   0.46          0.11           1.36  12 1.160
+#>        phi 0.70 0.13   0.60          0.54           0.93   1 1.066
+#>    sigma_x 0.92 0.27   0.97          0.18           1.35  34 1.000
+#>    sigma_y 0.49 0.35   0.28          0.21           1.36   4 1.008
 #> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =
 #> transition_fn, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.
 #> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn = transition_fn, : 
-#> Some Rhat values are above 1.01, indicating that the chains have not converged. Consider running the chains for more iterations and/or increase burn_in.
+#> Some Rhat values are above 1.01, indicating that the chains have not converged. 
+#> Consider running the chains for more iterations and/or increase burn_in.
 ```
 
 We get convergence warnings as expected due to the small number of

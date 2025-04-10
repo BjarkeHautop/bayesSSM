@@ -583,7 +583,7 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
   if (any(sapply(param_rhat, function(x) x > 1.01 && !is.na(x)))) {
     warning(paste0(
       "\nSome Rhat values are above 1.01, indicating that the chains ",
-      "have not converged. Consider running the chains for more iterations ",
+      "have not converged. \nConsider running the chains for more iterations ",
       "and/or increase burn_in."
     ))
   }
