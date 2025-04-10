@@ -150,6 +150,25 @@ test_that(".run_pilot_chain works", {
     param_transform = "log"
   ), "param_transform must be a list")
 
+  # Expect warning if param_transform not supported (e.g. arctan)
+  expect_warning(.run_pilot_chain(
+    y = my_data$y,
+    pilot_m = 100,
+    pilot_n = 100,
+    pilot_reps = 10,
+    init_fn = init_fn,
+    transition_fn = transition_fn,
+    log_likelihood_fn = log_likelihood_fn,
+    log_priors = log_priors,
+    proposal_sd = c(0.1),
+    pilot_init_params = c(phi = 0.5),
+    algorithm = "SISR",
+    resample_fn = "systematic",
+    param_transform = list(
+      phi = "arctan"
+    )
+  ), "Only 'log', 'logit', and 'identity' transformations are supported.")
+
   # Check verbose works
   expect_message(
     .run_pilot_chain(
