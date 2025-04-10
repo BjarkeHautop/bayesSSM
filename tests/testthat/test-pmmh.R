@@ -306,7 +306,7 @@ test_that("pmmh checks function arguments", {
 # Parameter Matching Tests for pmmh
 # -----------------------------
 
-test_that("pmmh checks that parameters match pilot_init_params and log_priors", {
+test_that("pmmh checks that parameters match init_params and log_priors", {
   valid_init_params <- list(c(phi = 0.8, sigma_x = 1, sigma_y = 0.5))
   valid_log_priors <- list(
     phi = function(phi) 0,

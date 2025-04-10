@@ -45,6 +45,5 @@ summary.pmmh_output <- function(x, ...) {
   summary_df$ESS <- x$diagnostics$ess[param_names]
   summary_df$Rhat <- x$diagnostics$rhat[param_names]
 
-  # Return summary
-  return(summary_df)
+  summary_df
 }

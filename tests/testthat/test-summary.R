@@ -16,7 +16,7 @@ test_that("Summary works", {
   expect_s3_class(dummy_output, "pmmh_output")
 
   # Check that the structure is as expected
-  expect_type(dummy_output$theta_chain, "list") # Data frame is technically a list
+  expect_type(dummy_output$theta_chain, "list")
   expect_equal(nrow(dummy_output$theta_chain), 200) # 100 from each chain
 
   expect_named(dummy_output$diagnostics$ess, c("param1", "param2"))
