@@ -211,6 +211,8 @@ test_that(".run_pilot_chain works", {
     ),
     "Pilot chain posterior variance \\(on transformed space\\):"
   )
+
+  # Check works with transformation multi-dim example ...
 })
 
 

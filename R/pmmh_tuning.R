@@ -318,14 +318,14 @@
     message("Pilot chain posterior mean:")
     print(pilot_theta_mean)
     if (ncol(pilot_theta_post) > 1) {
-      if (any(param_transform == "log")) {
+      if (any(param_transform != "identity")) {
         message("Pilot chain posterior covariance (on transformed space):")
       } else {
         message("Pilot chain posterior covariance:")
       }
       print(pilot_theta_cov)
     } else {
-      if (any(param_transform == "log")) {
+      if (any(param_transform != "identity")) {
         message("Pilot chain posterior variance (on transformed space):")
       } else {
         message("Pilot chain posterior variance:")
