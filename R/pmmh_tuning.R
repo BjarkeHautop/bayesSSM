@@ -115,6 +115,7 @@
 #' "identity" for no transformation. Default is `NULL`, which correspond to
 #' no transformation ("identity).
 #' @param pilot_init_params A numeric vector of initial parameter values.
+#' If `NULL`, the default is a vector of ones. Default is `NULL`.
 #' @param ... Additional arguments passed to the particle filter function.
 #'
 #' @return A list containing:
@@ -156,6 +157,11 @@
   pilot_theta_chain <- matrix(NA, nrow = pilot_m, ncol = num_params)
   colnames(pilot_theta_chain) <- names(log_priors)
   pilot_loglike_chain <- numeric(pilot_m)
+
+  if (is.null(pilot_init_params)) {
+    pilot_init_params <- rep(1, num_params)
+    names(pilot_init_params) <- names(log_priors)
+  }
 
   # Validate initial parameters using user-supplied log-priors.
   log_prior_init <- sapply(seq_along(pilot_init_params), function(i) {

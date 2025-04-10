@@ -1,6 +1,6 @@
 #' Print method for PMMH output
 #'
-#' @param x An object of class `pmmh_output`.
+#' @param object An object of class `pmmh_output`.
 #' @param ... Additional arguments.
 #'
 #' @returns A data frame containing summary statistics for each parameter.
@@ -22,13 +22,13 @@
 #' )
 #' class(dummy_output) <- "pmmh_output"
 #' summary(dummy_output)
-summary.pmmh_output <- function(x, ...) {
+summary.pmmh_output <- function(object, ...) {
   # Extract parameter names, excluding 'chain' column
-  param_names <- setdiff(colnames(x$theta_chain), "chain")
+  param_names <- setdiff(colnames(object$theta_chain), "chain")
 
   # Compute summary statistics
   summary_stats <- sapply(param_names, function(param) {
-    samples <- x$theta_chain[[param]]
+    samples <- object$theta_chain[[param]]
     c(
       mean = mean(samples),
       sd = sd(samples),
@@ -42,8 +42,8 @@ summary.pmmh_output <- function(x, ...) {
   summary_df <- as.data.frame(t(summary_stats))
 
   # Add ESS and Rhat diagnostics
-  summary_df$ESS <- x$diagnostics$ess[param_names]
-  summary_df$Rhat <- x$diagnostics$rhat[param_names]
+  summary_df$ESS <- object$diagnostics$ess[param_names]
+  summary_df$Rhat <- object$diagnostics$rhat[param_names]
 
   summary_df
 }

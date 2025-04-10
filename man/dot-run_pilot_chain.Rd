@@ -65,8 +65,8 @@ Currently only supports "log" for log-transformation and
 "identity" for no transformation. Default is `NULL`, which correspond to
 no transformation ("identity).}
 
-\item{pilot_init_params}{A numeric vector of initial parameter values. If `NULL`,
-the default is a vector of ones. Default is `NULL`.}
+\item{pilot_init_params}{A numeric vector of initial parameter values.
+If `NULL`, the default is a vector of ones. Default is `NULL`.}
 
 \item{...}{Additional arguments passed to the particle filter function.}
 }
