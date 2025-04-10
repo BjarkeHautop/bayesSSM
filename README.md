@@ -21,7 +21,7 @@ MCMC, such as the [POMP](https://kingaa.github.io/pomp/) package, I
 designed bayesSSM with ease of use in mind. It was developed as a
 procrastination task during my Master’s thesis about Particle MCMC,
 since I was implementing everything from scratch anyway. Everything is
-written in R, so performance is not the best, but it is easy to use.
+written in R, so performance is not the best.
 
 ## Installation
 
@@ -144,20 +144,20 @@ result <- pmmh(
 )
 #> Running chain 1...
 #> Running pilot chain for tuning...
-#> Using 1000 particles for PMMH:
+#> Using 109 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
-#> Using 466 particles for PMMH:
+#> Using 50 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
-#> Warning in ess(param_chain): One or more chains have zero variance.
-#> Warning in ess(param_chain): One or more chains have zero variance.
-#> Warning in ess(param_chain): One or more chains have zero variance.
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat
-#>        phi 0.73 0.14   0.63          0.56           1.03  NA 1.051
-#>    sigma_x 1.84 0.15   1.84          1.42           2.10  NA 1.119
-#>    sigma_y 0.22 0.20   0.14          0.03           0.87  NA 1.124
+#>        phi 0.71 0.11   0.73          0.51           0.92  13 1.084
+#>    sigma_x 0.95 0.41   1.06          0.09           1.46   9 1.085
+#>    sigma_y 0.54 0.41   0.46          0.11           1.36  12 1.160
+#> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =
+#> transition_fn, : Some ESS values are below 400, indicating poor mixing.
+#> Consider running the chains for more iterations.
 #> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn = transition_fn, : 
 #> Some Rhat values are above 1.01, indicating that the chains have not converged. Consider running the chains for more iterations and/or increase burn_in.
 ```

@@ -30,8 +30,8 @@ While there are several alternatives available for performing particle MCMC,
 such as the [POMP](https://kingaa.github.io/pomp/) package, I designed bayesSSM 
 with ease of use in mind. It was developed as a procrastination task during my
 Master's thesis about Particle MCMC, since I was implementing everything from
-scratch anyway. Everything is written in R, so performance is not the best, but
-it is easy to use. 
+scratch anyway. 
+Everything is written in R, so performance is not the best.
 
 ## Installation
 
