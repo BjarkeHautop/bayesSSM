@@ -21,12 +21,21 @@ test_that("ess autocorrelated", {
   expect_lt(ess(chains), n)
 })
 
-test_that("ess stops for non-matrix input", {
-  expect_error(ess(list(1, 2, 3)), "Input 'chains' must be a matrix")
-  expect_error(ess(c(1, 2, 3)), "Input 'chains' must be a matrix")
+test_that("dataframe input", {
+  n <- 3000
+  chains_df <- data.frame(
+    chain = rep(1:3, each = n / 3),
+    param1 = rnorm(n),
+    param2 = rnorm(n)
+  )
+  expect_equal(ess(chains_df)[[1]], n, tolerance = 0.05 * n)
+  expect_equal(ess(chains_df)[[2]], n, tolerance = 0.05 * n)
+})
+
+test_that("ess stops for non-valid input", {
   expect_error(
-    ess(data.frame(a = c(1, 2, 3), b = c(4, 5, 6))),
-    "Input 'chains' must be a matrix"
+    ess(list(1, 2, 3)),
+    "Input must be a matrix or a data frame with a 'chain' column."
   )
 })
 

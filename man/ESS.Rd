@@ -7,10 +7,12 @@
 ess(chains)
 }
 \arguments{
-\item{chains}{A matrix of dimensions m (iterations) x k (chains).}
+\item{chains}{A matrix (iterations x chains) or a data.frame with a 'chain'
+column and parameter columns.}
 }
 \value{
-The estimated effective sample size (ess) of the chains.
+The estimated effective sample size (ess) if given a matrix, or a
+named vector of ESS values if given a data frame.
 }
 \description{
 Estimate effective sample size (ESS) of MCMC chains.
@@ -19,8 +21,17 @@ Estimate effective sample size (ESS) of MCMC chains.
 Uses the formula for ESS proposed by Vehtari et al. (2021).
 }
 \examples{
+# With a matrix:
 chains <- matrix(rnorm(3000), nrow = 1000, ncol = 3)
 ess(chains)
+
+# With a data frame:
+chains_df <- data.frame(
+  chain = rep(1:3, each = 1000),
+  param1 = rnorm(3000),
+  param2 = rnorm(3000)
+)
+ess(chains_df)
 }
 \references{
 Vehtari et al. (2021). Rank-normalization, folding, and

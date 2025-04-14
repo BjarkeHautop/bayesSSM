@@ -7,10 +7,11 @@
 rhat(chains)
 }
 \arguments{
-\item{chains}{A matrix of dimensions m (iterations) x k (chains).}
+\item{chains}{A matrix (iterations x chains) or a data.frame with a 'chain'
+column and parameter columns.}
 }
 \value{
-The split-Rhat statistic.
+Rhat value (matrix input) or named vector of Rhat values.
 }
 \description{
 Compute split Rhat statistic
@@ -19,8 +20,16 @@ Compute split Rhat statistic
 Uses the formula for split-Rhat proposed by Gelman et al. (2013).
 }
 \examples{
+# Example with matrix
 chains <- matrix(rnorm(3000), nrow = 1000, ncol = 3)
 rhat(chains)
+#' # Example with data frame
+chains_df <- data.frame(
+  chain = rep(1:3, each = 1000),
+  param1 = rnorm(3000),
+  param2 = rnorm(3000)
+)
+rhat(chains_df)
 }
 \references{
 Gelman et al. (2013). Bayesian Data Analysis, 3rd Edition.
