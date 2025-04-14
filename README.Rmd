@@ -168,6 +168,7 @@ directed acyclic graph (DAG):
 The core function, `pmmh`, implements the Particle Marginal Metropolis-Hastings, 
 which is an algorithm that first generates a set of $N$ particles to approximate
 the likelihood and then uses this approximation in the acceptance probability. 
-The implementation automatically tunes the number of particles and the proposal distribution for the parameters. 
+The implementation automatically tunes the number of particles and the proposal 
+distribution for the parameters. 
 
 
