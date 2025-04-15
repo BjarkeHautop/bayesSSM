@@ -13,7 +13,7 @@ target number of particles for the Particle Marginal Metropolis Hastings
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -103,8 +103,10 @@ values.</p></dd>
 
 
 <dt id="arg-obs-times">obs_times<a class="anchor" aria-label="anchor" href="#arg-obs-times"></a></dt>
-<dd><p>A numeric vector of observation times. If not provided,
-the function assumes observations are available at every time step.</p></dd>
+<dd><p>A numeric vector indicating the time points at which
+observations in <code>y</code> are available. Must be of the same length as the
+number of rows in <code>y</code>. If not specified, it is assumed that observations
+are available at consecutive time steps, i.e., <code>obs_times = 1:nrow(y)</code>.</p></dd>
 
 
 <dt id="arg-algorithm">algorithm<a class="anchor" aria-label="anchor" href="#arg-algorithm"></a></dt>
