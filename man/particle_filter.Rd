@@ -37,8 +37,10 @@ particles. It should accept an observation, the current particles, and the
 current time step as arguments and return a numeric vector of log likelihood
 values.}
 
-\item{obs_times}{A numeric vector of observation times. If not provided,
-the function assumes observations are available at every time step.}
+\item{obs_times}{A numeric vector indicating the time points at which
+observations in \code{y} are available. Must be of the same length as the
+number of rows in \code{y}. If not specified, it is assumed that observations
+are available at consecutive time steps, i.e., \code{obs_times = 1:nrow(y)}.}
 
 \item{algorithm}{A character string specifying the particle filtering
 algorithm to use. Must be one of \code{"SISAR"}, \code{"SISR"}, or

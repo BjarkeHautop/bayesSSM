@@ -51,8 +51,10 @@ to discard as burn-in.}
 
 \item{num_chains}{An integer specifying the number of PMMH chains to run.}
 
-\item{obs_times}{A numeric vector of observation times. If not provided,
-the function assumes observations are available at every time step.}
+\item{obs_times}{A numeric vector indicating the time points at which
+observations in \code{y} are available. Must be of the same length as the
+number of rows in \code{y}. If not specified, it is assumed that observations
+are available at consecutive time steps, i.e., \code{obs_times = 1:nrow(y)}.}
 
 \item{algorithm}{A character string specifying the particle filtering
 algorithm to use. Must be one of \code{"SISAR"}, \code{"SISR"}, or
@@ -144,7 +146,7 @@ log_priors <- list(
   sigma_y = log_prior_sigma_y
 )
 # Generate data
-t_val <- 20
+t_val <- 10
 x <- numeric(t_val)
 y <- numeric(t_val)
 x[1] <- rnorm(1, mean = 0, sd = 1)
@@ -176,6 +178,33 @@ pmmh_result <- pmmh(
 )
 # Convergence warning is expected with such low MCMC iterations.
 
+# Suppose we have data for t=1,2,3,5,6,7,8,9,10 (i.e., missing at t=4)
+
+obs_times <- c(1, 2, 3, 5, 6, 7, 8, 9, 10)
+y <- y[obs_times]
+
+# Specify observation times in the pmmh using obs_times
+pmmh_result <- pmmh(
+  y = y,
+  m = 1000,
+  init_fn = init_fn,
+  transition_fn = transition_fn,
+  log_likelihood_fn = log_likelihood_fn,
+  log_priors = log_priors,
+  pilot_init_params = list(
+    c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
+    c(phi = 1, sigma_x = 0.5, sigma_y = 1)
+  ),
+  burn_in = 100,
+  num_chains = 2,
+  obs_times = obs_times,
+  param_transform = list(
+    phi = "identity",
+    sigma_x = "log",
+    sigma_y = "log"
+  ),
+  tune_control = default_tune_control(pilot_m = 500, pilot_burn_in = 100)
+)
 }
 \references{
 Andrieu et al. (2010). Particle Markov chain Monte Carlo methods.
