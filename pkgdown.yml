@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   bayesSSM: bayesSSM.html
   articles/sir-model: sir-model.html
-last_built: 2025-04-17T10:43Z
+last_built: 2025-04-17T12:22Z
 urls:
   reference: https://bjarkehautop.github.io/bayesSSM/reference
   article: https://bjarkehautop.github.io/bayesSSM/articles

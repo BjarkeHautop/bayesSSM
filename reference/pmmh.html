@@ -198,15 +198,12 @@ using more than one core.</p></dd>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The PMMH algorithm is essentially a Metropolis Hastings algorithm
-where instead of using the exact likelihood it is estimated using a particle
-filter (see also <code><a href="particle_filter.html">particle_filter</a></code>). This implementation
-has two main steps:</p><ol><li><p><strong>Pilot Chain:</strong> A pilot particle chain is run using the
-  settings provided in <code>tune_control</code> to obtain initial estimates for
-  the parameter vector, its covariance, and the number of particles for
-  the Particle Filter.</p></li>
-<li><p><strong>Main MCMC Chain:</strong> The main PMMH chain is executed for
-  <code>m</code> iterations using the tuned settings.</p></li>
-</ol></div>
+where instead of using the exact likelihood it instead uses an estimated
+using likelihood using a particle filter (see also
+<code><a href="particle_filter.html">particle_filter</a></code>). Values are proposed using a multivariate
+normal distribution in the transformed space. The proposal covariance is
+estimated using the pilot chain.</p>
+    </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
     <p>Andrieu et al. (2010). Particle Markov chain Monte Carlo methods.
