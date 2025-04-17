@@ -72,7 +72,7 @@ We define the priors for our model as follows:
 
 $$
 \begin{aligned}
-        \phi &\sim N(0,1), \\
+        \phi &\sim \text{Uniform}(0,1), \\
         \sigma_x &\sim \text{Exp}(1), \\
         \sigma_y &\sim \text{Exp}(1).
 \end{aligned}
@@ -102,8 +102,9 @@ transition_fn <- function(particles, phi, sigma_x) {
 log_likelihood_fn <- function(y, particles, sigma_y) {
   stats::dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
 }
+
 log_prior_phi <- function(phi) {
-  stats::dnorm(phi, mean = 0, sd = 1, log = TRUE)
+  stats::dunif(phi, min = 0, max = 1, log = TRUE)
 }
 log_prior_sigma_x <- function(sigma) {
   stats::dexp(sigma, rate = 1, log = TRUE)
@@ -135,8 +136,8 @@ result <- pmmh(
   log_likelihood_fn = log_likelihood_fn,
   log_priors = log_priors,
   pilot_init_params = list(
-    c(phi = 0.5, sigma_x = 0.5, sigma_y = 0.5),
-    c(phi = 1, sigma_x = 1, sigma_y = 1)
+    c(phi = 0.4, sigma_x = 0.4, sigma_y = 0.4),
+    c(phi = 0.8, sigma_x = 0.8, sigma_y = 0.8)
   ),
   burn_in = 50,
   num_chains = 2,
@@ -145,7 +146,7 @@ result <- pmmh(
 )
 #> Running chain 1...
 #> Running pilot chain for tuning...
-#> Using 86 particles for PMMH:
+#> Using 50 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
@@ -153,9 +154,9 @@ result <- pmmh(
 #> Running particle MCMC chain with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat
-#>        phi 0.67 0.13   0.65          0.45           0.88   9 1.098
-#>    sigma_x 1.35 0.25   1.33          0.91           1.80  56 1.113
-#>    sigma_y 0.46 0.25   0.41          0.11           1.01  31 1.045
+#>        phi 0.83 0.09   0.84          0.64           0.97  18 1.094
+#>    sigma_x 0.45 0.34   0.38          0.01           1.16  34 1.061
+#>    sigma_y 1.10 0.30   1.10          0.46           1.78  31 1.158
 #> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =
 #> transition_fn, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.

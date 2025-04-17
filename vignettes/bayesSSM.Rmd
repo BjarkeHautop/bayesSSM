@@ -95,7 +95,7 @@ $\log$-scale and takes the priors as a list of functions.
 
 ```{r}
 log_prior_phi <- function(phi) {
-  dnorm(phi, mean = 0, sd = 1, log = TRUE)
+  dunif(phi, min = 0, max = 1, log = TRUE)
 }
 
 log_prior_sigma_x <- function(sigma) {
@@ -133,8 +133,8 @@ result <- pmmh(
   log_likelihood_fn = log_likelihood_fn,
   log_priors = log_priors,
   pilot_init_params = list(
-    c(phi = 0.5, sigma_x = 0.5, sigma_y = 0.5),
-    c(phi = 1, sigma_x = 1, sigma_y = 1)
+    c(phi = 0.4, sigma_x = 0.4, sigma_y = 0.4),
+    c(phi = 0.8, sigma_x = 0.8, sigma_y = 0.8)
   ),
   burn_in = 500,
   num_chains = 2,

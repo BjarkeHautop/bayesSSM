@@ -82,7 +82,7 @@ We define the priors for our model as follows:
 
 $$
 \begin{aligned}
-		\phi &\sim N(0,1), \\
+		\phi &\sim \text{Uniform}(0,1), \\
 		\sigma_x &\sim \text{Exp}(1), \\
 		\sigma_y &\sim \text{Exp}(1).
 \end{aligned}
@@ -112,8 +112,9 @@ transition_fn <- function(particles, phi, sigma_x) {
 log_likelihood_fn <- function(y, particles, sigma_y) {
   stats::dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
 }
+
 log_prior_phi <- function(phi) {
-  stats::dnorm(phi, mean = 0, sd = 1, log = TRUE)
+  stats::dunif(phi, min = 0, max = 1, log = TRUE)
 }
 log_prior_sigma_x <- function(sigma) {
   stats::dexp(sigma, rate = 1, log = TRUE)
@@ -145,8 +146,8 @@ result <- pmmh(
   log_likelihood_fn = log_likelihood_fn,
   log_priors = log_priors,
   pilot_init_params = list(
-    c(phi = 0.5, sigma_x = 0.5, sigma_y = 0.5),
-    c(phi = 1, sigma_x = 1, sigma_y = 1)
+    c(phi = 0.4, sigma_x = 0.4, sigma_y = 0.4),
+    c(phi = 0.8, sigma_x = 0.8, sigma_y = 0.8)
   ),
   burn_in = 50,
   num_chains = 2,
