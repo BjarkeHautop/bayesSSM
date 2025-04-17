@@ -167,7 +167,7 @@ test_that(".run_pilot_chain works", {
     param_transform = list(
       phi = "arctan"
     )
-  ), "Only 'log', 'logit', and 'identity' transformations are supported.")
+  ), "Only 'log', 'invlogit', and 'identity' transformations are supported.")
 
   # Check verbose works
   expect_message(

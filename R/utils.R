@@ -78,8 +78,8 @@
   sapply(seq_along(theta), function(j) {
     if (transform[j] == "log") {
       log(theta[j])
-    } else if (transform[j] == "logit") {
-      log(theta[j] / (1 - theta[j]))
+    } else if (transform[j] == "invlogit") {
+      1 / (1 + exp(-theta[j]))
     } else {
       theta[j]
     }
@@ -98,8 +98,8 @@
   sapply(seq_along(theta_trans), function(j) {
     if (transform[j] == "log") {
       exp(theta_trans[j])
-    } else if (transform[j] == "logit") {
-      exp(theta_trans[j]) / (1 + exp(theta_trans[j])) # inverse logit (expit)
+    } else if (transform[j] == "invlogit") {
+      log(theta_trans[j] / (1 - theta_trans[j])) # back-transforming from logit
     } else {
       theta_trans[j]
     }
@@ -118,8 +118,9 @@
   sum(sapply(seq_along(theta), function(j) {
     if (transform[j] == "log") {
       log(theta[j]) # log|dx/dz| = log(x)
-    } else if (transform[j] == "logit") {
-      log(theta[j] * (1 - theta[j])) # log|dx/dz| = log(x (1 - x))
+    } else if (transform[j] == "invlogit") {
+      val <- 1 / (1 + exp(-theta[j])) # inverse logit
+      log(val * (1 - val)) # log|dx/dz| = log(x * (1 - x))
     } else {
       0 # no transformation
     }
