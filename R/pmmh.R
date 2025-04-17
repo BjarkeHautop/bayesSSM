@@ -119,17 +119,11 @@ default_tune_control <- function(
 #' using more than one core.
 #'
 #' @details The PMMH algorithm is essentially a Metropolis Hastings algorithm
-#' where instead of using the exact likelihood it is estimated using a particle
-#' filter (see also \code{\link{particle_filter}}). This implementation
-#' has two main steps:
-#' \enumerate{
-#'   \item \strong{Pilot Chain:} A pilot particle chain is run using the
-#'   settings provided in \code{tune_control} to obtain initial estimates for
-#'   the parameter vector, its covariance, and the number of particles for
-#'   the Particle Filter.
-#'   \item \strong{Main MCMC Chain:} The main PMMH chain is executed for
-#'   \code{m} iterations using the tuned settings.
-#' }
+#' where instead of using the exact likelihood it instead uses an estimated
+#' using likelihood using a particle filter (see also
+#' \code{\link{particle_filter}}). Values are proposed using a multivariate
+#' normal distribution in the transformed space. The proposal covariance is
+#' estimated using the pilot chain.
 #'
 #' @return A list containing:
 
