@@ -1,3 +1,3 @@
-# bayesSSM 0.4.6
+# bayesSSM 0.4.7
 
 * Initial CRAN submission.
