@@ -17,21 +17,112 @@ for Bayesian inference in SSMs.
 
 ## Why bayesSSM?
 
-While there are several alternatives available for performing particle
-MCMC, such as the [POMP](https://kingaa.github.io/pomp/) package, I
-designed bayesSSM with ease of use in mind. It was developed as a
-procrastination task during my Master’s thesis about Particle MCMC,
-since I was implementing everything from scratch anyway. Everything is
-written in R, so performance is not the best.
+While there are several alternative packages available for performing
+Particle MCMC bayesSSM is designed to be simple and easy to use. It was
+developed as a procrastination task during my Master’s thesis about
+Particle MCMC, since I was implementing everything from scratch anyway.
+Everything is written in R, so performance is not the best.
 
 ## Installation
 
-You can install the development version of bayesSSM from
-[GitHub](https://github.com/) with:
+You can install the latest stable version of bayesSSM from CRAN with:
+
+``` r
+install.packages("bayesSSM")
+#> Installing package into 'C:/Users/bjark/AppData/Local/Temp/RtmpgrSY3x/temp_libpath47d41614778d'
+#> (as 'lib' is unspecified)
+#> Warning: package 'bayesSSM' is not available for this version of R
+#> 
+#> A version of this package for your version of R might be available elsewhere,
+#> see the ideas at
+#> https://cran.r-project.org/doc/manuals/r-patched/R-admin.html#Installing-packages
+```
+
+or the development version from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("pak")
 pak::pak("BjarkeHautop/bayesSSM")
+#> ℹ Loading metadata database✔ Loading metadata database ... done
+#>  
+#> → Will install 22 packages.
+#> → Will update 1 package.
+#> → Will download 21 CRAN packages (11.07 MB), cached: 1 (136.95 kB).
+#> → Will download 1 package with unknown size.
+#> + bayesSSM     0.4.6 → 0.4.6  [bld][cmp][dl] (GitHub: 416d836)
+#> + cli                  3.6.4  [dl] (1.39 MB)
+#> + digest               0.6.37 [dl] (223.14 kB)
+#> + dplyr                1.1.4  [dl] (1.58 MB)
+#> + fansi                1.0.6  [dl] (322.97 kB)
+#> + future               1.40.0 [dl] (962.29 kB)
+#> + future.apply         1.11.3 [dl] (160.32 kB)
+#> + generics             0.1.3  [dl] (83.69 kB)
+#> + globals              0.17.0 
+#> + glue                 1.8.0  [dl] (183.78 kB)
+#> + lifecycle            1.0.4  [dl] (140.93 kB)
+#> + listenv              0.9.1  [dl] (109.21 kB)
+#> + magrittr             2.0.3  [dl] (229.42 kB)
+#> + parallelly           1.43.0 [dl] (601.63 kB)
+#> + pillar               1.10.2 [dl] (672.16 kB)
+#> + pkgconfig            2.0.3  [dl] (22.81 kB)
+#> + R6                   2.6.1  [dl] (88.64 kB)
+#> + rlang                1.1.6  [dl] (1.63 MB)
+#> + tibble               3.2.1  [dl] (695.05 kB)
+#> + tidyselect           1.2.1  [dl] (228.15 kB)
+#> + utf8                 1.2.4  [dl] (150.80 kB)
+#> + vctrs                0.6.5  [dl] (1.36 MB)
+#> + withr                3.0.2  [dl] (231.37 kB)
+#> ℹ Getting 21 pkgs (11.07 MB) and 1 pkg with unknown size, 1 (136.95 kB) cached
+#> ✔ Cached copy of R6 2.6.1 (i386+x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of cli 3.6.4 (x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of digest 0.6.37 (x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of dplyr 1.1.4 (x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of fansi 1.0.6 (x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of future.apply 1.11.3 (i386+x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of future 1.40.0 (i386+x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of generics 0.1.3 (i386+x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of glue 1.8.0 (x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of lifecycle 1.0.4 (i386+x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of listenv 0.9.1 (i386+x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of magrittr 2.0.3 (x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of parallelly 1.43.0 (x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of pillar 1.10.2 (i386+x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of pkgconfig 2.0.3 (i386+x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of rlang 1.1.6 (x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of tibble 3.2.1 (x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of tidyselect 1.2.1 (i386+x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of utf8 1.2.4 (x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of vctrs 0.6.5 (x86_64-w64-mingw32) is the latest build
+#> ✔ Cached copy of withr 3.0.2 (i386+x86_64-w64-mingw32) is the latest build
+#> ✔ Got bayesSSM 0.4.6 (source) (210.37 kB)
+#> ✔ Installed R6 2.6.1  (588ms)
+#> ✔ Installed cli 3.6.4  (848ms)
+#> ✔ Installed digest 0.6.37  (1.1s)
+#> ✔ Installed dplyr 1.1.4  (1.1s)
+#> ✔ Installed fansi 1.0.6  (1.2s)
+#> ✔ Installed generics 0.1.3  (1.1s)
+#> ✔ Installed future.apply 1.11.3  (1.2s)
+#> ✔ Installed listenv 0.9.1  (1.2s)
+#> ✔ Installed magrittr 2.0.3  (1.3s)
+#> ✔ Installed glue 1.8.0  (1.5s)
+#> ✔ Installed lifecycle 1.0.4  (1.6s)
+#> ✔ Installed pillar 1.10.2  (1.5s)
+#> ✔ Installed pkgconfig 2.0.3  (1.5s)
+#> ✔ Installed globals 0.17.0  (1.8s)
+#> ✔ Installed future 1.40.0  (1.9s)
+#> ✔ Installed parallelly 1.43.0  (1.7s)
+#> ✔ Installed rlang 1.1.6  (869ms)
+#> ✔ Installed tidyselect 1.2.1  (873ms)
+#> ✔ Installed tibble 3.2.1  (936ms)
+#> ✔ Installed utf8 1.2.4  (773ms)
+#> ✔ Installed withr 3.0.2  (732ms)
+#> ✔ Installed vctrs 0.6.5  (791ms)
+#> ℹ Packaging bayesSSM 0.4.6
+#> ✔ Packaged bayesSSM 0.4.6 (810ms)
+#> ℹ Building bayesSSM 0.4.6
+#> ✔ Built bayesSSM 0.4.6 (2.7s)
+#> ✔ Installed bayesSSM 0.4.6 (github::BjarkeHautop/bayesSSM@416d836) (85ms)
+#> ✔ 1 pkg + 24 deps: kept 1, upd 1, added 22, dld 1 (NA B) [15.4s]
 ```
 
 ## Example
@@ -146,7 +237,7 @@ result <- pmmh(
 )
 #> Running chain 1...
 #> Running pilot chain for tuning...
-#> Using 65 particles for PMMH:
+#> Using 50 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
@@ -154,9 +245,9 @@ result <- pmmh(
 #> Running particle MCMC chain with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat
-#>        phi 0.66 0.15   0.67          0.36           0.89  16 1.088
-#>    sigma_x 1.02 0.47   1.07          0.08           1.80  21 1.034
-#>    sigma_y 0.67 0.42   0.53          0.12           1.57  24 1.059
+#>        phi 0.82 0.09   0.83          0.65           0.95  65 1.009
+#>    sigma_x 0.69 0.40   0.68          0.03           1.36  34 1.152
+#>    sigma_y 0.82 0.37   0.86          0.21           1.49  18 1.264
 #> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =
 #> transition_fn, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.

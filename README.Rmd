@@ -27,19 +27,22 @@ for Bayesian inference in SSMs.
 
 ## Why bayesSSM?
 
-While there are several alternatives available for performing particle MCMC, 
-such as the [POMP](https://kingaa.github.io/pomp/) package, I designed bayesSSM 
-with ease of use in mind. It was developed as a procrastination task during my
-Master's thesis about Particle MCMC, since I was implementing everything from
-scratch anyway. 
+While there are several alternative packages available for performing Particle 
+MCMC bayesSSM is designed to be simple and easy to use. It was developed as a 
+procrastination task during my Master's thesis about Particle MCMC, since I 
+was implementing everything from scratch anyway. 
 Everything is written in R, so performance is not the best.
 
 ## Installation
+You can install the latest stable version of bayesSSM from CRAN with:
 
-You can install the development version of bayesSSM from 
-[GitHub](https://github.com/) with:
+```{r}
+install.packages("bayesSSM")
+```
 
-``` r
+or the development version from [GitHub](https://github.com/) with:
+
+```{r}
 # install.packages("pak")
 pak::pak("BjarkeHautop/bayesSSM")
 ```
