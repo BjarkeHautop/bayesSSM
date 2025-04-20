@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.6</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -72,15 +72,105 @@ for Bayesian inference in SSMs.</p>
 <div class="section level2">
 <h2 id="why-bayesssm">Why bayesSSM?<a class="anchor" aria-label="anchor" href="#why-bayesssm"></a>
 </h2>
-<p>While there are several alternatives available for performing particle MCMC, such as the <a href="https://kingaa.github.io/pomp/" class="external-link">POMP</a> package, I designed bayesSSM with ease of use in mind. It was developed as a procrastination task during my Master’s thesis about Particle MCMC, since I was implementing everything from scratch anyway. Everything is written in R, so performance is not the best.</p>
+<p>While there are several alternative packages available for performing Particle MCMC bayesSSM is designed to be simple and easy to use. It was developed as a procrastination task during my Master’s thesis about Particle MCMC, since I was implementing everything from scratch anyway. Everything is written in R, so performance is not the best.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p>You can install the development version of bayesSSM from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<p>You can install the latest stable version of bayesSSM from CRAN with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"bayesSSM"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Installing package into 'C:/Users/bjark/AppData/Local/Temp/RtmpgrSY3x/temp_libpath47d41614778d'</span></span>
+<span><span class="co">#&gt; (as 'lib' is unspecified)</span></span>
+<span><span class="co">#&gt; Warning: package 'bayesSSM' is not available for this version of R</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; A version of this package for your version of R might be available elsewhere,</span></span>
+<span><span class="co">#&gt; see the ideas at</span></span>
+<span><span class="co">#&gt; https://cran.r-project.org/doc/manuals/r-patched/R-admin.html#Installing-packages</span></span></code></pre></div>
+<p>or the development version from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
-<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"BjarkeHautop/bayesSSM"</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"BjarkeHautop/bayesSSM"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ℹ Loading metadata database✔ Loading metadata database ... done</span></span>
+<span><span class="co">#&gt;  </span></span>
+<span><span class="co">#&gt; → Will install 22 packages.</span></span>
+<span><span class="co">#&gt; → Will update 1 package.</span></span>
+<span><span class="co">#&gt; → Will download 21 CRAN packages (11.07 MB), cached: 1 (136.95 kB).</span></span>
+<span><span class="co">#&gt; → Will download 1 package with unknown size.</span></span>
+<span><span class="co">#&gt; + bayesSSM     0.4.6 → 0.4.6  [bld][cmp][dl] (GitHub: 416d836)</span></span>
+<span><span class="co">#&gt; + cli                  3.6.4  [dl] (1.39 MB)</span></span>
+<span><span class="co">#&gt; + digest               0.6.37 [dl] (223.14 kB)</span></span>
+<span><span class="co">#&gt; + dplyr                1.1.4  [dl] (1.58 MB)</span></span>
+<span><span class="co">#&gt; + fansi                1.0.6  [dl] (322.97 kB)</span></span>
+<span><span class="co">#&gt; + future               1.40.0 [dl] (962.29 kB)</span></span>
+<span><span class="co">#&gt; + future.apply         1.11.3 [dl] (160.32 kB)</span></span>
+<span><span class="co">#&gt; + generics             0.1.3  [dl] (83.69 kB)</span></span>
+<span><span class="co">#&gt; + globals              0.17.0 </span></span>
+<span><span class="co">#&gt; + glue                 1.8.0  [dl] (183.78 kB)</span></span>
+<span><span class="co">#&gt; + lifecycle            1.0.4  [dl] (140.93 kB)</span></span>
+<span><span class="co">#&gt; + listenv              0.9.1  [dl] (109.21 kB)</span></span>
+<span><span class="co">#&gt; + magrittr             2.0.3  [dl] (229.42 kB)</span></span>
+<span><span class="co">#&gt; + parallelly           1.43.0 [dl] (601.63 kB)</span></span>
+<span><span class="co">#&gt; + pillar               1.10.2 [dl] (672.16 kB)</span></span>
+<span><span class="co">#&gt; + pkgconfig            2.0.3  [dl] (22.81 kB)</span></span>
+<span><span class="co">#&gt; + R6                   2.6.1  [dl] (88.64 kB)</span></span>
+<span><span class="co">#&gt; + rlang                1.1.6  [dl] (1.63 MB)</span></span>
+<span><span class="co">#&gt; + tibble               3.2.1  [dl] (695.05 kB)</span></span>
+<span><span class="co">#&gt; + tidyselect           1.2.1  [dl] (228.15 kB)</span></span>
+<span><span class="co">#&gt; + utf8                 1.2.4  [dl] (150.80 kB)</span></span>
+<span><span class="co">#&gt; + vctrs                0.6.5  [dl] (1.36 MB)</span></span>
+<span><span class="co">#&gt; + withr                3.0.2  [dl] (231.37 kB)</span></span>
+<span><span class="co">#&gt; ℹ Getting 21 pkgs (11.07 MB) and 1 pkg with unknown size, 1 (136.95 kB) cached</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of R6 2.6.1 (i386+x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of cli 3.6.4 (x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of digest 0.6.37 (x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of dplyr 1.1.4 (x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of fansi 1.0.6 (x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of future.apply 1.11.3 (i386+x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of future 1.40.0 (i386+x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of generics 0.1.3 (i386+x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of glue 1.8.0 (x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of lifecycle 1.0.4 (i386+x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of listenv 0.9.1 (i386+x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of magrittr 2.0.3 (x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of parallelly 1.43.0 (x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of pillar 1.10.2 (i386+x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of pkgconfig 2.0.3 (i386+x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of rlang 1.1.6 (x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of tibble 3.2.1 (x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of tidyselect 1.2.1 (i386+x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of utf8 1.2.4 (x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of vctrs 0.6.5 (x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Cached copy of withr 3.0.2 (i386+x86_64-w64-mingw32) is the latest build</span></span>
+<span><span class="co">#&gt; ✔ Got bayesSSM 0.4.6 (source) (210.37 kB)</span></span>
+<span><span class="co">#&gt; ✔ Installed R6 2.6.1  (588ms)</span></span>
+<span><span class="co">#&gt; ✔ Installed cli 3.6.4  (848ms)</span></span>
+<span><span class="co">#&gt; ✔ Installed digest 0.6.37  (1.1s)</span></span>
+<span><span class="co">#&gt; ✔ Installed dplyr 1.1.4  (1.1s)</span></span>
+<span><span class="co">#&gt; ✔ Installed fansi 1.0.6  (1.2s)</span></span>
+<span><span class="co">#&gt; ✔ Installed generics 0.1.3  (1.1s)</span></span>
+<span><span class="co">#&gt; ✔ Installed future.apply 1.11.3  (1.2s)</span></span>
+<span><span class="co">#&gt; ✔ Installed listenv 0.9.1  (1.2s)</span></span>
+<span><span class="co">#&gt; ✔ Installed magrittr 2.0.3  (1.3s)</span></span>
+<span><span class="co">#&gt; ✔ Installed glue 1.8.0  (1.5s)</span></span>
+<span><span class="co">#&gt; ✔ Installed lifecycle 1.0.4  (1.6s)</span></span>
+<span><span class="co">#&gt; ✔ Installed pillar 1.10.2  (1.5s)</span></span>
+<span><span class="co">#&gt; ✔ Installed pkgconfig 2.0.3  (1.5s)</span></span>
+<span><span class="co">#&gt; ✔ Installed globals 0.17.0  (1.8s)</span></span>
+<span><span class="co">#&gt; ✔ Installed future 1.40.0  (1.9s)</span></span>
+<span><span class="co">#&gt; ✔ Installed parallelly 1.43.0  (1.7s)</span></span>
+<span><span class="co">#&gt; ✔ Installed rlang 1.1.6  (869ms)</span></span>
+<span><span class="co">#&gt; ✔ Installed tidyselect 1.2.1  (873ms)</span></span>
+<span><span class="co">#&gt; ✔ Installed tibble 3.2.1  (936ms)</span></span>
+<span><span class="co">#&gt; ✔ Installed utf8 1.2.4  (773ms)</span></span>
+<span><span class="co">#&gt; ✔ Installed withr 3.0.2  (732ms)</span></span>
+<span><span class="co">#&gt; ✔ Installed vctrs 0.6.5  (791ms)</span></span>
+<span><span class="co">#&gt; ℹ Packaging bayesSSM 0.4.6</span></span>
+<span><span class="co">#&gt; ✔ Packaged bayesSSM 0.4.6 (810ms)</span></span>
+<span><span class="co">#&gt; ℹ Building bayesSSM 0.4.6</span></span>
+<span><span class="co">#&gt; ✔ Built bayesSSM 0.4.6 (2.7s)</span></span>
+<span><span class="co">#&gt; ✔ Installed bayesSSM 0.4.6 (github::BjarkeHautop/bayesSSM@416d836) (85ms)</span></span>
+<span><span class="co">#&gt; ✔ 1 pkg + 24 deps: kept 1, upd 1, added 22, dld 1 (NA B) [15.4s]</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
@@ -94,7 +184,7 @@ for Bayesian inference in SSMs.</p>
 \end{aligned}
 </annotation></semantics></math></p>
 <p>Let’s first simulate some data from this model with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mo>=</mo><mn>0.8</mn></mrow><annotation encoding="application/x-tex">\phi = 0.8</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>σ</mi><mi>x</mi></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\sigma_x = 1</annotation></semantics></math>, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>σ</mi><mi>y</mi></msub><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">\sigma_y = 0.5</annotation></semantics></math>.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">t_val</span> <span class="op">&lt;-</span> <span class="fl">20</span></span>
 <span><span class="va">phi_val</span> <span class="op">&lt;-</span> <span class="fl">0.8</span></span>
 <span><span class="va">sigma_x_val</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
@@ -121,7 +211,7 @@ for Bayesian inference in SSMs.</p>
 </annotation></semantics></math></p>
 <p>We can use <code>pmmh</code> to perform Bayesian inference on this model. To use <code>pmmh</code> we need to define the functions for the SSM and the priors. The functions <code>init_fn</code>, <code>transition_fn</code> should be functions that simulates the latent states. They must contain the argument <code>particles</code>, which is a vector of particles, and can contain any other arguments. The function <code>log_likelihood_fn</code> should be a function that calculates the log-likelihood of the observed data given the latent state variables. It must contain the arguments <code>y</code> and <code>particles</code>.</p>
 <p>The priors for the parameters must be defined as log-prior functions. Every parameter from <code>init_fn</code>, <code>transition_fn</code>, and <code>log_likelihood_fn</code> must have a corresponding log-prior function.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">init_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">particles</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">particles</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
@@ -149,7 +239,7 @@ for Bayesian inference in SSMs.</p>
 <span>  sigma_y <span class="op">=</span> <span class="va">log_prior_sigma_y</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Now we can run the PMMH algorithm using the <code>pmmh</code> function. We run 2 chains for 200 MCMC samples with a burn-in of 10. We also modify the tuning to only use 200 pilot samples and a burn-in of 10. In practice you would want to run it for a much larger number of samples.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/BjarkeHautop/bayesSSM" class="external-link">bayesSSM</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pmmh.html">pmmh</a></span><span class="op">(</span></span>
@@ -170,7 +260,7 @@ for Bayesian inference in SSMs.</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Running chain 1...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
-<span><span class="co">#&gt; Using 65 particles for PMMH:</span></span>
+<span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; Running chain 2...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
@@ -178,9 +268,9 @@ for Bayesian inference in SSMs.</p>
 <span><span class="co">#&gt; Running particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
 <span><span class="co">#&gt;  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;        phi 0.66 0.15   0.67          0.36           0.89  16 1.088</span></span>
-<span><span class="co">#&gt;    sigma_x 1.02 0.47   1.07          0.08           1.80  21 1.034</span></span>
-<span><span class="co">#&gt;    sigma_y 0.67 0.42   0.53          0.12           1.57  24 1.059</span></span>
+<span><span class="co">#&gt;        phi 0.82 0.09   0.83          0.65           0.95  65 1.009</span></span>
+<span><span class="co">#&gt;    sigma_x 0.69 0.40   0.68          0.03           1.36  34 1.152</span></span>
+<span><span class="co">#&gt;    sigma_y 0.82 0.37   0.86          0.21           1.49  18 1.264</span></span>
 <span><span class="co">#&gt; Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =</span></span>
 <span><span class="co">#&gt; transition_fn, : Some ESS values are below 400, indicating poor mixing.</span></span>
 <span><span class="co">#&gt; Consider running the chains for more iterations.</span></span>
