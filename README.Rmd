@@ -36,13 +36,13 @@ Everything is written in R, so performance is not the best.
 ## Installation
 You can install the latest stable version of bayesSSM from CRAN with:
 
-```{r}
+``` r
 install.packages("bayesSSM")
 ```
 
 or the development version from [GitHub](https://github.com/) with:
 
-```{r}
+``` r
 # install.packages("pak")
 pak::pak("BjarkeHautop/bayesSSM")
 ```
