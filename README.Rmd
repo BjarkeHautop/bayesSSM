@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 bayesSSM is an R package offering a set of tools for performing Bayesian 
 inference in state-space models (SSMs). It implements the
 Particle Marginal Metropolis-Hastings (PMMH) in the main function `pmmh`   
-for Bayesian inference in SSMs.  
+for Bayesian inference in SSMs.
 
 ## Why bayesSSM?
 
