@@ -6,10 +6,15 @@ Authors@R: c(
     person(
       "Bjarke", "Hautop",
       email = "bjarke.hautop@gmail.com",
-      role = c("aut", "cre")
+      role = c("aut", "cre", "cph")
     )
   )
-Description: Implements methods for Bayesian analysis of State Space Models.
+Description: Implements methods for Bayesian analysis of State Space Models. 
+  Includes implementations the Particle Marginal Metropolis-Hastings algorithm 
+  described in Andrieu et al. (2010) <doi:10.1111/j.1467-9868.2009.00736.x> and
+  automatic tuning inspired by Pitt et al. (2012) 
+  <doi:10.1016/j.jeconom.2012.06.004> and J. Dahlin and 
+  T. B. Schön (2019) <doi:10.18637/jss.v088.c02>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
