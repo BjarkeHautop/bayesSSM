@@ -55,7 +55,7 @@ $$
 \begin{aligned}
 		X_1 &\sim N(0,1) \\
 		X_t&=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0,1) \\
-		Y_t&=X_t+\sigma_y W_t, \quad W_t \sim N(0, \, 1).
+		Y_t&=X_t+\sigma_y W_t, \quad W_t \sim N(0, 1).
 \end{aligned}
 $$
 

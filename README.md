@@ -46,7 +46,7 @@ $$
 \begin{aligned}
         X_1 &\sim N(0,1) \\
         X_t&=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0,1) \\
-        Y_t&=X_t+\sigma_y W_t, \quad W_t \sim N(0, \, 1).
+        Y_t&=X_t+\sigma_y W_t, \quad W_t \sim N(0, 1).
 \end{aligned}
 $$
 
@@ -154,13 +154,13 @@ result <- pmmh(
 #> Running particle MCMC chain with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
-#> Using 53 particles for PMMH:
+#> Using 50 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat
-#>        phi 0.66 0.15   0.67          0.38           0.94  25 1.036
-#>    sigma_x 0.84 0.33   0.88          0.17           1.43  11 1.169
-#>    sigma_y 0.63 0.38   0.56          0.07           1.51  16 1.170
+#>        phi 0.86 0.09   0.87          0.64           0.98  57 1.026
+#>    sigma_x 0.90 0.48   1.01          0.04           1.74  46 1.022
+#>    sigma_y 0.84 0.39   0.87          0.12           1.60  68 1.013
 #> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =
 #> transition_fn, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.
