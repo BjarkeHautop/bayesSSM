@@ -17,8 +17,8 @@
 <script src="deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="Bayesian Methods for State Space Models">
-<meta name="description" content="Implements methods for Bayesian analysis of State Space Models. Includes implementations the Particle Marginal Metropolis-Hastings algorithm described in Andrieu et al. (2010) &lt;doi:10.1111/j.1467-9868.2009.00736.x&gt; and automatic tuning inspired by Pitt et al. (2012) &lt;doi:10.1016/j.jeconom.2012.06.004&gt; and J. Dahlin and T. B. Schön (2019) &lt;doi:10.18637/jss.v088.c02&gt;.">
-<meta property="og:description" content="Implements methods for Bayesian analysis of State Space Models. Includes implementations the Particle Marginal Metropolis-Hastings algorithm described in Andrieu et al. (2010) &lt;doi:10.1111/j.1467-9868.2009.00736.x&gt; and automatic tuning inspired by Pitt et al. (2012) &lt;doi:10.1016/j.jeconom.2012.06.004&gt; and J. Dahlin and T. B. Schön (2019) &lt;doi:10.18637/jss.v088.c02&gt;.">
+<meta name="description" content="Implements methods for Bayesian analysis of State Space Models. Includes implementations of the Particle Marginal Metropolis-Hastings algorithm described in Andrieu et al. (2010) &lt;doi:10.1111/j.1467-9868.2009.00736.x&gt; and automatic tuning inspired by Pitt et al. (2012) &lt;doi:10.1016/j.jeconom.2012.06.004&gt; and J. Dahlin and T. B. Schön (2019) &lt;doi:10.18637/jss.v088.c02&gt;.">
+<meta property="og:description" content="Implements methods for Bayesian analysis of State Space Models. Includes implementations of the Particle Marginal Metropolis-Hastings algorithm described in Andrieu et al. (2010) &lt;doi:10.1111/j.1467-9868.2009.00736.x&gt; and automatic tuning inspired by Pitt et al. (2012) &lt;doi:10.1016/j.jeconom.2012.06.004&gt; and J. Dahlin and T. B. Schön (2019) &lt;doi:10.18637/jss.v088.c02&gt;.">
 <meta property="og:image" content="https://bjarkehautop.github.io/bayesSSM/logo.png">
 </head>
 <body>
@@ -29,7 +29,7 @@
 
     <a class="navbar-brand me-2" href="index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -151,7 +151,7 @@ for Bayesian inference in SSMs.</p>
 <span>  sigma_x <span class="op">=</span> <span class="va">log_prior_sigma_x</span>,</span>
 <span>  sigma_y <span class="op">=</span> <span class="va">log_prior_sigma_y</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Now we can run the PMMH algorithm using the <code>pmmh</code> function. We run 2 chains for 200 MCMC samples with a burn-in of 10. We also modify the tuning to only use 200 pilot samples and a burn-in of 10. In practice you would want to run it for a much larger number of samples.</p>
+<p>Now we can run the PMMH algorithm using the <code>pmmh</code> function. For this README we use a lower number of samples and a smaller burn-in period, and also modify the pilot chains to only use 200 samples. This is to make the example run faster.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/BjarkeHautop/bayesSSM" class="external-link">bayesSSM</a></span><span class="op">)</span></span>
 <span></span>
@@ -173,17 +173,17 @@ for Bayesian inference in SSMs.</p>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Running chain 1...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
-<span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
+<span><span class="co">#&gt; Using 140 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; Running chain 2...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
-<span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
+<span><span class="co">#&gt; Using 115 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
 <span><span class="co">#&gt;  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;        phi 0.86 0.09   0.87          0.64           0.98  57 1.026</span></span>
-<span><span class="co">#&gt;    sigma_x 0.90 0.48   1.01          0.04           1.74  46 1.022</span></span>
-<span><span class="co">#&gt;    sigma_y 0.84 0.39   0.87          0.12           1.60  68 1.013</span></span>
+<span><span class="co">#&gt;        phi 0.77 0.12   0.78          0.53           0.97  33 1.063</span></span>
+<span><span class="co">#&gt;    sigma_x 1.31 0.28   1.28          0.87           1.93  31 1.073</span></span>
+<span><span class="co">#&gt;    sigma_y 0.52 0.26   0.47          0.12           1.12   6 1.170</span></span>
 <span><span class="co">#&gt; Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =</span></span>
 <span><span class="co">#&gt; transition_fn, : Some ESS values are below 400, indicating poor mixing.</span></span>
 <span><span class="co">#&gt; Consider running the chains for more iterations.</span></span>
@@ -203,6 +203,7 @@ for Bayesian inference in SSMs.</p>
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
+<li><a href="https://cloud.r-project.org/package=bayesSSM" class="external-link">View on CRAN</a></li>
 <li><a href="https://github.com/BjarkeHautop/bayesSSM/" class="external-link">Browse source code</a></li>
 <li><a href="https://github.com/BjarkeHautop/bayesSSM/issues" class="external-link">Report a bug</a></li>
 </ul>
