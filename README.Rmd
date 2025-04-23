@@ -30,7 +30,7 @@ for Bayesian inference in SSMs.
 While there are several alternative packages available for performing Particle 
 MCMC bayesSSM is designed to be simple and easy to use. It was developed as a 
 procrastination task during my Master's thesis about Particle MCMC, since I 
-was implementing everything from scratch anyway. 
+was implementing everything from scratch anyway.
 Everything is written in R, so performance is not the best.
 
 ## Installation

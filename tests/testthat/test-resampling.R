@@ -31,6 +31,38 @@ test_that("Throws error if particles dim doesn't match weight", {
   )
 })
 
+
+test_that("Throws error for non-valid weights", {
+  particles <- 1:3
+  weights <- rep(0, 3)
+  expect_error(
+    .resample_multinomial(particles, weights),
+    "Sum of weights must be greater than 0"
+  )
+  expect_error(
+    .resample_stratified(particles, weights),
+    "Sum of weights must be greater than 0"
+  )
+  expect_error(
+    .resample_systematic(particles, weights),
+    "Sum of weights must be greater than 0"
+  )
+
+  weights <- c(-0.1, 0.5, 0.4)
+  expect_error(
+    .resample_multinomial(particles, weights),
+    "Weights must be non-negative"
+  )
+  expect_error(
+    .resample_stratified(particles, weights),
+    "Weights must be non-negative"
+  )
+  expect_error(
+    .resample_systematic(particles, weights),
+    "Weights must be non-negative"
+  )
+})
+
 test_that("Multinomial resampling produces valid output", {
   set.seed(123)
   particles <- 1:5

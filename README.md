@@ -150,17 +150,17 @@ result <- pmmh(
 )
 #> Running chain 1...
 #> Running pilot chain for tuning...
-#> Using 140 particles for PMMH:
+#> Using 63 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
-#> Using 115 particles for PMMH:
+#> Using 50 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat
-#>        phi 0.77 0.12   0.78          0.53           0.97  33 1.063
-#>    sigma_x 1.31 0.28   1.28          0.87           1.93  31 1.073
-#>    sigma_y 0.52 0.26   0.47          0.12           1.12   6 1.170
+#>        phi 0.65 0.16   0.68          0.23           0.91   8 1.169
+#>    sigma_x 1.14 0.30   1.13          0.60           1.94  29 1.012
+#>    sigma_y 0.61 0.27   0.60          0.14           1.14  28 1.093
 #> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =
 #> transition_fn, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.
