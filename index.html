@@ -89,11 +89,11 @@ for Bayesian inference in SSMs.</p>
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
 <p>Consider the following SSM:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>X</mi><mn>1</mn></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>X</mi><mi>t</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>ϕ</mi><msub><mi>X</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><mo>sin</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>σ</mi><mi>x</mi></msub><msub><mi>V</mi><mi>t</mi></msub><mo>,</mo><mspace width="1.0em"></mspace><msub><mi>V</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>Y</mi><mi>t</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>X</mi><mi>t</mi></msub><mo>+</mo><msub><mi>σ</mi><mi>y</mi></msub><msub><mi>W</mi><mi>t</mi></msub><mo>,</mo><mspace width="1.0em"></mspace><msub><mi>W</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mspace width="0.167em"></mspace><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>X</mi><mn>1</mn></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>X</mi><mi>t</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>ϕ</mi><msub><mi>X</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><mo>sin</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>σ</mi><mi>x</mi></msub><msub><mi>V</mi><mi>t</mi></msub><mo>,</mo><mspace width="1.0em"></mspace><msub><mi>V</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>Y</mi><mi>t</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>X</mi><mi>t</mi></msub><mo>+</mo><msub><mi>σ</mi><mi>y</mi></msub><msub><mi>W</mi><mi>t</mi></msub><mo>,</mo><mspace width="1.0em"></mspace><msub><mi>W</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">
 \begin{aligned}
         X_1 &amp;\sim N(0,1) \\
         X_t&amp;=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0,1) \\
-        Y_t&amp;=X_t+\sigma_y W_t, \quad W_t \sim N(0, \, 1).
+        Y_t&amp;=X_t+\sigma_y W_t, \quad W_t \sim N(0, 1).
 \end{aligned}
 </annotation></semantics></math></p>
 <p>Let’s first simulate some data from this model with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mo>=</mo><mn>0.8</mn></mrow><annotation encoding="application/x-tex">\phi = 0.8</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>σ</mi><mi>x</mi></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\sigma_x = 1</annotation></semantics></math>, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>σ</mi><mi>y</mi></msub><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">\sigma_y = 0.5</annotation></semantics></math>.</p>
@@ -177,13 +177,13 @@ for Bayesian inference in SSMs.</p>
 <span><span class="co">#&gt; Running particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; Running chain 2...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
-<span><span class="co">#&gt; Using 53 particles for PMMH:</span></span>
+<span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
 <span><span class="co">#&gt;  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;        phi 0.66 0.15   0.67          0.38           0.94  25 1.036</span></span>
-<span><span class="co">#&gt;    sigma_x 0.84 0.33   0.88          0.17           1.43  11 1.169</span></span>
-<span><span class="co">#&gt;    sigma_y 0.63 0.38   0.56          0.07           1.51  16 1.170</span></span>
+<span><span class="co">#&gt;        phi 0.86 0.09   0.87          0.64           0.98  57 1.026</span></span>
+<span><span class="co">#&gt;    sigma_x 0.90 0.48   1.01          0.04           1.74  46 1.022</span></span>
+<span><span class="co">#&gt;    sigma_y 0.84 0.39   0.87          0.12           1.60  68 1.013</span></span>
 <span><span class="co">#&gt; Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =</span></span>
 <span><span class="co">#&gt; transition_fn, : Some ESS values are below 400, indicating poor mixing.</span></span>
 <span><span class="co">#&gt; Consider running the chains for more iterations.</span></span>
