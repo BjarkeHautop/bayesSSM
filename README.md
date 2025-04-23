@@ -124,10 +124,10 @@ log_priors <- list(
 )
 ```
 
-Now we can run the PMMH algorithm using the `pmmh` function. We run 2
-chains for 200 MCMC samples with a burn-in of 10. We also modify the
-tuning to only use 200 pilot samples and a burn-in of 10. In practice
-you would want to run it for a much larger number of samples.
+Now we can run the PMMH algorithm using the `pmmh` function. For this
+README we use a lower number of samples and a smaller burn-in period,
+and also modify the pilot chains to only use 200 samples. This is to
+make the example run faster.
 
 ``` r
 library(bayesSSM)
@@ -150,17 +150,17 @@ result <- pmmh(
 )
 #> Running chain 1...
 #> Running pilot chain for tuning...
-#> Using 50 particles for PMMH:
+#> Using 140 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
-#> Using 50 particles for PMMH:
+#> Using 115 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat
-#>        phi 0.86 0.09   0.87          0.64           0.98  57 1.026
-#>    sigma_x 0.90 0.48   1.01          0.04           1.74  46 1.022
-#>    sigma_y 0.84 0.39   0.87          0.12           1.60  68 1.013
+#>        phi 0.77 0.12   0.78          0.53           0.97  33 1.063
+#>    sigma_x 1.31 0.28   1.28          0.87           1.93  31 1.073
+#>    sigma_y 0.52 0.26   0.47          0.12           1.12   6 1.170
 #> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =
 #> transition_fn, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.

@@ -133,10 +133,10 @@ log_priors <- list(
 )
 ```
 
-Now we can run the PMMH algorithm using the `pmmh` function. We run 2 chains for
-200 MCMC samples with a burn-in of 10. We also modify the tuning to only use
-200 pilot samples and a burn-in of 10. 
-In practice you would want to run it for a much larger number of samples. 
+Now we can run the PMMH algorithm using the `pmmh` function. For this README we
+use a lower number of samples and a smaller burn-in period, and also modify
+the pilot chains to only use 200 samples. 
+This is to make the example run faster.
 
 ```{r example}
 library(bayesSSM)
