@@ -13,12 +13,10 @@
     stop("Weights must be non-negative")
   }
 
-  # Normalize weights to sum to 1
   total_weight <- sum(weights)
   if (total_weight == 0) {
     stop("Sum of weights must be greater than 0")
   }
-  weights <- weights / total_weight
 
   if (is.matrix(particles)) {
     n <- nrow(particles)
@@ -47,12 +45,10 @@
     stop("Weights must be non-negative")
   }
 
-  # Normalize weights to sum to 1
   total_weight <- sum(weights)
   if (total_weight == 0) {
     stop("Sum of weights must be greater than 0")
   }
-  weights <- weights / total_weight
 
   if (is.matrix(particles)) {
     n <- nrow(particles)
@@ -105,12 +101,10 @@
     stop("Weights must be non-negative")
   }
 
-  # Normalize weights to sum to 1
   total_weight <- sum(weights)
   if (total_weight == 0) {
     stop("Sum of weights must be greater than 0")
   }
-  weights <- weights / total_weight
 
   if (is.matrix(particles)) {
     n <- nrow(particles)
@@ -118,11 +112,9 @@
     if (n != length(weights)) {
       stop("Number of particles must match the length of weights")
     }
-
-    start <- stats::runif(1, 0, 1 / n)
-    positions <- start + ((0:(n - 1)) / n)
+    positions <- (runif(1) + seq_len(n) - 1) / n
     cumulative_sum <- cumsum(weights)
-    indices <- rep(NA, n)
+    indices <- numeric(n)
     i <- 1
     j <- 1
     while (i <= n) {
@@ -140,11 +132,9 @@
     if (n != length(weights)) {
       stop("Number of particles must match the length of weights")
     }
-
-    start <- runif(1, 0, 1 / n)
-    positions <- start + ((0:(n - 1)) / n)
+    positions <- (runif(1) + seq_len(n) - 1) / n
     cumulative_sum <- cumsum(weights)
-    indices <- rep(NA, n)
+    indices <- numeric(n)
     i <- 1
     j <- 1
     while (i <= n) {
