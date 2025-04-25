@@ -28,6 +28,9 @@ rhat <- function(chains) {
   compute_rhat_matrix <- function(mat) {
     m <- nrow(mat)
     k <- ncol(mat)
+    if (m < 2) {
+      stop("Number of iterations must be at least 2.")
+    }
 
     # Ensure even number of iterations
     if (m %% 2 == 1) {

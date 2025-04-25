@@ -16,7 +16,10 @@ test_that("Summary works", {
 
   # Check structure and content
   expect_s3_class(summary_out, "data.frame")
-  expect_named(summary_out, c("mean", "sd", "median", "2.5%", "97.5%", "ESS", "Rhat"))
+  expect_named(
+    summary_out,
+    c("mean", "sd", "median", "2.5%", "97.5%", "ESS", "Rhat")
+  )
   expect_equal(rownames(summary_out), c("param1", "param2"))
   expect_equal(summary_out["param1", "ESS"], 200)
   expect_equal(summary_out["param1", "Rhat"], 1.01)

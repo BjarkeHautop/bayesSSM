@@ -40,6 +40,11 @@ test_that("rhat 0 variance", {
   expect_warning(rhat(chains), "One or more chains have zero variance")
 })
 
+test_that("rhat too few observations", {
+  chains <- matrix(rep(1, 2), nrow = 1, ncol = 2)
+  expect_error(rhat(chains), "Number of iterations must be at least 2.")
+})
+
 test_that("not same number of iterations", {
   m <- 8
   chains_df <- data.frame(

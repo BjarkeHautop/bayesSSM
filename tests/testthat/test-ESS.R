@@ -75,7 +75,7 @@ test_that("ess stops if every chain not same number of iterations", {
 })
 
 test_that("ess idx2 > length(hat_rho)", {
-  chains <- matrix(c(1,2,3, 2,3,4), ncol = 2)
+  chains <- matrix(c(1, 2, 3, 2, 3, 4), ncol = 2)
   expect_equal(
     ess(chains),
     6
