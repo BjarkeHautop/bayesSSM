@@ -135,8 +135,7 @@ ess <- function(chains) {
       if (length(unique(chain_lengths)) != 1) {
         stop(
           paste0(
-            "Not all chains have the same number of iterations for
-            parameter: ", param
+            "Not all chains have the same number of iterations."
           )
         )
       }
