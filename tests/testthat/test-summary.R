@@ -12,16 +12,12 @@ test_that("Summary works", {
 
   class(dummy_output) <- "pmmh_output"
 
-  # Check that the class is correctly assigned
-  expect_s3_class(dummy_output, "pmmh_output")
+  summary_out <- summary(dummy_output)
 
-  # Check that the structure is as expected
-  expect_type(dummy_output$theta_chain, "list")
-  expect_equal(nrow(dummy_output$theta_chain), 200) # 100 from each chain
-
-  expect_named(dummy_output$diagnostics$ess, c("param1", "param2"))
-  expect_named(dummy_output$diagnostics$rhat, c("param1", "param2"))
-
-  expect_equal(dummy_output$diagnostics$ess[["param1"]], 200)
-  expect_equal(dummy_output$diagnostics$rhat[["param1"]], 1.01)
+  # Check structure and content
+  expect_s3_class(summary_out, "data.frame")
+  expect_named(summary_out, c("mean", "sd", "median", "2.5%", "97.5%", "ESS", "Rhat"))
+  expect_equal(rownames(summary_out), c("param1", "param2"))
+  expect_equal(summary_out["param1", "ESS"], 200)
+  expect_equal(summary_out["param1", "Rhat"], 1.01)
 })

@@ -29,14 +29,16 @@ summary.pmmh_output <- function(object, ...) {
   # Compute summary statistics
   summary_stats <- sapply(param_names, function(param) {
     samples <- object$theta_chain[[param]]
-    c(
+    stats <- c(
       mean = mean(samples),
       sd = sd(samples),
       median = median(samples),
-      `2.5%` = quantile(samples, 0.025),
-      `97.5%` = quantile(samples, 0.975)
+      quantile(samples, probs = c(0.025, 0.975))
     )
+    names(stats)[4:5] <- c("2.5%", "97.5%")  # clean names
+    stats
   })
+
 
   # Convert to data frame
   summary_df <- as.data.frame(t(summary_stats))
