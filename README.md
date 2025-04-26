@@ -12,8 +12,8 @@ coverage](https://codecov.io/gh/BjarkeHautop/bayesSSM/graph/badge.svg)](https://
 
 bayesSSM is an R package offering a set of tools for performing Bayesian
 inference in state-space models (SSMs). It implements the Particle
-Marginal Metropolis-Hastings (PMMH) in the main function `pmmh`  
-for Bayesian inference in SSMs.
+Marginal Metropolis-Hastings (PMMH) in the main function `pmmh` for
+Bayesian inference in SSMs.
 
 ## Why bayesSSM?
 
@@ -150,7 +150,7 @@ result <- pmmh(
 )
 #> Running chain 1...
 #> Running pilot chain for tuning...
-#> Using 63 particles for PMMH:
+#> Using 50 particles for PMMH:
 #> Running particle MCMC chain with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
@@ -158,9 +158,9 @@ result <- pmmh(
 #> Running particle MCMC chain with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat
-#>        phi 0.65 0.16   0.68          0.23           0.91   8 1.169
-#>    sigma_x 1.14 0.30   1.13          0.60           1.94  29 1.012
-#>    sigma_y 0.61 0.27   0.60          0.14           1.14  28 1.093
+#>        phi 0.73 0.12   0.73          0.51           0.98  50 1.012
+#>    sigma_x 0.73 0.40   0.80          0.03           1.41  61 1.011
+#>    sigma_y 0.91 0.29   0.93          0.42           1.47  48 1.052
 #> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =
 #> transition_fn, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.

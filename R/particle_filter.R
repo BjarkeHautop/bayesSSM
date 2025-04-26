@@ -112,7 +112,9 @@
 #'   transition_fn = transition_fn,
 #'   log_likelihood_fn = log_likelihood_fn
 #' )
-#' plot(result$state_est, type = "l", col = "blue", main = "State Estimates")
+#' plot(result$state_est, type = "l", col = "blue", main = "State Estimates",
+#'   ylim = range(c(result$state_est, y)))
+#' points(y, col = "red", pch = 20)
 #'
 #' # With parameters
 #' init_fn <- function(particles) rnorm(particles, 0, 1)
@@ -137,7 +139,9 @@
 #'   mu = 1,
 #'   sigma = 1
 #' )
-#' plot(result$state_est, type = "l", col = "blue", main = "State Estimates")
+#' plot(result$state_est, type = "l", col = "blue", main = "State Estimates",
+#'   ylim = range(c(result$state_est, y)))
+#' points(y, col = "red", pch = 20)
 #'
 #' # With observations gaps
 #' init_fn <- function(particles) rnorm(particles, 0, 1)
@@ -165,13 +169,13 @@
 #' # Suppose we have data for t=1,2,3,5,6,7,8,9,10 (i.e., missing at t=4)
 #'
 #' obs_times <- c(1, 2, 3, 5, 6, 7, 8, 9, 10)
-#' data <- data[obs_times]
+#' data_obs <- data[obs_times]
 #'
 #' num_particles <- 100
 #' # Run the particle filter
 #' # Specify observation times in the particle filter using obs_times
 #' result <- particle_filter(
-#'   y = data,
+#'   y = data_obs,
 #'   num_particles = num_particles,
 #'   init_fn = init_fn,
 #'   transition_fn = transition_fn,
@@ -180,7 +184,9 @@
 #'   mu = 1,
 #'   sigma = 1,
 #' )
-#' plot(result$state_est, type = "l", col = "blue", main = "State Estimates")
+#' plot(result$state_est, type = "l", col = "blue", main = "State Estimates",
+#'   ylim = range(c(result$state_est, data)))
+#' points(data, col = "red", pch = 20)
 particle_filter <- function(
     y, num_particles, init_fn, transition_fn, log_likelihood_fn,
     obs_times = NULL,
@@ -393,14 +399,12 @@ particle_filter <- function(
       return(result)
     }
 
-    log_weights <- log(weights) + log_likelihood
-    log_l_i <- logsumexp(log_weights) - log(num_particles)
-    loglike <- loglike + log_l_i
-    loglike_history[i] <- log_l_i
-
+    # correct:
+    log_weights    <- log(weights) + log_likelihood
     log_normalizer <- logsumexp(log_weights)
-    log_weights <- log_weights - log_normalizer
-    weights <- exp(log_weights)
+    loglike        <- loglike + log_normalizer
+    log_weights    <- log_weights - log_normalizer
+    weights        <- exp(log_weights)
 
     ess_current <- 1 / sum(weights^2)
     ess_vec[i] <- ess_current

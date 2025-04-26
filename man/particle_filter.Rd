@@ -136,7 +136,9 @@ result <- particle_filter(
   transition_fn = transition_fn,
   log_likelihood_fn = log_likelihood_fn
 )
-plot(result$state_est, type = "l", col = "blue", main = "State Estimates")
+plot(result$state_est, type = "l", col = "blue", main = "State Estimates",
+  ylim = range(c(result$state_est, y)))
+points(y, col = "red", pch = 20)
 
 # With parameters
 init_fn <- function(particles) rnorm(particles, 0, 1)
@@ -161,7 +163,9 @@ result <- particle_filter(
   mu = 1,
   sigma = 1
 )
-plot(result$state_est, type = "l", col = "blue", main = "State Estimates")
+plot(result$state_est, type = "l", col = "blue", main = "State Estimates",
+  ylim = range(c(result$state_est, y)))
+points(y, col = "red", pch = 20)
 
 # With observations gaps
 init_fn <- function(particles) rnorm(particles, 0, 1)
@@ -189,13 +193,13 @@ data <- simulate_ssm(10, mu = 1, sigma = 1)
 # Suppose we have data for t=1,2,3,5,6,7,8,9,10 (i.e., missing at t=4)
 
 obs_times <- c(1, 2, 3, 5, 6, 7, 8, 9, 10)
-data <- data[obs_times]
+data_obs <- data[obs_times]
 
 num_particles <- 100
 # Run the particle filter
 # Specify observation times in the particle filter using obs_times
 result <- particle_filter(
-  y = data,
+  y = data_obs,
   num_particles = num_particles,
   init_fn = init_fn,
   transition_fn = transition_fn,
@@ -204,7 +208,9 @@ result <- particle_filter(
   mu = 1,
   sigma = 1,
 )
-plot(result$state_est, type = "l", col = "blue", main = "State Estimates")
+plot(result$state_est, type = "l", col = "blue", main = "State Estimates",
+  ylim = range(c(result$state_est, data)))
+points(data, col = "red", pch = 20)
 }
 \references{
 Douc, R., Cappé, O., & Moulines, E. (2005). Comparison of

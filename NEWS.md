@@ -1,10 +1,12 @@
 # bayesSSM (development version)
 
-* Improve description.
+* Fixed a bug in `particle_filter`.
 
-* Improve text in README and bayesSSM vignette.
+* Improved package description.
 
-* Fixed a bug in stratified resampling.
+* Improve text in README and `bayesSSM` vignette.
+
+* Added additional tests.
 
 # bayesSSM 0.4.7
 
