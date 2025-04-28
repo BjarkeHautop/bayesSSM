@@ -387,7 +387,13 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
 
     # Precompute the transformed proposal covariance:
     scale_vec <- sapply(seq_along(init_theta), function(j) {
-      if (param_transform[j] == "log") init_theta[j] else 1
+      if (param_transform[j] == "log") {
+        init_theta[j]
+      } else if (param_transform[j] == "invlogit") {
+        init_theta[j] * (1 - init_theta[j])
+      } else {
+        1
+      }
     })
     proposal_cov_trans <- diag(1 / scale_vec) %*% proposal_cov %*%
       diag(1 / scale_vec)
