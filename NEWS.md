@@ -2,6 +2,10 @@
 
 * Fixed a bug in `particle_filter`.
 
+* Made `pmmh` more robust. 
+
+* Added scaling for proposal covariance for "invlogit" in `pmmh`.
+
 * Improved package description.
 
 * Improve text in README and `bayesSSM` vignette.

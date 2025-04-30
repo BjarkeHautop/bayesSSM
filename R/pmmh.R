@@ -488,6 +488,11 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
                              log_jacobian_current)
       log_accept_ratio <- log_accept_num - log_accept_denom
 
+      # If it’s NA/NaN, force it to -Inf.
+      if (is.na(log_accept_ratio)) {
+        log_accept_ratio <- -Inf
+      }
+
       if (log(runif(1)) < log_accept_ratio) {
         current_theta <- proposed_theta
         current_loglike <- proposed_loglike
