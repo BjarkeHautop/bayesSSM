@@ -73,11 +73,18 @@ default_tune_control <- function(
 #' @param y A numeric vector or matrix of observations. Each row represents an
 #' observation at a time step.
 #' @param m An integer specifying the total number of MCMC iterations.
-#' @param init_fn A function to initialize the state-space model.
-#' @param transition_fn A function that defines the state transition of the
-#' state-space model.
-#' @param log_likelihood_fn A function that calculates the log-likelihood
-#' for the state-space model given latent states.
+#' @param init_fn A function that initializes the particle states. It should
+#' take the current particles as its first argument and return
+#' a vector or matrix of initial particle states.
+#' @param transition_fn A function describing the state transition model. It
+#' should take the current particles and the current time step as arguments and
+#' return the propagated particles. The function can optionally depend on time
+#' by including a time step argument `t`.
+#' @param log_likelihood_fn A function that computes the log likelihoods for the
+#' particles. It should accept an observation, the current particles, and the
+#' current time step as arguments and return a numeric vector of log likelihood
+#' values. The function can optionally depend on time
+#' by including a time step argument `t`.
 #' @param log_priors A list of functions for computing the log-prior of each
 #' parameter.
 #' @param pilot_init_params A list of initial parameter values. Should be a list

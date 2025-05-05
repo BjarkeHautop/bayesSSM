@@ -30,12 +30,14 @@ a vector or matrix of initial particle states.}
 
 \item{transition_fn}{A function describing the state transition model. It
 should take the current particles and the current time step as arguments and
-return the propagated particles.}
+return the propagated particles. The function can optionally depend on time
+by including a time step argument `t`.}
 
 \item{log_likelihood_fn}{A function that computes the log likelihoods for the
 particles. It should accept an observation, the current particles, and the
 current time step as arguments and return a numeric vector of log likelihood
-values.}
+values. The function can optionally depend on time
+by including a time step argument `t`.}
 
 \item{obs_times}{A numeric vector indicating the time points at which
 observations in \code{y} are available. Must be of the same length as the

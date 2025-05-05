@@ -21,11 +21,13 @@
 #' a vector or matrix of initial particle states.
 #' @param transition_fn A function describing the state transition model. It
 #' should take the current particles and the current time step as arguments and
-#' return the propagated particles.
+#' return the propagated particles. The function can optionally depend on time
+#' by including a time step argument `t`.
 #' @param log_likelihood_fn A function that computes the log likelihoods for the
 #' particles. It should accept an observation, the current particles, and the
 #' current time step as arguments and return a numeric vector of log likelihood
-#' values.
+#' values. The function can optionally depend on time
+#' by including a time step argument `t`.
 #' @param obs_times A numeric vector indicating the time points at which
 #' observations in \code{y} are available. Must be of the same length as the
 #' number of rows in \code{y}. If not specified, it is assumed that observations
@@ -216,6 +218,20 @@ particle_filter <- function(
     )
   }
 
+  # Add t ar arg to transistion_fn and log_likelihood_fn if not present
+  if (!"t" %in% names(formals(transition_fn))) {
+    formals(transition_fn) <- c(
+      formals(transition_fn),
+      alist(t = NULL)
+    )
+  }
+  if (!"t" %in% names(formals(log_likelihood_fn))) {
+    formals(log_likelihood_fn) <- c(
+      formals(log_likelihood_fn),
+      alist(t = NULL)
+    )
+  }
+
   # ---------------------------
   # Input validation
   # ---------------------------
@@ -313,8 +329,24 @@ particle_filter <- function(
   # ---------------------------
   # Time step 1 initialization
   # ---------------------------
-  # Evaluate log-likelihood function at the first observation.
-  log_weights <- log_likelihood_fn(y = y[1, ], particles = particles, ...)
+
+  # Simulate from initial (t=1) to first observation time, if needed
+  initial_time <- 1L
+  gap1 <- obs_times[1] - initial_time
+  if (gap1 > 0) {
+    t_curr <- initial_time
+    for (step in seq_len(gap1)) {
+      t_curr <- t_curr + 1L
+      particles <- transition_fn(particles = particles, t = t_curr, ...)
+    }
+  }
+  # Weight at first observation
+  log_weights <- log_likelihood_fn(
+    y = y[1, ],
+    particles = particles,
+    t = obs_times[1],
+    ...
+  )
 
   # Check that log_likelihood_fn returns a log-likelihood of correct dimensions.
   if (!is.numeric(log_weights) || length(log_weights) != num_particles) {
@@ -348,25 +380,31 @@ particle_filter <- function(
   # ----------------------------
   # Main loop over time steps
   # ----------------------------
-  for (i in 2:num_steps) {
-    # Determine how many time steps to evolve the particles
-    gap <- obs_times[i] - obs_times[i - 1]
-    if (gap < 1) stop("obs_times must be increasing")
+  prev_time <- obs_times[1]
 
+  for (i in 2:num_steps) {
+    # Evolve particles from prev_time to obs_times[i]
+    gap <- obs_times[i] - prev_time
+    t_curr <- prev_time
     # Evolve the particles for the gap (if gap > 1, do multiple transitions)
     for (step in 1:gap) {
-      particles_new <- transition_fn(particles = particles, ...)
-      if (is.null(dim(particles_new))) {
-        if (length(particles_new) != num_particles) {
+      t_curr <- t_curr + 1
+      particles <- transition_fn(
+        particles = particles,
+        t = t_curr,
+        ...
+      )
+      if (is.null(dim(particles))) {
+        if (length(particles) != num_particles) {
           stop("transition_fn must return a vector of length num_particles")
         }
-        particles_new <- matrix(
-          particles_new,
+        particles <- matrix(
+          particles,
           nrow = num_particles,
           byrow = TRUE
         )
       } else {
-        if (nrow(particles_new) != num_particles) {
+        if (nrow(particles) != num_particles) {
           stop(
             paste0(
               "transition_fn must return the same number of rows ",
@@ -375,11 +413,16 @@ particle_filter <- function(
           )
         }
       }
-      particles <- particles_new
     }
+    prev_time <- obs_times[i]
 
     # Now evaluate the log-likelihood at the current observation time.
-    log_likelihood <- log_likelihood_fn(y = y[i, ], particles = particles, ...)
+    log_likelihood <- log_likelihood_fn(
+      y = y[i, ],
+      particles = particles,
+      t = obs_times[i],
+      ...
+    )
 
     # Check if the likelihood is extremely low.
     if (all(log_likelihood < -1e8)) {
@@ -399,7 +442,6 @@ particle_filter <- function(
       return(result)
     }
 
-    # correct:
     log_weights    <- log(weights) + log_likelihood
     log_normalizer <- logsumexp(log_weights)
     loglike        <- loglike + log_normalizer
