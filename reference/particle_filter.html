@@ -25,7 +25,7 @@ It is recommended to use either SISR or SISAR to avoid weight degeneracy."><meta
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9004</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -106,14 +106,16 @@ a vector or matrix of initial particle states.</p></dd>
 <dt id="arg-transition-fn">transition_fn<a class="anchor" aria-label="anchor" href="#arg-transition-fn"></a></dt>
 <dd><p>A function describing the state transition model. It
 should take the current particles and the current time step as arguments and
-return the propagated particles.</p></dd>
+return the propagated particles. The function can optionally depend on time
+by including a time step argument `t`.</p></dd>
 
 
 <dt id="arg-log-likelihood-fn">log_likelihood_fn<a class="anchor" aria-label="anchor" href="#arg-log-likelihood-fn"></a></dt>
 <dd><p>A function that computes the log likelihoods for the
 particles. It should accept an observation, the current particles, and the
 current time step as arguments and return a numeric vector of log likelihood
-values.</p></dd>
+values. The function can optionally depend on time
+by including a time step argument `t`.</p></dd>
 
 
 <dt id="arg-obs-times">obs_times<a class="anchor" aria-label="anchor" href="#arg-obs-times"></a></dt>

@@ -13,7 +13,7 @@ particles for the particle filter, and then runs the main PMMH chain."><meta pro
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9004</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,17 +88,24 @@ observation at a time step.</p></dd>
 
 
 <dt id="arg-init-fn">init_fn<a class="anchor" aria-label="anchor" href="#arg-init-fn"></a></dt>
-<dd><p>A function to initialize the state-space model.</p></dd>
+<dd><p>A function that initializes the particle states. It should
+take the current particles as its first argument and return
+a vector or matrix of initial particle states.</p></dd>
 
 
 <dt id="arg-transition-fn">transition_fn<a class="anchor" aria-label="anchor" href="#arg-transition-fn"></a></dt>
-<dd><p>A function that defines the state transition of the
-state-space model.</p></dd>
+<dd><p>A function describing the state transition model. It
+should take the current particles and the current time step as arguments and
+return the propagated particles. The function can optionally depend on time
+by including a time step argument `t`.</p></dd>
 
 
 <dt id="arg-log-likelihood-fn">log_likelihood_fn<a class="anchor" aria-label="anchor" href="#arg-log-likelihood-fn"></a></dt>
-<dd><p>A function that calculates the log-likelihood
-for the state-space model given latent states.</p></dd>
+<dd><p>A function that computes the log likelihoods for the
+particles. It should accept an observation, the current particles, and the
+current time step as arguments and return a numeric vector of log likelihood
+values. The function can optionally depend on time
+by including a time step argument `t`.</p></dd>
 
 
 <dt id="arg-log-priors">log_priors<a class="anchor" aria-label="anchor" href="#arg-log-priors"></a></dt>
