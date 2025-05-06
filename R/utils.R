@@ -15,11 +15,8 @@
 .check_params_match <- function(
     init_fn, transition_fn, log_likelihood_fn, pilot_init_params,
     log_priors) {
-  # Helper function to get parameter names excluding 'particles' and 'y'
   get_fn_params <- function(fn) {
-    fn_args <- names(formals(fn))
-
-    fn_args
+    names(formals(fn))
   }
 
   # Check if 'particles' is in init_fn, transition_fn, and
@@ -48,8 +45,8 @@
     get_fn_params(transition_fn),
     get_fn_params(log_likelihood_fn)
   ))
-  # Drop 'particles', 'y' and '...'
-  fn_params <- fn_params[!(fn_params %in% c("particles", "y", "..."))]
+  # Drop 'particles', 'y', 't', and '...' from the parameters
+  fn_params <- fn_params[!(fn_params %in% c("particles", "y", "t", "..."))]
 
   # Check if the parameters match init_params
   if (!all(fn_params %in% names(pilot_init_params))) {
