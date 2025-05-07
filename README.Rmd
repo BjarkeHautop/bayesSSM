@@ -92,12 +92,14 @@ $$
 $$
 
 We can use `pmmh` to perform Bayesian inference on this model. To use `pmmh`
-we need to define the functions for the SSM and the priors. The functions 
-`init_fn`, `transition_fn` should be functions that simulates the
+we need to define the functions for the SSM and the priors. 
+
+The functions `init_fn`, `transition_fn` should be functions that simulates the
 latent states. `init_fn` must contain the argument `num_particles` for 
 initializing the particles, and `transition_fn` must contain the argument
 `particles`, which is a vector of particles, and can contain any other 
 arguments for model-specific parameters. 
+
 The function `log_likelihood_fn` should be a function that
 calculates the log-likelihood of the observed data given the latent state
 variables. It must contain the arguments `y` for the data and `particles`. 
@@ -116,7 +118,6 @@ log_likelihood_fn <- function(y, particles, sigma_y) {
  dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
 }
 ```
-
 
 The priors for the parameters must be defined as log-prior functions. Every 
 parameter from `init_fn`, `transition_fn`, and `log_likelihood_fn` must have a 

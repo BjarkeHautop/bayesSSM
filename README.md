@@ -83,17 +83,19 @@ $$
 $$
 
 We can use `pmmh` to perform Bayesian inference on this model. To use
-`pmmh` we need to define the functions for the SSM and the priors. The
-functions `init_fn`, `transition_fn` should be functions that simulates
-the latent states. `init_fn` must contain the argument `num_particles`
-for initializing the particles, and `transition_fn` must contain the
-argument `particles`, which is a vector of particles, and can contain
-any other arguments for model-specific parameters. The function
-`log_likelihood_fn` should be a function that calculates the
-log-likelihood of the observed data given the latent state variables. It
-must contain the arguments `y` for the data and `particles`.
-Time-dependency can be implemented by giving a `t` argument in
-`transition_fn` and `log_likelihood_fn`.
+`pmmh` we need to define the functions for the SSM and the priors.
+
+The functions `init_fn`, `transition_fn` should be functions that
+simulates the latent states. `init_fn` must contain the argument
+`num_particles` for initializing the particles, and `transition_fn` must
+contain the argument `particles`, which is a vector of particles, and
+can contain any other arguments for model-specific parameters.
+
+The function `log_likelihood_fn` should be a function that calculates
+the log-likelihood of the observed data given the latent state
+variables. It must contain the arguments `y` for the data and
+`particles`. Time-dependency can be implemented by giving a `t` argument
+in `transition_fn` and `log_likelihood_fn`.
 
 ``` r
 init_fn <- function(num_particles) {
@@ -164,9 +166,9 @@ result <- pmmh(
 #> Running particle MCMC chain with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat
-#>        phi 0.66 0.10   0.66          0.48           0.85  89 1.003
-#>    sigma_x 0.47 0.30   0.42          0.05           1.24  50 1.019
-#>    sigma_y 0.94 0.27   0.95          0.24           1.44  48 1.036
+#>        phi 0.70 0.08   0.70          0.56           0.85  34 1.015
+#>    sigma_x 0.40 0.27   0.37          0.01           0.91  13 1.126
+#>    sigma_y 0.65 0.20   0.68          0.16           0.95  12 1.213
 #> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =
 #> transition_fn, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.
