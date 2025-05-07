@@ -2,7 +2,7 @@
 
 * Added time dependency in functions. You can now use `t` in SSM functions.
 * Fixed a bug in `particle_filter` in likelihood calculation.
-* Improved robustness of `pmmh` when low likelihood.
+* Improved robustness of `pmmh` when very low log-likelihood.
 * Added scaling for proposal covariance for "invlogit" in `pmmh`.
 * Improved package description.
 * Improved text in the README and `bayesSSM` vignette.

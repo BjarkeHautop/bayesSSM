@@ -61,7 +61,7 @@ rhat <- function(chains) {
     r_hat <- sqrt(var_hat / w)
 
     if (r_hat >= 0.99 && r_hat <= 1) {
-      r_hat <- 1
+      r_hat <- 1.00
     }
     r_hat
   }
