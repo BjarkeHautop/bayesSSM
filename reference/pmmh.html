@@ -13,7 +13,7 @@ particles for the particle filter, and then runs the main PMMH chain."><meta pro
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9006</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9007</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,23 +89,25 @@ observation at a time step.</p></dd>
 
 <dt id="arg-init-fn">init_fn<a class="anchor" aria-label="anchor" href="#arg-init-fn"></a></dt>
 <dd><p>A function that initializes the particle states. It should
-take the current particles as its first argument and return
-a vector or matrix of initial particle states.</p></dd>
+take `num_particles` as an argument for initializing the particles and return
+a vector or matrix of initial particle states. It can include any
+model-specific parameters as named arguments.</p></dd>
 
 
 <dt id="arg-transition-fn">transition_fn<a class="anchor" aria-label="anchor" href="#arg-transition-fn"></a></dt>
 <dd><p>A function describing the state transition model. It
-should take the current particles and the current time step as arguments and
-return the propagated particles. The function can optionally depend on time
-by including a time step argument `t`.</p></dd>
+should take `particles` as an argument and return the propagated particles.
+The function can optionally depend on time by including a time step argument
+`t`. It can include any model-specific parameters as named arguments.</p></dd>
 
 
 <dt id="arg-log-likelihood-fn">log_likelihood_fn<a class="anchor" aria-label="anchor" href="#arg-log-likelihood-fn"></a></dt>
 <dd><p>A function that computes the log likelihoods for the
-particles. It should accept an observation, the current particles, and the
-current time step as arguments and return a numeric vector of log likelihood
-values. The function can optionally depend on time
-by including a time step argument `t`.</p></dd>
+particles. It should take a `y` argument for the observations,
+the current particles, and return a numeric vector of log likelihood
+values. The function can optionally depend on time by including a time step
+argument `t`. It can include any model-specific parameters as named
+arguments.</p></dd>
 
 
 <dt id="arg-log-priors">log_priors<a class="anchor" aria-label="anchor" href="#arg-log-priors"></a></dt>
@@ -221,8 +223,8 @@ Journal of the Royal Statistical Society: Series B (Statistical Methodology),
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">init_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">particles</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">particles</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">init_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">num_particles</span><span class="op">)</span> <span class="op">{</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">num_particles</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span><span class="va">transition_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">particles</span>, <span class="va">phi</span>, <span class="va">sigma_x</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="va">phi</span> <span class="op">*</span> <span class="va">particles</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">particles</span><span class="op">)</span> <span class="op">+</span></span></span>

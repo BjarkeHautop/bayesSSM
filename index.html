@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9006</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9007</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -70,7 +70,7 @@
 <div class="section level2">
 <h2 id="why-bayesssm">Why bayesSSM?<a class="anchor" aria-label="anchor" href="#why-bayesssm"></a>
 </h2>
-<p>While there are several alternative packages available for performing Particle MCMC bayesSSM is designed to be simple and easy to use. It was developed as a procrastination task during my Master’s thesis about Particle MCMC, since I was implementing everything from scratch anyway. Everything is written in R, so performance is not the best.</p>
+<p>While there are several alternative packages available for performing Particle MCMC, bayesSSM is designed to be simple and easy to use. It was developed as a procrastination task during my Master’s thesis about Particle MCMC, since I was implementing everything from scratch anyway. Everything is written in R, so performance is not the best.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -78,7 +78,7 @@
 <p>You can install the latest stable version of bayesSSM from CRAN with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"bayesSSM"</span><span class="op">)</span></span></code></pre></div>
-<p>or the development version from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
+<p>or the development version from GitHub with:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("pak")</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"BjarkeHautop/bayesSSM"</span><span class="op">)</span></span></code></pre></div>
@@ -120,28 +120,28 @@
         \sigma_y &amp;\sim \text{Exp}(1).
 \end{aligned}
 </annotation></semantics></math></p>
-<p>We can use <code>pmmh</code> to perform Bayesian inference on this model. To use <code>pmmh</code> we need to define the functions for the SSM and the priors. The functions <code>init_fn</code>, <code>transition_fn</code> should be functions that simulates the latent states. They must contain the argument <code>particles</code>, which is a vector of particles, and can contain any other arguments. The function <code>log_likelihood_fn</code> should be a function that calculates the log-likelihood of the observed data given the latent state variables. It must contain the arguments <code>y</code> and <code>particles</code>.</p>
-<p>The priors for the parameters must be defined as log-prior functions. Every parameter from <code>init_fn</code>, <code>transition_fn</code>, and <code>log_likelihood_fn</code> must have a corresponding log-prior function.</p>
+<p>We can use <code>pmmh</code> to perform Bayesian inference on this model. To use <code>pmmh</code> we need to define the functions for the SSM and the priors. The functions <code>init_fn</code>, <code>transition_fn</code> should be functions that simulates the latent states. <code>init_fn</code> must contain the argument <code>num_particles</code> for initializing the particles, and <code>transition_fn</code> must contain the argument <code>particles</code>, which is a vector of particles, and can contain any other arguments for model-specific parameters. The function <code>log_likelihood_fn</code> should be a function that calculates the log-likelihood of the observed data given the latent state variables. It must contain the arguments <code>y</code> for the data and <code>particles</code>. Time-dependency can be implemented by giving a <code>t</code> argument in <code>transition_fn</code> and <code>log_likelihood_fn</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">init_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">particles</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">particles</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">init_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">num_particles</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">num_particles</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="va">transition_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">particles</span>, <span class="va">phi</span>, <span class="va">sigma_x</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">phi</span> <span class="op">*</span> <span class="va">particles</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">particles</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">particles</span><span class="op">)</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_x</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">particles</span><span class="op">)</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_x</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="va">log_likelihood_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">y</span>, <span class="va">particles</span>, <span class="va">sigma_y</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span>, mean <span class="op">=</span> <span class="va">particles</span>, sd <span class="op">=</span> <span class="va">sigma_y</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="va">log_prior_phi</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">phi</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">dunif</a></span><span class="op">(</span><span class="va">phi</span>, min <span class="op">=</span> <span class="fl">0</span>, max <span class="op">=</span> <span class="fl">1</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span>, mean <span class="op">=</span> <span class="va">particles</span>, sd <span class="op">=</span> <span class="va">sigma_y</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+<p>The priors for the parameters must be defined as log-prior functions. Every parameter from <code>init_fn</code>, <code>transition_fn</code>, and <code>log_likelihood_fn</code> must have a corresponding log-prior function.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">log_prior_phi</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">phi</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html" class="external-link">dunif</a></span><span class="op">(</span><span class="va">phi</span>, min <span class="op">=</span> <span class="fl">0</span>, max <span class="op">=</span> <span class="fl">1</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="va">log_prior_sigma_x</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sigma</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Exponential.html" class="external-link">dexp</a></span><span class="op">(</span><span class="va">sigma</span>, rate <span class="op">=</span> <span class="fl">1</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Exponential.html" class="external-link">dexp</a></span><span class="op">(</span><span class="va">sigma</span>, rate <span class="op">=</span> <span class="fl">1</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="va">log_prior_sigma_y</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">sigma</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu">stats</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/stats/Exponential.html" class="external-link">dexp</a></span><span class="op">(</span><span class="va">sigma</span>, rate <span class="op">=</span> <span class="fl">1</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Exponential.html" class="external-link">dexp</a></span><span class="op">(</span><span class="va">sigma</span>, rate <span class="op">=</span> <span class="fl">1</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">log_priors</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
@@ -150,7 +150,7 @@
 <span>  sigma_y <span class="op">=</span> <span class="va">log_prior_sigma_y</span></span>
 <span><span class="op">)</span></span></code></pre></div>
 <p>Now we can run the PMMH algorithm using the <code>pmmh</code> function. For this README we use a lower number of samples and a smaller burn-in period, and also modify the pilot chains to only use 200 samples. This is to make the example run faster.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/BjarkeHautop/bayesSSM" class="external-link">bayesSSM</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/pmmh.html">pmmh</a></span><span class="op">(</span></span>
@@ -179,9 +179,9 @@
 <span><span class="co">#&gt; Running particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
 <span><span class="co">#&gt;  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;        phi 0.79 0.10   0.81          0.57           0.96  42 1.035</span></span>
-<span><span class="co">#&gt;    sigma_x 0.69 0.34   0.73          0.05           1.33   3 1.339</span></span>
-<span><span class="co">#&gt;    sigma_y 0.57 0.27   0.55          0.16           1.05   4 1.211</span></span>
+<span><span class="co">#&gt;        phi 0.66 0.10   0.66          0.48           0.85  89 1.003</span></span>
+<span><span class="co">#&gt;    sigma_x 0.47 0.30   0.42          0.05           1.24  50 1.019</span></span>
+<span><span class="co">#&gt;    sigma_y 0.94 0.27   0.95          0.24           1.44  48 1.036</span></span>
 <span><span class="co">#&gt; Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =</span></span>
 <span><span class="co">#&gt; transition_fn, : Some ESS values are below 400, indicating poor mixing.</span></span>
 <span><span class="co">#&gt; Consider running the chains for more iterations.</span></span>

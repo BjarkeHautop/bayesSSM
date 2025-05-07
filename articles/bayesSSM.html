@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9006</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9007</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -118,15 +118,20 @@ and
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="bayesSSM_files/figure-html/unnamed-chunk-3-1.png" alt="The blue line represents the latent state, and red points represent observed values." width="576"></p>
 <p>To fit the model using <code>pmmh</code> we need to specify the
-likelihood initialization, transition, and log-likelihood functions.
-It’s important that they all take an argument <code>particles</code>,
-which is a vector of particles, and that the log-likelihood function
-takes an argument
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>y</mi><annotation encoding="application/x-tex">y</annotation></semantics></math>
-for the data.</p>
+initialization, transition, and log-likelihood functions. The
+initialization function <code>init_fn</code> must take the argument
+<code>num_particles</code> and return a vector or matrix of particles.
+The transition function <code>transition_fn</code> must take the
+argument <code>particles</code> and return a vector or matrix of
+particles. The log-likelihood function <code>log_likelihood_fn</code>
+must take the arguments <code>y</code>, <code>particles</code>, and
+return a vector of log-likelihood values.</p>
+<p>All the functions can take model-specific parameters as arguments.
+Time-dependency can be implemented by giving a <code>t</code> argument
+in <code>transition_fn</code> and <code>log_likelihood_fn</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">init_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">particles</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">particles</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="va">init_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">num_particles</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">num_particles</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">transition_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">particles</span>, <span class="va">phi</span>, <span class="va">sigma_x</span><span class="op">)</span> <span class="op">{</span></span>
