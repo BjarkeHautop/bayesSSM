@@ -1,9 +1,16 @@
 # bayesSSM (development version)
 
-* Added time dependency in functions. You can now use `t` in SSM functions.
-* Fixed a bug in `particle_filter` in likelihood calculation.
-* Improved robustness of `pmmh` when very low log-likelihood.
-* Added scaling for proposal covariance for "invlogit" in `pmmh`.
+* The `particles` argument in `init_fn` which is passed to `particle_filter`
+and `pmmh` is deprecated. Please use `num_particles` instead.
+A warning will be issued if `particles` is used.
+* Added support for time dependency in functions. You can now use `t` in 
+`transition_fn` and `likelihood_fn` when passing them to `particle_filter`
+and `pmmh`. This allows for time-varying transition and likelihood functions.
+* Fixed a bug in `particle_filter` in likelihood calculation causing it to be
+shifted by a constant.
+* Improved robustness of `pmmh` when encountering very low log-likelihood 
+values.
+* dded scaling for the proposal covariance when using `"invlogit"` in `pmmh`.
 * Improved package description.
 * Improved text in the README and `bayesSSM` vignette.
 * Added additional tests.
