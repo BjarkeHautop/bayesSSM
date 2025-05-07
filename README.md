@@ -18,7 +18,7 @@ Bayesian inference in SSMs.
 ## Why bayesSSM?
 
 While there are several alternative packages available for performing
-Particle MCMC bayesSSM is designed to be simple and easy to use. It was
+Particle MCMC, bayesSSM is designed to be simple and easy to use. It was
 developed as a procrastination task during my Master’s thesis about
 Particle MCMC, since I was implementing everything from scratch anyway.
 Everything is written in R, so performance is not the best.
@@ -31,7 +31,7 @@ You can install the latest stable version of bayesSSM from CRAN with:
 install.packages("bayesSSM")
 ```
 
-or the development version from [GitHub](https://github.com/) with:
+or the development version from GitHub with:
 
 ``` r
 # install.packages("pak")
@@ -85,36 +85,42 @@ $$
 We can use `pmmh` to perform Bayesian inference on this model. To use
 `pmmh` we need to define the functions for the SSM and the priors. The
 functions `init_fn`, `transition_fn` should be functions that simulates
-the latent states. They must contain the argument `particles`, which is
-a vector of particles, and can contain any other arguments. The function
+the latent states. `init_fn` must contain the argument `num_particles`
+for initializing the particles, and `transition_fn` must contain the
+argument `particles`, which is a vector of particles, and can contain
+any other arguments for model-specific parameters. The function
 `log_likelihood_fn` should be a function that calculates the
 log-likelihood of the observed data given the latent state variables. It
-must contain the arguments `y` and `particles`.
+must contain the arguments `y` for the data and `particles`.
+Time-dependency can be implemented by giving a `t` argument in
+`transition_fn` and `log_likelihood_fn`.
+
+``` r
+init_fn <- function(num_particles) {
+  rnorm(num_particles, mean = 0, sd = 1)
+}
+transition_fn <- function(particles, phi, sigma_x) {
+  phi * particles + sin(particles) +
+    rnorm(length(particles), mean = 0, sd = sigma_x)
+}
+log_likelihood_fn <- function(y, particles, sigma_y) {
+ dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
+}
+```
 
 The priors for the parameters must be defined as log-prior functions.
 Every parameter from `init_fn`, `transition_fn`, and `log_likelihood_fn`
 must have a corresponding log-prior function.
 
 ``` r
-init_fn <- function(particles) {
-  stats::rnorm(particles, mean = 0, sd = 1)
-}
-transition_fn <- function(particles, phi, sigma_x) {
-  phi * particles + sin(particles) +
-    stats::rnorm(length(particles), mean = 0, sd = sigma_x)
-}
-log_likelihood_fn <- function(y, particles, sigma_y) {
-  stats::dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
-}
-
 log_prior_phi <- function(phi) {
-  stats::dunif(phi, min = 0, max = 1, log = TRUE)
+  dunif(phi, min = 0, max = 1, log = TRUE)
 }
 log_prior_sigma_x <- function(sigma) {
-  stats::dexp(sigma, rate = 1, log = TRUE)
+  dexp(sigma, rate = 1, log = TRUE)
 }
 log_prior_sigma_y <- function(sigma) {
-  stats::dexp(sigma, rate = 1, log = TRUE)
+  dexp(sigma, rate = 1, log = TRUE)
 }
 
 log_priors <- list(
@@ -158,9 +164,9 @@ result <- pmmh(
 #> Running particle MCMC chain with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat
-#>        phi 0.79 0.10   0.81          0.57           0.96  42 1.035
-#>    sigma_x 0.69 0.34   0.73          0.05           1.33   3 1.339
-#>    sigma_y 0.57 0.27   0.55          0.16           1.05   4 1.211
+#>        phi 0.66 0.10   0.66          0.48           0.85  89 1.003
+#>    sigma_x 0.47 0.30   0.42          0.05           1.24  50 1.019
+#>    sigma_y 0.94 0.27   0.95          0.24           1.44  48 1.036
 #> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =
 #> transition_fn, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.

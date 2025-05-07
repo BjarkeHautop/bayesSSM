@@ -25,19 +25,21 @@ observation at a time step.}
 \item{num_particles}{A positive integer specifying the number of particles.}
 
 \item{init_fn}{A function that initializes the particle states. It should
-take the current particles as its first argument and return
-a vector or matrix of initial particle states.}
+take `num_particles` as an argument for initializing the particles and return
+a vector or matrix of initial particle states. It can include any
+model-specific parameters as named arguments.}
 
 \item{transition_fn}{A function describing the state transition model. It
-should take the current particles and the current time step as arguments and
-return the propagated particles. The function can optionally depend on time
-by including a time step argument `t`.}
+should take `particles` as an argument and return the propagated particles.
+The function can optionally depend on time by including a time step argument
+`t`. It can include any model-specific parameters as named arguments.}
 
 \item{log_likelihood_fn}{A function that computes the log likelihoods for the
-particles. It should accept an observation, the current particles, and the
-current time step as arguments and return a numeric vector of log likelihood
-values. The function can optionally depend on time
-by including a time step argument `t`.}
+particles. It should take a `y` argument for the observations,
+the current particles, and return a numeric vector of log likelihood
+values. The function can optionally depend on time by including a time step
+argument `t`. It can include any model-specific parameters as named
+arguments.}
 
 \item{obs_times}{A numeric vector indicating the time points at which
 observations in \code{y} are available. Must be of the same length as the
@@ -60,7 +62,8 @@ resampling in the \code{"SISAR"} algorithm. If not provided, it defaults to
 particle history. Defaults to \code{TRUE}.}
 
 \item{...}{Additional arguments passed to \code{init_fn},
-\code{transition_fn}, and \code{log_likelihood_fn}.}
+\code{transition_fn}, and \code{log_likelihood_fn}. So, parameter values if
+the functions require them.}
 }
 \value{
 A list containing:
@@ -120,7 +123,7 @@ showed that it always gives a lower variance compared to
 multinomial resampling.
 }
 \examples{
-init_fn <- function(particles) rnorm(particles, 0, 1)
+init_fn <- function(num_particles) rnorm(num_particles, 0, 1)
 transition_fn <- function(particles) particles + rnorm(length(particles))
 log_likelihood_fn <- function(y, particles) {
   dnorm(y, mean = particles, sd = 1, log = TRUE)
@@ -143,7 +146,7 @@ plot(result$state_est, type = "l", col = "blue", main = "State Estimates",
 points(y, col = "red", pch = 20)
 
 # With parameters
-init_fn <- function(particles) rnorm(particles, 0, 1)
+init_fn <- function(num_particles) rnorm(num_particles, 0, 1)
 transition_fn <- function(particles, mu) {
   particles + rnorm(length(particles), mean = mu)
 }
@@ -170,7 +173,7 @@ plot(result$state_est, type = "l", col = "blue", main = "State Estimates",
 points(y, col = "red", pch = 20)
 
 # With observations gaps
-init_fn <- function(particles) rnorm(particles, 0, 1)
+init_fn <- function(num_particles) rnorm(num_particles, 0, 1)
 transition_fn <- function(particles, mu) {
   particles + rnorm(length(particles), mean = mu)
 }

@@ -81,7 +81,7 @@ test_that("default_tune_control errors on invalid inputs", {
 # -----------------------------
 
 test_that("pmmh checks input types", {
-  init_fn <- function(particles) rnorm(particles, mean = 0, sd = 1)
+  init_fn <- function(num_particles) rnorm(num_particles, mean = 0, sd = 1)
   transition_fn <- function(particles, phi, sigma_x) {
     phi * particles + sin(particles) +
       rnorm(length(particles), mean = 0, sd = sigma_x)
@@ -256,7 +256,7 @@ test_that("pmmh checks function arguments", {
     sigma_y = function(sigma_y) 0
   )
 
-  mock_init_fn <- function(particles, phi, sigma_x) particles
+  mock_init_fn <- function(num_particles, phi, sigma_x) num_particles
   mock_transition_fn <- function(particles, phi, sigma_x) particles
   mock_log_likelihood_fn <- function(y, particles, sigma_y) particles
 
@@ -274,7 +274,7 @@ test_that("pmmh checks function arguments", {
       burn_in = 1,
       num_chains = 1
     ),
-    "init_fn does not contain 'particles' as an argument"
+    "init_fn does not contain 'particles' or 'num_particles' as an argument"
   )
 
   expect_error(
@@ -314,7 +314,7 @@ test_that("pmmh checks that parameters match init_params and log_priors", {
     sigma_y = function(sigma_y) 0
   )
 
-  mock_init_fn <- function(particles, phi, sigma_x) particles
+  mock_init_fn <- function(num_particles, phi, sigma_x) num_particles
   mock_transition_fn <- function(particles, phi, sigma_x) particles
   mock_log_likelihood_fn <- function(y, particles, sigma_y) particles
 
@@ -347,24 +347,24 @@ test_that("pmmh checks that parameters match init_params and log_priors", {
 
 test_that("pmmh works with valid arguments", {
   set.seed(1405)
-  init_fn <- function(particles) {
-    stats::rnorm(particles, mean = 0, sd = 1)
+  init_fn <- function(num_particles) {
+    rnorm(num_particles, mean = 0, sd = 1)
   }
   transition_fn <- function(particles, phi, sigma_x) {
     phi * particles + sin(particles) +
-      stats::rnorm(length(particles), mean = 0, sd = sigma_x)
+      rnorm(length(particles), mean = 0, sd = sigma_x)
   }
   log_likelihood_fn <- function(y, particles, sigma_y) {
-    stats::dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
+    dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
   }
   log_prior_phi <- function(phi) {
-    stats::dnorm(phi, mean = 0, sd = 1, log = TRUE)
+    dnorm(phi, mean = 0, sd = 1, log = TRUE)
   }
   log_prior_sigma_x <- function(sigma) {
-    stats::dexp(sigma, rate = 1, log = TRUE)
+    dexp(sigma, rate = 1, log = TRUE)
   }
   log_prior_sigma_y <- function(sigma) {
-    stats::dexp(sigma, rate = 1, log = TRUE)
+    dexp(sigma, rate = 1, log = TRUE)
   }
   log_priors <- list(
     phi = log_prior_phi,
@@ -503,9 +503,11 @@ test_that("pmmh works with valid arguments", {
 test_that("Multi dimensional works", {
   set.seed(1405)
 
-  init_fn <- function(particles) matrix(stats::rnorm(particles * 2), ncol = 2)
+  init_fn <- function(num_particles) {
+    matrix(rnorm(num_particles * 2), ncol = 2)
+  }
   transition_fn <- function(particles, phi) {
-    particles + stats::rnorm(nrow(particles) * 2, mean = phi)
+    particles + rnorm(nrow(particles) * 2, mean = phi)
   }
   log_likelihood_fn <- function(y, particles) rep(1, nrow(particles))
 
@@ -513,7 +515,7 @@ test_that("Multi dimensional works", {
   y <- rep(0, 20)
 
   log_prior_phi <- function(phi) {
-    stats::dnorm(phi, mean = 0, sd = 1, log = TRUE)
+    dnorm(phi, mean = 0, sd = 1, log = TRUE)
   }
 
   log_priors <- list(

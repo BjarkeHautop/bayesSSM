@@ -24,14 +24,16 @@ Imports:
     stats,
     dplyr,
     future,
-    future.apply
+    future.apply,
+    lifecycle
 Suggests: 
     knitr,
     rmarkdown,
     testthat (>= 3.0.0),
     ggplot2,
     tidyr,
-    extraDistr
+    extraDistr,
+    rlang
 Config/testthat/edition: 3
 URL: https://github.com/BjarkeHautop/bayesSSM, https://bjarkehautop.github.io/bayesSSM/
 BugReports: https://github.com/BjarkeHautop/bayesSSM/issues

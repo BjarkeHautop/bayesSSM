@@ -68,14 +68,21 @@ ggplot() +
   theme_minimal()
 ```
 
-To fit the model using `pmmh` we need to specify the likelihood initialization, 
-transition, and log-likelihood functions. It's important that they all take
-an argument `particles`, which is a vector of particles, and that the 
-log-likelihood function takes an argument $y$ for the data.
+To fit the model using `pmmh` we need to specify the initialization, 
+transition, and log-likelihood functions. The initialization function `init_fn`
+must take the argument `num_particles` and return a vector or matrix of
+particles. The transition function `transition_fn` must take the argument 
+`particles` and return a vector or matrix of particles. The log-likelihood
+function `log_likelihood_fn` must take the arguments `y`, `particles`, and 
+return a vector of log-likelihood values.
+
+All the functions can take model-specific parameters as arguments. 
+Time-dependency can be implemented by giving a `t` argument in `transition_fn`
+and `log_likelihood_fn`.
 
 ```{r}
-init_fn <- function(particles) {
-  rnorm(particles, mean = 0, sd = 1)
+init_fn <- function(num_particles) {
+  rnorm(num_particles, mean = 0, sd = 1)
 }
 
 transition_fn <- function(particles, phi, sigma_x) {

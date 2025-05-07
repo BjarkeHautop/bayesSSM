@@ -1,7 +1,7 @@
 test_that(".pilot_run works non-trivial setup", {
   set.seed(1405)
-  init_fn <- function(particles, ...) {
-    rnorm(particles, mean = 0, sd = 1)
+  init_fn <- function(num_particles, ...) {
+    rnorm(num_particles, mean = 0, sd = 1)
   }
 
   transition_fn <- function(particles, t, phi, sigma_x, ...) {
@@ -45,8 +45,8 @@ test_that(".pilot_run works non-trivial setup", {
 # .run_pilot_chain works
 test_that(".run_pilot_chain works", {
   set.seed(1405)
-  init_fn <- function(particles, ...) {
-    rnorm(particles, mean = 0, sd = 1)
+  init_fn <- function(num_particles, ...) {
+    rnorm(num_particles, mean = 0, sd = 1)
   }
 
   transition_fn <- function(particles, t, phi, ...) {
@@ -221,8 +221,8 @@ test_that(".run_pilot_chain works", {
 test_that("More complicated example", {
   set.seed(1405)
 
-  init_fn <- function(particles, ...) {
-    rnorm(particles, mean = 0, sd = 1)
+  init_fn <- function(num_particles, ...) {
+    rnorm(num_particles, mean = 0, sd = 1)
   }
 
   transition_fn <- function(particles, phi, sigma_x, ...) {
@@ -292,8 +292,8 @@ test_that("More complicated example", {
 test_that("More complicated example with transformation", {
   set.seed(1405)
 
-  init_fn <- function(particles, ...) {
-    rnorm(particles, mean = 0, sd = 1)
+  init_fn <- function(num_particles, ...) {
+    rnorm(num_particles, mean = 0, sd = 1)
   }
 
   transition_fn <- function(particles, phi, sigma_x, ...) {
@@ -369,7 +369,9 @@ test_that("More complicated example with transformation", {
 test_that("Multi dimensional works", {
   set.seed(1405)
 
-  init_fn <- function(particles, ...) matrix(rnorm(particles * 2), ncol = 2)
+  init_fn <- function(num_particles, ...) {
+    matrix(rnorm(num_particles * 2), ncol = 2)
+  }
   transition_fn <- function(particles, phi, ...) {
     particles + rnorm(nrow(particles) * 2, mean = phi)
   }
@@ -379,7 +381,7 @@ test_that("Multi dimensional works", {
   y <- rep(0, 5)
 
   log_prior_phi <- function(phi) {
-    stats::dnorm(phi, mean = 0, sd = 1, log = TRUE)
+    dnorm(phi, mean = 0, sd = 1, log = TRUE)
   }
 
   log_priors <- list(

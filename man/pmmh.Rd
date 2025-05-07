@@ -32,19 +32,21 @@ observation at a time step.}
 \item{m}{An integer specifying the total number of MCMC iterations.}
 
 \item{init_fn}{A function that initializes the particle states. It should
-take the current particles as its first argument and return
-a vector or matrix of initial particle states.}
+take `num_particles` as an argument for initializing the particles and return
+a vector or matrix of initial particle states. It can include any
+model-specific parameters as named arguments.}
 
 \item{transition_fn}{A function describing the state transition model. It
-should take the current particles and the current time step as arguments and
-return the propagated particles. The function can optionally depend on time
-by including a time step argument `t`.}
+should take `particles` as an argument and return the propagated particles.
+The function can optionally depend on time by including a time step argument
+`t`. It can include any model-specific parameters as named arguments.}
 
 \item{log_likelihood_fn}{A function that computes the log likelihoods for the
-particles. It should accept an observation, the current particles, and the
-current time step as arguments and return a numeric vector of log likelihood
-values. The function can optionally depend on time
-by including a time step argument `t`.}
+particles. It should take a `y` argument for the observations,
+the current particles, and return a numeric vector of log likelihood
+values. The function can optionally depend on time by including a time step
+argument `t`. It can include any model-specific parameters as named
+arguments.}
 
 \item{log_priors}{A list of functions for computing the log-prior of each
 parameter.}
@@ -125,8 +127,8 @@ normal distribution in the transformed space. The proposal covariance is
 estimated using the pilot chain.
 }
 \examples{
-init_fn <- function(particles) {
-  rnorm(particles, mean = 0, sd = 1)
+init_fn <- function(num_particles) {
+  rnorm(num_particles, mean = 0, sd = 1)
 }
 transition_fn <- function(particles, phi, sigma_x) {
   phi * particles + sin(particles) +

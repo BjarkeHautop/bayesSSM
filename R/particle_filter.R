@@ -17,17 +17,19 @@
 #' observation at a time step.
 #' @param num_particles A positive integer specifying the number of particles.
 #' @param init_fn A function that initializes the particle states. It should
-#' take the current particles as its first argument and return
-#' a vector or matrix of initial particle states.
+#' take `num_particles` as an argument for initializing the particles and return
+#' a vector or matrix of initial particle states. It can include any
+#' model-specific parameters as named arguments.
 #' @param transition_fn A function describing the state transition model. It
-#' should take the current particles and the current time step as arguments and
-#' return the propagated particles. The function can optionally depend on time
-#' by including a time step argument `t`.
+#' should take `particles` as an argument and return the propagated particles.
+#' The function can optionally depend on time by including a time step argument
+#' `t`. It can include any model-specific parameters as named arguments.
 #' @param log_likelihood_fn A function that computes the log likelihoods for the
-#' particles. It should accept an observation, the current particles, and the
-#' current time step as arguments and return a numeric vector of log likelihood
-#' values. The function can optionally depend on time
-#' by including a time step argument `t`.
+#' particles. It should take a `y` argument for the observations,
+#' the current particles, and return a numeric vector of log likelihood
+#' values. The function can optionally depend on time by including a time step
+#' argument `t`. It can include any model-specific parameters as named
+#' arguments.
 #' @param obs_times A numeric vector indicating the time points at which
 #' observations in \code{y} are available. Must be of the same length as the
 #' number of rows in \code{y}. If not specified, it is assumed that observations
@@ -44,7 +46,8 @@
 #' @param return_particles A logical value indicating whether to return the full
 #' particle history. Defaults to \code{TRUE}.
 #' @param ... Additional arguments passed to \code{init_fn},
-#' \code{transition_fn}, and \code{log_likelihood_fn}.
+#' \code{transition_fn}, and \code{log_likelihood_fn}. So, parameter values if
+#' the functions require them.
 #'
 #' @return A list containing:
 #'   \describe{
@@ -93,10 +96,11 @@
 #' Accessible at: https://arxiv.org/abs/cs/0507025
 #'
 #' @importFrom stats dnorm rnorm
+#' @importFrom lifecycle deprecate_warn
 #' @export
 #'
 #' @examples
-#' init_fn <- function(particles) rnorm(particles, 0, 1)
+#' init_fn <- function(num_particles) rnorm(num_particles, 0, 1)
 #' transition_fn <- function(particles) particles + rnorm(length(particles))
 #' log_likelihood_fn <- function(y, particles) {
 #'   dnorm(y, mean = particles, sd = 1, log = TRUE)
@@ -119,7 +123,7 @@
 #' points(y, col = "red", pch = 20)
 #'
 #' # With parameters
-#' init_fn <- function(particles) rnorm(particles, 0, 1)
+#' init_fn <- function(num_particles) rnorm(num_particles, 0, 1)
 #' transition_fn <- function(particles, mu) {
 #'   particles + rnorm(length(particles), mean = mu)
 #' }
@@ -146,7 +150,7 @@
 #' points(y, col = "red", pch = 20)
 #'
 #' # With observations gaps
-#' init_fn <- function(particles) rnorm(particles, 0, 1)
+#' init_fn <- function(num_particles) rnorm(num_particles, 0, 1)
 #' transition_fn <- function(particles, mu) {
 #'   particles + rnorm(length(particles), mean = mu)
 #' }
@@ -218,7 +222,7 @@ particle_filter <- function(
     )
   }
 
-  # Add t ar arg to transistion_fn and log_likelihood_fn if not present
+  # Add t ar arg to transition_fn and log_likelihood_fn if not present
   if (!"t" %in% names(formals(transition_fn))) {
     formals(transition_fn) <- c(
       formals(transition_fn),
@@ -284,7 +288,20 @@ particle_filter <- function(
   )
 
   # Initialization: obtain initial particles and ensure they are in matrix form.
-  particles <- init_fn(particles = num_particles, ...)
+
+  # Deprecated argument 'particles' in init_fn.
+  init_formals <- names(formals(init_fn))
+  if ("particles" %in% init_formals && !"num_particles" %in% init_formals) {
+    lifecycle::deprecate_warn(
+      when = "1.0.0",
+      what = "init_fn(particles)",
+      with = "init_fn(num_particles)"
+    )
+    particles <- init_fn(particles = num_particles, ...)
+  } else {
+    particles <- init_fn(num_particles = num_particles, ...)
+  }
+
   if (is.null(dim(particles))) {
     # If particles come as a vector, treat it as 1-dimensional.
     if (length(particles) != num_particles) {

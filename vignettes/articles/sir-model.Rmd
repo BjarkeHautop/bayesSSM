@@ -76,9 +76,8 @@ is a latent state and we observe a noisy version of this state, that could
 either be higher or lower (often it is lower). We model this as a Poisson 
 distribution:
 $$
-Y_t \mid I(t) \sim \operatorname{Pois}(I(t)),
+Y_t \mid I(t) \sim \operatorname{Pois}(I(t)).
 $$
-where $\phi > 0$ is the overdispersion parameter. 
 
 # Simulate data
 We will simulate data from the SIR model with the following parameters:
@@ -99,14 +98,13 @@ init_state <- c(n_total - init_infected, init_infected) # (s, i) at time 0
 t_max <- 10 # Total number of days to simulate
 true_lambda <- 0.5 # True infection parameter
 true_gamma <- 0.2 # True removal parameter
-phi_true <- 1 # True dispersion parameter for negative binomial
-p_true <- 0.9 # True probability for binomial
 
 # --- Functions for simulating the epidemic ---
 
-# Gillespie simulation: simulate from current state for a time interval
-gillespie_step <- function(state, t_end, lambda, gamma, n_total) {
+# Simulate 1 step of the epidemic
+epidemic_step <- function(state, lambda, gamma, n_total) {
   t <- 0
+  t_end <- 1
   s <- state[1]
   i <- state[2]
   while (t < t_end && i > 0) {
@@ -119,11 +117,9 @@ gillespie_step <- function(state, t_end, lambda, gamma, n_total) {
     t <- t + dt
     # Decide which event occurs:
     if (runif(1) < rate_infection / rate_total) {
-      # Infection event (only possible if s > 0)
-      if (s > 0) {
-        s <- s - 1
-        i <- i + 1
-      }
+      # Infection event
+      s <- s - 1
+      i <- i + 1
     } else {
       # Removal event
       i <- i - 1
@@ -133,14 +129,14 @@ gillespie_step <- function(state, t_end, lambda, gamma, n_total) {
 }
 
 # Simulate epidemic trajectory using Gillespie
-simulate_epidemic_gillespie <- function(
+simulate_epidemic <- function(
     n_total, init_infected, lambda, gamma, t_max) {
   states <- matrix(0, nrow = t_max + 1, ncol = 2)
   # initial state at t = 0
   states[1, ] <- c(n_total - init_infected, init_infected)
   state <- states[1, ]
   for (t in 1:t_max) {
-    state <- gillespie_step(state, 1, lambda, gamma, n_total)
+    state <- epidemic_step(state, lambda, gamma, n_total)
     states[t + 1, ] <- state
   }
   states
@@ -150,14 +146,17 @@ simulate_epidemic_gillespie <- function(
 Now, we generate some data:
 
 ```{r}
-# Simulate a "true" epidemic dataset
-true_states <- simulate_epidemic_gillespie(
+# Simulate an epidemic dataset
+true_states <- simulate_epidemic(
   n_total, init_infected, true_lambda, true_gamma, t_max
 )
 latent_i <- true_states[, 2]
 
-# Poisson
-observations <- rpois(length(latent_i), lambda = latent_i)
+# 1st observation is deterministic.
+
+observations <- rpois(length(latent_i) - 1, lambda = latent_i[-1])
+
+observations <- c(init_infected, observations)
 
 # Display simulated data: time, susceptible, latent infectious, observed counts
 print(data.frame(
@@ -247,10 +246,6 @@ log_prior_phi <- function(phi) {
   extraDistr::dhnorm(1 / sqrt(phi), sigma = 1, log = TRUE) + log_jacobian
 }
 
-log_prior_p <- function(p) {
-  dunif(p, 0, 1, log = TRUE)
-}
-
 log_priors <- list(
   lambda = log_prior_lambda,
   gamma = log_prior_gamma
@@ -261,32 +256,45 @@ We now define the initial state, transition and likelihood functions for the
 SIR model. 
 
 ```{r}
-init_fn_epidemic <- function(particles) {
+init_fn_epidemic <- function(num_particles) {
   # Return a matrix with particles rows; each row is the initial state (s, i)
-  matrix(rep(init_state, each = particles), nrow = particles, byrow = FALSE)
+  matrix(
+    rep(init_state, each = num_particles),
+    nrow = num_particles,
+    byrow = FALSE
+  )
 }
 
-transition_fn_gillespie <- function(particles, lambda, gamma) {
+transition_fn_epidemic <- function(particles, lambda, gamma, t) {
+  # t=1 deterministic
+  if (t == 1) {
+    return(particles)
+  }
+
   new_particles <- t(apply(particles, 1, function(state) {
     s <- state[1]
     i <- state[2]
     if (i == 0) {
       return(c(s, i))
     }
-    gillespie_step(state, t_end = 1, lambda, gamma, n_total)
+    epidemic_step(state, lambda, gamma, n_total)
   }))
   new_particles
 }
 
 log_likelihood_fn_epidemic <- function(y, particles) {
   # particles is expected to be a matrix with columns (s, i)
+  # t=1 deterministic
+  if (t == 1) {
+    return(rep(0, nrow(particles)))
+  }
   dpois(y, lambda = particles[, 2], log = TRUE)
 }
 ```
 
-Now we can run the PMMH algorithm to estimate the parameters. For this 
-vignette we only use a small number of iterations (1000) and 2 chains (and
-we also modify the tuning to only use 100 iterations with a burn-in of 10).
+Now we can run the PMMH algorithm to estimate the posterior distribution. 
+For this vignette we only use a small number of iterations (1000) and 2 chains 
+(and we also modify the tuning to only use 100 iterations with a burn-in of 10).
 In practice, these should be much higher.
 
 ```{r}
@@ -294,7 +302,7 @@ result <- bayesSSM::pmmh(
   y = observations,
   m = 1000,
   init_fn = init_fn_epidemic,
-  transition_fn = transition_fn_gillespie,
+  transition_fn = transition_fn_epidemic,
   log_likelihood_fn = log_likelihood_fn_epidemic,
   log_priors = log_priors,
   pilot_init_params = list(
@@ -310,7 +318,8 @@ result <- bayesSSM::pmmh(
 )
 ```
 
-We get convergence warnings as expected, but we still recover the true values.
+We get convergence warnings as expected, but the posterior is still centered 
+around the true value.
 
 We can access the chains and plot the densities:
 
