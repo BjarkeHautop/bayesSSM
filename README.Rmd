@@ -28,8 +28,8 @@ for Bayesian inference in SSMs.
 ## Why bayesSSM?
 
 While there are several alternative packages available for performing Particle 
-MCMC, bayesSSM is designed to be simple and easy to use. It was developed as a 
-procrastination task during my Master's thesis about Particle MCMC, since I 
+MCMC, bayesSSM is designed to be simple and easy to use. It was alongside my
+Master's thesis about Particle MCMC, since I 
 was implementing everything from scratch anyway.
 Everything is written in R, so performance is not the best.
 
@@ -54,8 +54,8 @@ Consider the following SSM:
 $$
 \begin{aligned}
 		X_1 &\sim N(0,1) \\
-		X_t&=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0,1) \\
-		Y_t&=X_t+\sigma_y W_t, \quad W_t \sim N(0, 1).
+		Y_t&=X_t+\sigma_y W_t, \quad W_t \sim N(0, 1), \quad t\geq 1 \\
+		X_t&=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0,1), \quad t\geq 2
 \end{aligned}
 $$
 

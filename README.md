@@ -19,9 +19,9 @@ Bayesian inference in SSMs.
 
 While there are several alternative packages available for performing
 Particle MCMC, bayesSSM is designed to be simple and easy to use. It was
-developed as a procrastination task during my Master’s thesis about
-Particle MCMC, since I was implementing everything from scratch anyway.
-Everything is written in R, so performance is not the best.
+alongside my Master’s thesis about Particle MCMC, since I was
+implementing everything from scratch anyway. Everything is written in R,
+so performance is not the best.
 
 ## Installation
 
@@ -45,8 +45,8 @@ Consider the following SSM:
 $$
 \begin{aligned}
         X_1 &\sim N(0,1) \\
-        X_t&=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0,1) \\
-        Y_t&=X_t+\sigma_y W_t, \quad W_t \sim N(0, 1).
+        Y_t&=X_t+\sigma_y W_t, \quad W_t \sim N(0, 1), \quad t\geq 1 \\
+        X_t&=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0,1), \quad t\geq 2
 \end{aligned}
 $$
 
@@ -158,17 +158,17 @@ result <- pmmh(
 )
 #> Running chain 1...
 #> Running pilot chain for tuning...
-#> Using 50 particles for PMMH:
-#> Running particle MCMC chain with tuned settings...
+#> Using 58 particles for PMMH:
+#> Running Particle MCMC chain with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
 #> Using 50 particles for PMMH:
-#> Running particle MCMC chain with tuned settings...
+#> Running Particle MCMC chain with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat
-#>        phi 0.70 0.08   0.70          0.56           0.85  34 1.015
-#>    sigma_x 0.40 0.27   0.37          0.01           0.91  13 1.126
-#>    sigma_y 0.65 0.20   0.68          0.16           0.95  12 1.213
+#>        phi 0.69 0.15   0.65          0.37           0.98   2 1.255
+#>    sigma_x 1.30 0.27   1.35          0.79           1.84  31 1.116
+#>    sigma_y 0.49 0.30   0.51          0.08           1.10  11 1.204
 #> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =
 #> transition_fn, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.

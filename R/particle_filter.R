@@ -14,7 +14,9 @@
 #' It is recommended to use either SISR or SISAR to avoid weight degeneracy.
 #'
 #' @param y A numeric vector or matrix of observations. Each row represents an
-#' observation at a time step.
+#' observation at a time step. If observations not equally spaced, use the
+#' \code{obs_times} argument to specify the time points at which
+#' observations are available.
 #' @param num_particles A positive integer specifying the number of particles.
 #' @param init_fn A function that initializes the particle states. It should
 #' take `num_particles` as an argument for initializing the particles and return
@@ -42,12 +44,12 @@
 #' \code{"multinomial"}. Defaults to \code{"stratified"}.
 #' @param threshold A numeric value specifying the ESS threshold for triggering
 #' resampling in the \code{"SISAR"} algorithm. If not provided, it defaults to
-#' \code{particles / 2}.
+#' \code{num_particles / 2}.
 #' @param return_particles A logical value indicating whether to return the full
 #' particle history. Defaults to \code{TRUE}.
 #' @param ... Additional arguments passed to \code{init_fn},
-#' \code{transition_fn}, and \code{log_likelihood_fn}. So, parameter values if
-#' the functions require them.
+#' \code{transition_fn}, and \code{log_likelihood_fn}. I.e., parameter values if
+#' the functions requires them.
 #'
 #' @return A list containing:
 #'   \describe{
