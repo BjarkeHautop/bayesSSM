@@ -172,8 +172,9 @@ of iterations.
 
 ## State-space Models
 
-A state-space model (SSM) has the structure given in the following
-directed acyclic graph (DAG):
+A state-space model (SSM) has the structure given in the following diagram, 
+where we omitted potential time-dependency in the transition and observation 
+densities for simplicity.
 
 ![](man/figures/DAG_SSM.png)
 
@@ -182,5 +183,4 @@ which is an algorithm that first generates a set of $N$ particles to approximate
 the likelihood and then uses this approximation in the acceptance probability. 
 The implementation automatically tunes the number of particles and the proposal 
 distribution for the parameters. 
-
 

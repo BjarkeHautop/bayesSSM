@@ -20,7 +20,9 @@ particle_filter(
 }
 \arguments{
 \item{y}{A numeric vector or matrix of observations. Each row represents an
-observation at a time step.}
+observation at a time step. If observations not equally spaced, use the
+\code{obs_times} argument to specify the time points at which
+observations are available.}
 
 \item{num_particles}{A positive integer specifying the number of particles.}
 
@@ -56,14 +58,14 @@ Must be one of \code{"stratified"}, \code{"systematic"}, or
 
 \item{threshold}{A numeric value specifying the ESS threshold for triggering
 resampling in the \code{"SISAR"} algorithm. If not provided, it defaults to
-\code{particles / 2}.}
+\code{num_particles / 2}.}
 
 \item{return_particles}{A logical value indicating whether to return the full
 particle history. Defaults to \code{TRUE}.}
 
 \item{...}{Additional arguments passed to \code{init_fn},
-\code{transition_fn}, and \code{log_likelihood_fn}. So, parameter values if
-the functions require them.}
+\code{transition_fn}, and \code{log_likelihood_fn}. I.e., parameter values if
+the functions requires them.}
 }
 \value{
 A list containing:

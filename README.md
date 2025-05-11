@@ -158,7 +158,7 @@ result <- pmmh(
 )
 #> Running chain 1...
 #> Running pilot chain for tuning...
-#> Using 58 particles for PMMH:
+#> Using 50 particles for PMMH:
 #> Running Particle MCMC chain with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
@@ -166,9 +166,9 @@ result <- pmmh(
 #> Running Particle MCMC chain with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat
-#>        phi 0.69 0.15   0.65          0.37           0.98   2 1.255
-#>    sigma_x 1.30 0.27   1.35          0.79           1.84  31 1.116
-#>    sigma_y 0.49 0.30   0.51          0.08           1.10  11 1.204
+#>        phi 0.63 0.17   0.66          0.23           0.92  47 1.043
+#>    sigma_x 0.64 0.47   0.58          0.03           1.64  56 1.005
+#>    sigma_y 1.25 0.29   1.26          0.57           1.74  41 1.003
 #> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =
 #> transition_fn, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.
@@ -183,7 +183,8 @@ iterations.
 ## State-space Models
 
 A state-space model (SSM) has the structure given in the following
-directed acyclic graph (DAG):
+diagram, where we omitted potential time-dependency in the transition
+and observation densities for simplicity.
 
 ![](man/figures/DAG_SSM.png)
 
