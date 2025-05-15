@@ -29,7 +29,7 @@ test_that("particle_filter returns errors on wrong input", {
       num_particles = 10, wrong_init_fn, transition_fn,
       log_likelihood_fn, algorithm = "SIS"
     ),
-    "init_fn must return a vector of length num_particles"
+    "init_fn must return a length of num_particles"
   )
 
   expect_error(
@@ -37,7 +37,7 @@ test_that("particle_filter returns errors on wrong input", {
       y, num_particles = 10, wrong_init_fn_matrix, transition_fn,
       log_likelihood_fn, algorithm = "SIS"
     ),
-    "init_fn must return a matrix with num_particles rows"
+    "init_fn must return num_particles rows"
   )
 
   expect_error(
@@ -45,7 +45,7 @@ test_that("particle_filter returns errors on wrong input", {
       y, num_particles = 10, init_fn, wrong_transition_fn,
       log_likelihood_fn, algorithm = "SIS"
     ),
-    "transition_fn must return a vector of length num_particles"
+    "transition_fn must return a length of num_particles"
   )
 
   expect_error(
@@ -53,7 +53,7 @@ test_that("particle_filter returns errors on wrong input", {
       y, num_particles = 10, init_fn, transition_fn,
       wrong_log_likelihood_fn, algorithm = "SIS"
     ),
-    "log_likelihood_fn must return dimensions matching num_particles"
+    "log_likelihood_fn must return num_particles values"
   )
 
   expect_error(
@@ -71,7 +71,7 @@ test_that("particle_filter returns errors on wrong input", {
       y, num_particles = 10, init_fn, transition_fn, log_likelihood_fn,
       obs_times = wrong_len_obs_times
     ),
-    "obs_times must match the number of observations "
+    "obs_times must match rows of y"
   )
 
   not_numeric_obs_times <- "hi"
@@ -155,14 +155,17 @@ test_that("particle_filter works non-trivial setup", {
   }
 
   simulate_ssm <- function(num_steps, phi, sigma_x, sigma_y) {
+    init_state <- rnorm(1, mean = 0, sd = sigma_x)
     x <- numeric(num_steps)
     y <- numeric(num_steps)
-    x[1] <- rnorm(1, mean = 0, sd = sigma_x)
-    y[1] <- rnorm(1, mean = x[1], sd = sigma_y)
+    x[1] <- phi * init_state + sin(init_state) +
+      rnorm(1, mean = 0, sd = sigma_x)
+    y[1] <- x[1] + rnorm(1, mean = 0, sd = sigma_y)
     for (t in 2:num_steps) {
       x[t] <- phi * x[t - 1] + sin(x[t - 1]) + rnorm(1, mean = 0, sd = sigma_x)
       y[t] <- x[t] + rnorm(1, mean = 0, sd = sigma_y)
     }
+    x <- c(init_state, x)
     list(x = x, y = y)
   }
   my_data <- simulate_ssm(50, phi = 0.8, sigma_x = 1, sigma_y = 0.5)

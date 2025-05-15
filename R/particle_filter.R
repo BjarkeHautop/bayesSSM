@@ -196,101 +196,69 @@
 #'   ylim = range(c(result$state_est, data)))
 #' points(data, col = "red", pch = 20)
 particle_filter <- function(
-    y, num_particles, init_fn, transition_fn, log_likelihood_fn,
-    obs_times = NULL,
+    y, num_particles, init_fn, transition_fn,
+    log_likelihood_fn, obs_times = NULL,
     algorithm = c("SISAR", "SISR", "SIS"),
-    resample_fn = c("stratified", "systematic", "multinomial"),
-    threshold = NULL, return_particles = TRUE, ...) {
-  # Validate num_particles: must be a positive integer
+    resample_fn = c("stratified", "systematic",
+                    "multinomial"),
+    threshold = NULL, return_particles = TRUE,
+    ...) {
+
+  # Validate num_particles
   if (!is.numeric(num_particles) || num_particles <= 0) {
     stop("num_particles must be a positive integer")
   }
 
-  # Add ... as arg to functions if not present
-  has_dots <- function(fun) {
-    "..." %in% names(formals(fun))
+  # Ensure ... in user functions
+  ensure_dots <- function(fun) {
+    if (!"..." %in% names(formals(fun))) {
+      formals(fun) <- c(formals(fun), alist(... = ))
+    }
+    fun
   }
+  init_fn <- ensure_dots(init_fn)
+  transition_fn <- ensure_dots(transition_fn)
+  log_likelihood_fn <- ensure_dots(log_likelihood_fn)
 
-  if (!has_dots(init_fn)) {
-    formals(init_fn) <- c(formals(init_fn), alist(... = ))
-  }
-  if (!has_dots(transition_fn)) {
-    formals(transition_fn) <- c(formals(transition_fn), alist(... = ))
-  }
-  if (!has_dots(log_likelihood_fn)) {
-    formals(log_likelihood_fn) <- c(
-      formals(log_likelihood_fn),
-      alist(... = )
-    )
-  }
-
-  # Add t ar arg to transition_fn and log_likelihood_fn if not present
+  # Add t arg if missing
   if (!"t" %in% names(formals(transition_fn))) {
-    formals(transition_fn) <- c(
-      formals(transition_fn),
-      alist(t = NULL)
-    )
+    formals(transition_fn) <- c(formals(transition_fn),
+                                alist(t = NULL))
   }
   if (!"t" %in% names(formals(log_likelihood_fn))) {
     formals(log_likelihood_fn) <- c(
-      formals(log_likelihood_fn),
-      alist(t = NULL)
+      formals(log_likelihood_fn), alist(t = NULL)
     )
   }
 
-  # ---------------------------
-  # Input validation
-  # ---------------------------
-
-  # Check y matrix or vector
-  if (!is.numeric(y)) {
-    stop("y must be numeric")
-  }
-
-  # Ensure y is a matrix.
-  if (is.vector(y)) {
-    y <- matrix(y, ncol = 1)
-  }
-
-  if (is.null(obs_times)) {
-    obs_times <- seq_len(nrow(y))
-  }
-
-  # Check numeric
+  # Process observations
+  if (!is.numeric(y)) stop("y must be numeric")
+  if (is.vector(y)) y <- matrix(y, ncol = 1)
+  if (is.null(obs_times)) obs_times <- seq_len(nrow(y))
+  num_obs <- nrow(y)
   if (!is.numeric(obs_times)) {
     stop("obs_times must be numeric")
   }
-
-  if (length(obs_times) != nrow(y)) {
-    stop("obs_times must match the number of observations (rows in y)")
+  if (length(obs_times) != num_obs) {
+    stop("obs_times must match rows of y")
   }
-
-  # Check obs_times integers
-  if (!all(obs_times == round(obs_times))) {
+  if (any(obs_times != floor(obs_times))) {
     stop("obs_times must be integers")
   }
-
-  # Check obs_times increasing
   if (any(diff(obs_times) < 1)) {
-    stop("obs_times must be strictly increasing")
+    stop("obs_times must be strictly increasing ints")
   }
 
-  # Each row of y is an observation, so set num_steps to the number of rows.
-  num_steps <- nrow(y)
-
-  # Match provided algorithm and resampling method to valid options
+  # Algorithm & resampler
   algorithm <- match.arg(algorithm)
-  resample_fn <- match.arg(resample_fn)
-
-  resample_func <- switch(
-    resample_fn,
+  resampler <- switch(
+    match.arg(resample_fn),
     multinomial = .resample_multinomial,
-    stratified = .resample_stratified,
+    stratified  = .resample_stratified,
     systematic = .resample_systematic
   )
 
-  # Initialization: obtain initial particles and ensure they are in matrix form.
-
+  # Init particles at t = 0
   # Deprecated argument 'particles' in init_fn.
   init_formals <- names(formals(init_fn))
   if ("particles" %in% init_formals && !"num_particles" %in% init_formals) {
@@ -305,201 +273,115 @@ particle_filter <- function(
   }
 
   if (is.null(dim(particles))) {
-    # If particles come as a vector, treat it as 1-dimensional.
     if (length(particles) != num_particles) {
-      stop("init_fn must return a vector of length num_particles")
+      stop("init_fn must return a length of num_particles")
     }
-    particles <- matrix(particles, nrow = num_particles, byrow = TRUE)
+    particles <- matrix(particles, nrow = num_particles)
   }
-
-  # Check that init_fn returns exactly num_particles rows
   if (nrow(particles) != num_particles) {
-    stop("init_fn must return a matrix with num_particles rows")
+    stop("init_fn must return num_particles rows")
   }
-
-  # Save state dimension d
   d <- ncol(particles)
-
-  # Decide whether the state is 1-dim or multi-dim.
   one_dim <- (d == 1)
 
-  # Initialize state estimates:
-  if (one_dim) {
-    state_est <- numeric(num_steps)
-  } else {
-    state_est <- matrix(NA, nrow = num_steps, ncol = d)
-  }
-  ess_vec <- numeric(num_steps)
-  loglike <- 0 # log-likelihood accumulator
-  loglike_history <- numeric(num_steps)  # log-likelihood at each time step
-
-  # To store history, use lists (each element is an num_particles x d matrix)
+  # Allocate storage for t = 0..num_obs
+  out_steps <- num_obs + 1
+  state_est <- if (one_dim) numeric(out_steps) else
+    matrix(NA, nrow = out_steps, ncol = d)
+  ess_vec <- numeric(out_steps)
+  loglike_history <- numeric(num_obs)
+  loglike <- 0
   if (return_particles) {
-    particles_history <- vector("list", num_steps)
-    weights_history <- vector("list", num_steps)
+    particles_history <- vector("list", out_steps)
+    weights_history <- vector("list", out_steps)
   }
 
-  # Helper function: log-sum-exp trick for numerical stability
-  logsumexp <- function(lw) {
-    max_lw <- max(lw)
-    max_lw + log(sum(exp(lw - max_lw)))
-  }
-
-  # ---------------------------
-  # Time step 1 initialization
-  # ---------------------------
-
-  # Simulate from initial (t=1) to first observation time, if needed
-  initial_time <- 1L
-  gap1 <- obs_times[1] - initial_time
-  if (gap1 > 0) {
-    t_curr <- initial_time
-    for (step in seq_len(gap1)) {
-      t_curr <- t_curr + 1L
-      particles <- transition_fn(particles = particles, t = t_curr, ...)
-    }
-  }
-  # Weight at first observation
-  log_weights <- log_likelihood_fn(
-    y = y[1, ],
-    particles = particles,
-    t = obs_times[1],
-    ...
-  )
-
-  # Check that log_likelihood_fn returns a log-likelihood of correct dimensions.
-  if (!is.numeric(log_weights) || length(log_weights) != num_particles) {
-    stop("log_likelihood_fn must return dimensions matching num_particles")
-  }
-
-  log_l_1 <- logsumexp(log_weights) - log(num_particles)
-  loglike <- log_l_1
-  loglike_history[1] <- log_l_1
-
-  log_normalizer <- logsumexp(log_weights)
-  log_weights <- log_weights - log_normalizer
-  weights <- exp(log_weights)
-  # Compute the weighted average for the first time step
-  if (one_dim) {
-    state_est[1] <- sum(particles * weights)
-  } else {
-    state_est[1, ] <- colSums(particles * weights)
-  }
-  ess_vec[1] <- 1 / sum(weights^2)
+  # t = 0 estimate
+  w0 <- rep(1/num_particles, num_particles)
+  state_est[1] <- if (one_dim) sum(particles * w0) else
+    colSums(particles * w0)
+  ess_vec[1] <- 1/sum(w0^2)
   if (return_particles) {
     particles_history[[1]] <- particles
-    weights_history[[1]] <- weights
+    weights_history[[1]] <- w0
   }
 
-  # Set adaptive resampling threshold if needed
+  # adaptive threshold
   if (algorithm == "SISAR" && is.null(threshold)) {
     threshold <- num_particles / 2
   }
 
-  # ----------------------------
-  # Main loop over time steps
-  # ----------------------------
-  prev_time <- obs_times[1]
-
-  for (i in 2:num_steps) {
-    # Evolve particles from prev_time to obs_times[i]
-    gap <- obs_times[i] - prev_time
-    t_curr <- prev_time
-    # Evolve the particles for the gap (if gap > 1, do multiple transitions)
-    for (step in 1:gap) {
-      t_curr <- t_curr + 1
+  prev_t <- 0L
+  for (i in seq_len(num_obs)) {
+    # propagate to obs_times[i]
+    gap <- obs_times[i] - prev_t
+    for (step in seq_len(gap)) {
+      tnow <- prev_t + step
       particles <- transition_fn(
         particles = particles,
-        t = t_curr,
-        ...
+        t = tnow, ...
       )
+      # ensure shape
       if (is.null(dim(particles))) {
         if (length(particles) != num_particles) {
-          stop("transition_fn must return a vector of length num_particles")
+          stop("transition_fn must return a length of num_particles")
         }
         particles <- matrix(
-          particles,
-          nrow = num_particles,
-          byrow = TRUE
+          particles, nrow = num_particles
         )
-      } else {
-        if (nrow(particles) != num_particles) {
-          stop(
-            paste0(
-              "transition_fn must return the same number of rows ",
-              "as num_particles"
-            )
-          )
-        }
+      } else if (nrow(particles) != num_particles) {
+        stop("transition_fn must return num_particles rows")
       }
     }
-    prev_time <- obs_times[i]
+    prev_t <- obs_times[i]
 
-    # Now evaluate the log-likelihood at the current observation time.
-    log_likelihood <- log_likelihood_fn(
+    # compute log-weights
+    logw <- log_likelihood_fn(
       y = y[i, ],
       particles = particles,
-      t = obs_times[i],
+      t = prev_t,
       ...
     )
+    if (length(logw) != num_particles) {
+      stop("log_likelihood_fn must return num_particles values")
+    }
+    max_lw <- max(logw)
+    w <- exp(logw - max_lw)
+    norm <- sum(w)
+    loglike <- loglike + (
+      max_lw + log(norm) - log(num_particles)
+    )
+    w <- w / norm
+    loglike_history[i] <- loglike
 
-    # Check if the likelihood is extremely low.
-    if (all(log_likelihood < -1e8)) {
-      loglike <- -Inf
-      loglike_history[i] <- -Inf
-      result <- list(
-        state_est = state_est,
-        ess = ess_vec,
-        loglike = loglike,
-        loglike_history = loglike_history,
-        algorithm = algorithm
-      )
-      if (return_particles) {
-        result$particles_history <- particles_history
-        result$weights_history <- weights_history
-      }
-      return(result)
+    # ESS & resample
+    ess <- 1/sum(w^2)
+    if (
+      algorithm == "SISR" ||
+      (algorithm == "SISAR" && ess < threshold)
+    ) {
+      particles <- resampler(particles, w)
+      w <- rep(1/num_particles, num_particles)
+      ess <- num_particles
     }
 
-    log_weights    <- log(weights) + log_likelihood
-    log_normalizer <- logsumexp(log_weights)
-    loglike        <- loglike + log_normalizer
-    log_weights    <- log_weights - log_normalizer
-    weights        <- exp(log_weights)
-
-    ess_current <- 1 / sum(weights^2)
-    ess_vec[i] <- ess_current
-
-    # Resampling step for SISR and SISAR
-    if (algorithm == "SISR") {
-      particles <- resample_func(particles, weights)
-      weights <- rep(1 / num_particles, num_particles)
-      ess_vec[i] <- num_particles
-    } else if (algorithm == "SISAR" && ess_current < threshold) {
-      particles <- resample_func(particles, weights)
-      weights <- rep(1 / num_particles, num_particles)
-      ess_vec[i] <- num_particles
-    }
-
-    # Compute state estimates
-    if (one_dim) {
-      state_est[i] <- sum(particles * weights)
-    } else {
-      state_est[i, ] <- colSums(particles * weights)
-    }
-
+    # store at i+1
+    state_est[i+1] <- if (one_dim) sum(particles * w) else
+      colSums(particles * w)
+    ess_vec[i+1] <- ess
     if (return_particles) {
-      particles_history[[i]] <- particles
-      weights_history[[i]] <- weights
+      particles_history[[i+1]] <- particles
+      weights_history[[i+1]] <- w
     }
   }
 
+  # return
   result <- list(
-    state_est = state_est,
-    ess = ess_vec,
-    loglike = loglike,
+    state_est       = state_est,
+    ess             = ess_vec,
+    loglike         = loglike,
     loglike_history = loglike_history,
-    algorithm = algorithm
+    algorithm       = algorithm
   )
   if (return_particles) {
     result$particles_history <- particles_history
