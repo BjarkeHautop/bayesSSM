@@ -13,7 +13,7 @@ particles for the particle filter, and then runs the main PMMH chain."><meta pro
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9009</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9010</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -250,12 +250,19 @@ Journal of the Royal Statistical Society: Series B (Statistical Methodology),
 <span class="r-in"><span><span class="va">t_val</span> <span class="op">&lt;-</span> <span class="fl">10</span></span></span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">t_val</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">t_val</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">y</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, sd <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">phi</span> <span class="op">&lt;-</span> <span class="fl">0.8</span></span></span>
+<span class="r-in"><span><span class="va">sigma_x</span> <span class="op">&lt;-</span> <span class="fl">1</span></span></span>
+<span class="r-in"><span><span class="va">sigma_y</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">init_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">phi</span> <span class="op">*</span> <span class="va">init_state</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">init_state</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_x</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">y</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_y</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw">for</span> <span class="op">(</span><span class="va">t</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="va">t_val</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="va">x</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0.8</span> <span class="op">*</span> <span class="va">x</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">y</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">x</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">phi</span> <span class="op">*</span> <span class="va">x</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_x</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">y</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_y</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
+<span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">init_state</span>, <span class="va">x</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Should use much higher MCMC iterations in practice (m)</span></span></span>
 <span class="r-in"><span><span class="va">pmmh_result</span> <span class="op">&lt;-</span> <span class="fu">pmmh</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  y <span class="op">=</span> <span class="va">y</span>,</span></span>
@@ -279,7 +286,7 @@ Journal of the Royal Statistical Society: Series B (Statistical Methodology),
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running chain 1...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running pilot chain for tuning...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 50 particles for PMMH:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 61 particles for PMMH:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running Particle MCMC chain with tuned settings...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running chain 2...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running pilot chain for tuning...</span>
@@ -287,9 +294,9 @@ Journal of the Royal Statistical Society: Series B (Statistical Methodology),
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running Particle MCMC chain with tuned settings...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> PMMH Results Summary:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        phi 0.64 0.19   0.64          0.28           1.03  78 1.031</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_x 0.52 0.40   0.43          0.02           1.49  38 1.003</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_y 0.75 0.31   0.75          0.18           1.38  65 1.002</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        phi 0.57 0.16   0.59          0.10           0.82  33 1.046</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_x 0.81 0.38   0.80          0.12           1.58  55 1.050</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_y 0.46 0.32   0.36          0.03           1.18  28 1.081</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some ESS values are below 400, indicating poor mixing. Consider running the chains for more iterations.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Some Rhat values are above 1.01, indicating that the chains have not converged. </span>
@@ -333,9 +340,9 @@ Journal of the Royal Statistical Society: Series B (Statistical Methodology),
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running Particle MCMC chain with tuned settings...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> PMMH Results Summary:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        phi 0.66 0.18   0.68          0.30           0.99  77 1.006</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_x 0.61 0.44   0.56          0.05           1.60   9 1.077</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_y 0.70 0.32   0.70          0.14           1.42  40 1.061</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        phi 0.61 0.14   0.61          0.31           0.88  80 1.003</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_x 0.61 0.36   0.60          0.06           1.50  41 1.013</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_y 0.64 0.27   0.59          0.26           1.23  31 1.023</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some ESS values are below 400, indicating poor mixing. Consider running the chains for more iterations.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Some Rhat values are above 1.01, indicating that the chains have not converged. </span>

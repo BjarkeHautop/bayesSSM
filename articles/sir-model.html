@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9009</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9010</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -170,11 +170,10 @@ and
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>=</mo><mn>1.5</mn></mrow><annotation encoding="application/x-tex">\lambda=1.5</annotation></semantics></math>
 and removal rate
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>γ</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">\gamma=0.5</annotation></semantics></math>.
--
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">\phi=3</annotation></semantics></math>
-for the overdispersion parameter. - We observe the number of infectious
-individuals at times
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">t=0, 1, \ldots, 10</annotation></semantics></math>.
+- We observe the initial state at
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">t=0</annotation></semantics></math>
+complete, and then noisy version of infectious individuals at times
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">t=1, \ldots, 10</annotation></semantics></math>
 representing observations for each day.</p>
 <p>We can simulate using the fact that we have two independent
 exponential distribution, so an event occurs at rate of the sum of the
@@ -190,7 +189,6 @@ rates.</p>
 <span></span>
 <span><span class="co"># --- Functions for simulating the epidemic ---</span></span>
 <span></span>
-<span><span class="co"># Simulate 1 step of the epidemic</span></span>
 <span><span class="va">epidemic_step</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">n_total</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">t</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
 <span>  <span class="va">t_end</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
@@ -217,16 +215,14 @@ rates.</p>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">s</span>, <span class="va">i</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="co"># Simulate epidemic trajectory using Gillespie</span></span>
 <span><span class="va">simulate_epidemic</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
 <span>    <span class="va">n_total</span>, <span class="va">init_infected</span>, <span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">t_max</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span>, nrow <span class="op">=</span> <span class="va">t_max</span> <span class="op">+</span> <span class="fl">1</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span>  <span class="va">states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span>, nrow <span class="op">=</span> <span class="va">t_max</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span>  <span class="co"># initial state at t = 0</span></span>
-<span>  <span class="va">states</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">n_total</span> <span class="op">-</span> <span class="va">init_infected</span>, <span class="va">init_infected</span><span class="op">)</span></span>
-<span>  <span class="va">state</span> <span class="op">&lt;-</span> <span class="va">states</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span></span>
+<span>  <span class="va">state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">n_total</span> <span class="op">-</span> <span class="va">init_infected</span>, <span class="va">init_infected</span><span class="op">)</span></span>
 <span>  <span class="kw">for</span> <span class="op">(</span><span class="va">t</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">t_max</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">state</span> <span class="op">&lt;-</span> <span class="fu">epidemic_step</span><span class="op">(</span><span class="va">state</span>, <span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">n_total</span><span class="op">)</span></span>
-<span>    <span class="va">states</span><span class="op">[</span><span class="va">t</span> <span class="op">+</span> <span class="fl">1</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="va">state</span></span>
+<span>    <span class="va">states</span><span class="op">[</span><span class="va">t</span>, <span class="op">]</span> <span class="op">&lt;-</span> <span class="va">state</span></span>
 <span>  <span class="op">}</span></span>
 <span>  <span class="va">states</span></span>
 <span><span class="op">}</span></span></code></pre></div>
@@ -238,35 +234,30 @@ rates.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">latent_i</span> <span class="op">&lt;-</span> <span class="va">true_states</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span></span>
 <span></span>
-<span><span class="co"># 1st observation is deterministic.</span></span>
-<span></span>
-<span><span class="va">observations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">latent_i</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span>, lambda <span class="op">=</span> <span class="va">latent_i</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">observations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">init_infected</span>, <span class="va">observations</span><span class="op">)</span></span>
+<span><span class="va">observations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">rpois</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">latent_i</span><span class="op">)</span>, lambda <span class="op">=</span> <span class="va">latent_i</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Display simulated data: time, susceptible, latent infectious, observed counts</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>  time <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="va">t_max</span>, s <span class="op">=</span> <span class="va">true_states</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>, i <span class="op">=</span> <span class="va">true_states</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">observations</span></span>
+<span>  time <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="va">t_max</span>, s <span class="op">=</span> <span class="va">true_states</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>, i <span class="op">=</span> <span class="va">true_states</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span>, y <span class="op">=</span> <span class="va">observations</span></span>
 <span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;    time   s   i   y</span></span>
-<span><span class="co">#&gt; 1     0 430  70  70</span></span>
-<span><span class="co">#&gt; 2     1 391  88 103</span></span>
-<span><span class="co">#&gt; 3     2 348 113 106</span></span>
-<span><span class="co">#&gt; 4     3 307 132 114</span></span>
-<span><span class="co">#&gt; 5     4 266 147 136</span></span>
-<span><span class="co">#&gt; 6     5 221 164 155</span></span>
-<span><span class="co">#&gt; 7     6 183 171 168</span></span>
-<span><span class="co">#&gt; 8     7 155 159 154</span></span>
-<span><span class="co">#&gt; 9     8 137 143 137</span></span>
-<span><span class="co">#&gt; 10    9 118 139 147</span></span>
-<span><span class="co">#&gt; 11   10 107 121 123</span></span></code></pre></div>
+<span><span class="co">#&gt; 1     1 391  88 103</span></span>
+<span><span class="co">#&gt; 2     2 348 113 106</span></span>
+<span><span class="co">#&gt; 3     3 307 132 114</span></span>
+<span><span class="co">#&gt; 4     4 266 147 136</span></span>
+<span><span class="co">#&gt; 5     5 221 164 155</span></span>
+<span><span class="co">#&gt; 6     6 183 171 168</span></span>
+<span><span class="co">#&gt; 7     7 155 159 154</span></span>
+<span><span class="co">#&gt; 8     8 137 143 137</span></span>
+<span><span class="co">#&gt; 9     9 118 139 147</span></span>
+<span><span class="co">#&gt; 10   10 107 121 123</span></span></code></pre></div>
 <p>And plot it:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Function to create a tidy dataset for ggplot</span></span>
 <span><span class="va">prepare_data_for_plot</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">states</span>, <span class="va">observations</span>, <span class="va">t_max</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># Organize the data into a tidy format</span></span>
 <span>  <span class="va">data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>    time <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="va">t_max</span>,</span>
+<span>    time <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="va">t_max</span>,</span>
 <span>    s <span class="op">=</span> <span class="va">states</span><span class="op">[</span>, <span class="fl">1</span><span class="op">]</span>,</span>
 <span>    i <span class="op">=</span> <span class="va">states</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span>,</span>
 <span>    y <span class="op">=</span> <span class="va">observations</span></span>
@@ -290,7 +281,7 @@ rates.</p>
 <span>    <span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span>legend.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_blank</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="va">t_max</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_continuous.html" class="external-link">scale_x_continuous</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="va">t_max</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/theme.html" class="external-link">theme</a></span><span class="op">(</span></span>
 <span>      axis.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span>,</span>
 <span>      plot.title <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/element.html" class="external-link">element_text</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fl">14</span>, hjust <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
@@ -343,6 +334,7 @@ likelihood.</p>
 <span></span>
 <span>  <span class="co"># Jacobian: |d(1/sqrt(phi))/dphi| = 1/(2 * phi^(3/2))</span></span>
 <span>  <span class="va">log_jacobian</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1.5</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">phi</span><span class="op">)</span></span>
+<span>  </span>
 <span>  <span class="fu">extraDistr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/extraDistr/man/HalfNormal.html" class="external-link">dhnorm</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">phi</span><span class="op">)</span>, sigma <span class="op">=</span> <span class="fl">1</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span> <span class="va">log_jacobian</span></span>
 <span><span class="op">}</span></span>
 <span></span>
@@ -363,11 +355,7 @@ for the SIR model.</p>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">transition_fn_epidemic</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">particles</span>, <span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">t</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># t=1 deterministic</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">t</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">particles</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span></span>
+<span>  </span>
 <span>  <span class="va">new_particles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">particles</span>, <span class="fl">1</span>, <span class="kw">function</span><span class="op">(</span><span class="va">state</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">s</span> <span class="op">&lt;-</span> <span class="va">state</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
 <span>    <span class="va">i</span> <span class="op">&lt;-</span> <span class="va">state</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
@@ -381,10 +369,7 @@ for the SIR model.</p>
 <span></span>
 <span><span class="va">log_likelihood_fn_epidemic</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">y</span>, <span class="va">particles</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># particles is expected to be a matrix with columns (s, i)</span></span>
-<span>  <span class="co"># t=1 deterministic</span></span>
-<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">t</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">particles</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
+<span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">dpois</a></span><span class="op">(</span><span class="va">y</span>, lambda <span class="op">=</span> <span class="va">particles</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>Now we can run the PMMH algorithm to estimate the posterior
@@ -415,28 +400,28 @@ higher.</p>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
 <span><span class="co">#&gt; Pilot chain posterior mean:</span></span>
 <span><span class="co">#&gt;    lambda     gamma </span></span>
-<span><span class="co">#&gt; 0.5282195 0.2003936</span></span>
+<span><span class="co">#&gt; 0.5881027 0.2127300</span></span>
 <span><span class="co">#&gt; Pilot chain posterior covariance (on transformed space):</span></span>
 <span><span class="co">#&gt;             lambda        gamma</span></span>
-<span><span class="co">#&gt; lambda 0.007543494 0.0016968694</span></span>
-<span><span class="co">#&gt; gamma  0.001696869 0.0004225967</span></span>
+<span><span class="co">#&gt; lambda 0.010907941 0.0018724407</span></span>
+<span><span class="co">#&gt; gamma  0.001872441 0.0003879703</span></span>
 <span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running Particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; Running chain 2...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
 <span><span class="co">#&gt; Pilot chain posterior mean:</span></span>
 <span><span class="co">#&gt;    lambda     gamma </span></span>
-<span><span class="co">#&gt; 0.5513289 0.2073881</span></span>
+<span><span class="co">#&gt; 0.4549656 0.1785082</span></span>
 <span><span class="co">#&gt; Pilot chain posterior covariance (on transformed space):</span></span>
-<span><span class="co">#&gt;             lambda        gamma</span></span>
-<span><span class="co">#&gt; lambda 0.009459800 0.0026608817</span></span>
-<span><span class="co">#&gt; gamma  0.002660882 0.0008163978</span></span>
+<span><span class="co">#&gt;              lambda        gamma</span></span>
+<span><span class="co">#&gt; lambda 1.366952e-04 3.586485e-05</span></span>
+<span><span class="co">#&gt; gamma  3.586485e-05 4.459946e-05</span></span>
 <span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running Particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
 <span><span class="co">#&gt;  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;     lambda 0.54 0.08   0.54          0.37           0.70 170 1.008</span></span>
-<span><span class="co">#&gt;      gamma 0.20 0.02   0.20          0.16           0.24 102 1.032</span></span>
+<span><span class="co">#&gt;     lambda 0.55 0.06   0.55          0.44           0.67  54 1.008</span></span>
+<span><span class="co">#&gt;      gamma 0.20 0.02   0.20          0.17           0.24  63 1.022</span></span>
 <span><span class="co">#&gt; Warning in bayesSSM::pmmh(y = observations, m = 1000, init_fn =</span></span>
 <span><span class="co">#&gt; init_fn_epidemic, : Some ESS values are below 400, indicating poor mixing.</span></span>
 <span><span class="co">#&gt; Consider running the chains for more iterations.</span></span>

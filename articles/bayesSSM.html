@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9009</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9010</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -75,10 +75,10 @@
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span></code></pre></div>
 <p>We will show how to fit the following SSM model using the
 <code>bayesSSM</code> package:</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>X</mi><mn>1</mn></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mspace width="0.167em"></mspace><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>X</mi><mi>t</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>ϕ</mi><msub><mi>X</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><mo>sin</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>σ</mi><mi>x</mi></msub><msub><mi>V</mi><mi>t</mi></msub><mo>,</mo><mspace width="1.0em"></mspace><msub><mi>V</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mspace width="0.167em"></mspace><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>Y</mi><mi>t</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>X</mi><mi>t</mi></msub><mo>+</mo><msub><mi>σ</mi><mi>y</mi></msub><msub><mi>W</mi><mi>t</mi></msub><mo>,</mo><mspace width="1.0em"></mspace><msub><mi>W</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mspace width="0.167em"></mspace><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
-        X_1 &amp;\sim N(0,\, 1) \\
-        X_t&amp;=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0, \, 1) \\
-        Y_t&amp;=X_t+\sigma_y W_t, \quad W_t \sim N(0, \, 1),
+<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>X</mi><mn>0</mn></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>X</mi><mi>t</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>ϕ</mi><msub><mi>X</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><mo>sin</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>σ</mi><mi>x</mi></msub><msub><mi>V</mi><mi>t</mi></msub><mo>,</mo><mspace width="1.0em"></mspace><msub><mi>V</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="1.0em"></mspace><mi>t</mi><mo>≥</mo><mn>1</mn></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>Y</mi><mi>t</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>X</mi><mi>t</mi></msub><mo>+</mo><msub><mi>σ</mi><mi>y</mi></msub><msub><mi>W</mi><mi>t</mi></msub><mo>,</mo><mspace width="1.0em"></mspace><msub><mi>W</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="1.0em"></mspace><mi>t</mi><mo>≥</mo><mn>1</mn></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+        X_0 &amp;\sim N(0,1) \\
+        X_t&amp;=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0,1), \quad t\geq 1 \\
+        Y_t&amp;=X_t+\sigma_y W_t, \quad W_t \sim N(0, 1), \quad t\geq 1 
 \end{align*}</annotation></semantics></math> that is
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>X</mi><mi>t</mi></msub><annotation encoding="application/x-tex">X_t</annotation></semantics></math>
 is a latent state and
@@ -91,23 +91,26 @@ and
 <p>First, we will simulate some data from this model:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1405</span><span class="op">)</span></span>
-<span><span class="va">t_val</span> <span class="op">&lt;-</span> <span class="fl">50</span></span>
-<span><span class="va">phi_true</span> <span class="op">&lt;-</span> <span class="fl">0.8</span></span>
-<span><span class="va">sigma_x_true</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
-<span><span class="va">sigma_y_true</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span>
+<span><span class="va">t_val</span> <span class="op">&lt;-</span> <span class="fl">20</span></span>
+<span><span class="va">phi</span> <span class="op">&lt;-</span> <span class="fl">0.8</span></span>
+<span><span class="va">sigma_x</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
+<span><span class="va">sigma_y</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span>
 <span></span>
+<span><span class="va">init_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_x</span><span class="op">)</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">t_val</span><span class="op">)</span></span>
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">t_val</span><span class="op">)</span></span>
-<span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">y</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="va">sigma_y_true</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">phi</span> <span class="op">*</span> <span class="va">init_state</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">init_state</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_x</span><span class="op">)</span></span>
+<span><span class="va">y</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_y</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">t</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="va">t_val</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">x</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">phi_true</span> <span class="op">*</span> <span class="va">x</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="va">sigma_x_true</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
-<span>  <span class="va">y</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">+</span> <span class="va">sigma_y_true</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
+<span>  <span class="va">x</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">phi</span> <span class="op">*</span> <span class="va">x</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_x</span><span class="op">)</span></span>
+<span>  <span class="va">y</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_y</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">init_state</span>, <span class="va">x</span><span class="op">)</span></span></code></pre></div>
 <p>Let’s visualize the data:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="va">t_val</span>, y <span class="op">=</span> <span class="va">x</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"blue"</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="co"># Latent</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="va">t_val</span>, y <span class="op">=</span> <span class="va">x</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"blue"</span>, linewidth <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="co"># Latent</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html" class="external-link">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="va">t_val</span>, y <span class="op">=</span> <span class="va">y</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="co"># Observed</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"Simulated Data: Latent State and Observations"</span>,</span>
@@ -215,31 +218,31 @@ should be on the
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
 <span><span class="co">#&gt; Pilot chain posterior mean:</span></span>
 <span><span class="co">#&gt;       phi   sigma_x   sigma_y </span></span>
-<span><span class="co">#&gt; 0.8798657 0.9173364 0.5683548</span></span>
+<span><span class="co">#&gt; 0.7018566 0.4519345 1.1169538</span></span>
 <span><span class="co">#&gt; Pilot chain posterior covariance (on transformed space):</span></span>
-<span><span class="co">#&gt;                 phi     sigma_x     sigma_y</span></span>
-<span><span class="co">#&gt; phi     0.002084208 0.002558793 0.002332220</span></span>
-<span><span class="co">#&gt; sigma_x 0.002558793 0.008055780 0.006217778</span></span>
-<span><span class="co">#&gt; sigma_y 0.002332220 0.006217778 0.006318947</span></span>
-<span><span class="co">#&gt; Using 150 particles for PMMH:</span></span>
+<span><span class="co">#&gt;                  phi      sigma_x     sigma_y</span></span>
+<span><span class="co">#&gt; phi      0.008556143  0.007220183 -0.01466298</span></span>
+<span><span class="co">#&gt; sigma_x  0.007220183  0.036320425 -0.02118126</span></span>
+<span><span class="co">#&gt; sigma_y -0.014662982 -0.021181262  0.04817363</span></span>
+<span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running Particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; Running chain 2...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
 <span><span class="co">#&gt; Pilot chain posterior mean:</span></span>
 <span><span class="co">#&gt;       phi   sigma_x   sigma_y </span></span>
-<span><span class="co">#&gt; 0.8057224 1.0560141 0.4103715</span></span>
+<span><span class="co">#&gt; 0.8633947 0.7962495 1.0493673</span></span>
 <span><span class="co">#&gt; Pilot chain posterior covariance (on transformed space):</span></span>
-<span><span class="co">#&gt;                 phi     sigma_x     sigma_y</span></span>
-<span><span class="co">#&gt; phi     0.007080104 0.007619264 0.005622426</span></span>
-<span><span class="co">#&gt; sigma_x 0.007619264 0.013808487 0.008079961</span></span>
-<span><span class="co">#&gt; sigma_y 0.005622426 0.008079961 0.006104050</span></span>
-<span><span class="co">#&gt; Using 160 particles for PMMH:</span></span>
+<span><span class="co">#&gt;                  phi      sigma_x      sigma_y</span></span>
+<span><span class="co">#&gt; phi      0.003403028 -0.005929153  0.007394396</span></span>
+<span><span class="co">#&gt; sigma_x -0.005929153  0.039885950 -0.053859333</span></span>
+<span><span class="co">#&gt; sigma_y  0.007394396 -0.053859333  0.122962510</span></span>
+<span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running Particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
 <span><span class="co">#&gt;  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;        phi 0.82 0.07   0.82          0.66           0.96  30 1.029</span></span>
-<span><span class="co">#&gt;    sigma_x 0.91 0.11   0.90          0.71           1.18  23 1.075</span></span>
-<span><span class="co">#&gt;    sigma_y 0.55 0.12   0.54          0.38           0.77   2 1.372</span></span>
+<span><span class="co">#&gt;        phi 0.80 0.10   0.80          0.55           0.98  21 1.034</span></span>
+<span><span class="co">#&gt;    sigma_x 0.88 0.43   0.97          0.07           1.50   2 1.427</span></span>
+<span><span class="co">#&gt;    sigma_y 0.71 0.41   0.61          0.18           1.48   1 1.553</span></span>
 <span><span class="co">#&gt; Warning in pmmh(y = y, m = 1000, init_fn = init_fn, transition_fn =</span></span>
 <span><span class="co">#&gt; transition_fn, : Some ESS values are below 400, indicating poor mixing.</span></span>
 <span><span class="co">#&gt; Consider running the chains for more iterations.</span></span>
@@ -256,9 +259,9 @@ be printed from any <code>pmmh_output</code> object by calling
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
 <span><span class="co">#&gt;  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;        phi 0.82 0.07   0.82          0.66           0.96  30 1.029</span></span>
-<span><span class="co">#&gt;    sigma_x 0.91 0.11   0.90          0.71           1.18  23 1.075</span></span>
-<span><span class="co">#&gt;    sigma_y 0.55 0.12   0.54          0.38           0.77   2 1.372</span></span></code></pre></div>
+<span><span class="co">#&gt;        phi 0.80 0.10   0.80          0.55           0.98  21 1.034</span></span>
+<span><span class="co">#&gt;    sigma_x 0.88 0.43   0.97          0.07           1.50   2 1.427</span></span>
+<span><span class="co">#&gt;    sigma_y 0.71 0.41   0.61          0.18           1.48   1 1.553</span></span></code></pre></div>
 <p>The chains are saved as <code>theta_chain</code></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chains</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">theta_chain</span></span></code></pre></div>
