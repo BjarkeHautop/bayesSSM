@@ -296,16 +296,16 @@ particle_filter <- function(
   }
 
   # t = 0 estimate
-  w0 <- rep(1 / num_particles, num_particles)
+  initial_weights <- rep(1 / num_particles, num_particles)
   if (one_dim) {
-    state_est[1] <- sum(particles * w0)
+    state_est[1] <- sum(particles * initial_weights)
   } else {
-    state_est[1, ] <- colSums(particles * w0)
+    state_est[1, ] <- colSums(particles * initial_weights)
   }
-  ess_vec[1] <- 1 / sum(w0^2)
+  ess_vec[1] <- 1 / sum(initial_weights^2)
   if (return_particles) {
     particles_history[[1]] <- particles
-    weights_history[[1]] <- w0
+    weights_history[[1]] <- initial_weights
   }
 
   # adaptive threshold
@@ -338,18 +338,18 @@ particle_filter <- function(
     prev_t <- obs_times[i]
 
     # compute log-weights
-    logw <- log_likelihood_fn(
+    log_weights <- log_likelihood_fn(
       y = y[i, ],
       particles = particles,
       t = prev_t,
       ...
     )
-    if (length(logw) != num_particles) {
+    if (length(log_weights) != num_particles) {
       stop("log_likelihood_fn must return num_particles values")
     }
 
-    # If logw is very small return -Inf
-    if (all(logw < -1e8)) {
+    # If log_weights is very small return -Inf
+    if (all(log_weights < -1e8)) {
       loglike <- -Inf
       loglike_history[i] <- -Inf
       result <- list(
@@ -366,38 +366,38 @@ particle_filter <- function(
       return(result)
     }
 
-    max_lw <- max(logw)
-    w <- exp(logw - max_lw)
-    norm <- sum(w)
+    max_log_weights <- max(log_weights)
+    unnormalized_weights <- exp(log_weights - max_log_weights)
+    weight_sum <- sum(unnormalized_weights)
     loglike <- loglike + (
-      max_lw + log(norm) - log(num_particles)
+      max_log_weights + log(weight_sum) - log(num_particles)
     )
-    w <- w / norm
+    weights <- unnormalized_weights / weight_sum
     loglike_history[i] <- loglike
 
     # Resample
     if (algorithm == "SISR") {
-      particles <- resample_func(particles, w)
+      particles <- resample_func(particles, weights)
       w <- rep(1 / num_particles, num_particles)
       ess_vec[i + 1] <- num_particles
     } else if (algorithm == "SISAR" && ess_vec[i] < threshold) {
-      particles <- resample_func(particles, w)
+      particles <- resample_func(particles, weights)
       w <- rep(1 / num_particles, num_particles)
       ess_vec[i + 1] <- num_particles
     } else {
-      ess_vec[i + 1] <- 1 / sum(w^2)
+      ess_vec[i + 1] <- 1 / sum(weights^2)
     }
 
     # store at i+1
     if (one_dim) {
-      state_est[i + 1] <- sum(particles * w)
+      state_est[i + 1] <- sum(particles * weights)
     } else {
-      state_est[i + 1, ] <- colSums(particles * w)
+      state_est[i + 1, ] <- colSums(particles * weights)
     }
 
     if (return_particles) {
       particles_history[[i + 1]] <- particles
-      weights_history[[i + 1]] <- w
+      weights_history[[i + 1]] <- weights
     }
   }
 
