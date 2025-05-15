@@ -139,6 +139,7 @@ test_that("particle_filter returns no particles_history when requested", {
 })
 
 test_that("particle_filter works non-trivial setup", {
+  set.seed(1405)
   # Works with more complicated setup
   init_fn_ssm <- function(num_particles) {
     rnorm(num_particles, mean = 0, sd = 1)
@@ -183,7 +184,16 @@ test_that("particle_filter works non-trivial setup", {
     resample_fn = "systematic"
   )
   rmse <- sqrt(mean((result$state_est - my_data$x)^2))
-  expect_lt(rmse, 1)
+  plot(
+    result$state_est,
+    type = "l",
+    col = "blue",
+    main = "Particle Filter State Estimate vs True State",
+    xlab = "Time",
+    ylab = "State Estimate"
+  )
+  lines(my_data$x, col = "red")
+  expect_lt(rmse, 0.5)
 })
 
 

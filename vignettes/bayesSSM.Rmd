@@ -25,9 +25,9 @@ library(ggplot2)
 We will show how to fit the following SSM model using the `bayesSSM` package:
 
 \begin{align*}
-		X_1 &\sim N(0,\, 1) \\
-		X_t&=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0, \, 1) \\
-		Y_t&=X_t+\sigma_y W_t, \quad W_t \sim N(0, \, 1),
+		X_0 &\sim N(0,1) \\
+		X_t&=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0,1), \quad t\geq 1 \\
+		Y_t&=X_t+\sigma_y W_t, \quad W_t \sim N(0, 1), \quad t\geq 1 
 \end{align*}
 that is $X_t$ is a latent state and $Y_t$ is an observed value. 
 The parameters of the model are $\phi$, $\sigma_x$, and $\sigma_y$.
@@ -36,19 +36,22 @@ First, we will simulate some data from this model:
 
 ```{r}
 set.seed(1405)
-t_val <- 50
-phi_true <- 0.8
-sigma_x_true <- 1
-sigma_y_true <- 0.5
+t_val <- 20
+phi <- 0.8
+sigma_x <- 1
+sigma_y <- 0.5
 
+init_state <- rnorm(1, mean = 0, sd = sigma_x)
 x <- numeric(t_val)
 y <- numeric(t_val)
-x[1] <- rnorm(1)
-y[1] <- x[1] + sigma_y_true * rnorm(1)
+x[1] <- phi * init_state + sin(init_state) +
+  rnorm(1, mean = 0, sd = sigma_x)
+y[1] <- x[1] + rnorm(1, mean = 0, sd = sigma_y)
 for (t in 2:t_val) {
-  x[t] <- phi_true * x[t - 1] + sin(x[t - 1]) + sigma_x_true * rnorm(1)
-  y[t] <- x[t] + sigma_y_true * rnorm(1)
+  x[t] <- phi * x[t - 1] + sin(x[t - 1]) + rnorm(1, mean = 0, sd = sigma_x)
+  y[t] <- x[t] + rnorm(1, mean = 0, sd = sigma_y)
 }
+x <- c(init_state, x)
 ```
 
 Let's visualize the data:
@@ -57,7 +60,7 @@ Let's visualize the data:
 #| fig.alt: "The blue line represents the latent state, and red points represent
 #| observed values."
 ggplot() +
-  geom_line(aes(x = 1:t_val, y = x), color = "blue", linewidth = 1) + # Latent
+  geom_line(aes(x = 0:t_val, y = x), color = "blue", linewidth = 1) + # Latent
   geom_point(aes(x = 1:t_val, y = y), color = "red", size = 2) + # Observed
   labs(
     title = "Simulated Data: Latent State and Observations",

@@ -83,9 +83,9 @@ $$
 We will simulate data from the SIR model with the following parameters:
 - At $t=0$ we have $S(0) = 90$, $I(0) = 10$ and $R(0) = 0$.
 - Infection rate $\lambda=1.5$ and removal rate $\gamma=0.5$.
-- $\phi=3$ for the overdispersion parameter.
-- We observe the number of infectious individuals at times $t=0, 1, \ldots, 10$.
-representing observations for each day.
+- We observe the initial state at $t=0$ complete, and then noisy version of 
+infectious individuals at times $t=1, \ldots, 10$ representing observations for
+each day.
 
 We can simulate using the fact that we have two independent
 exponential distribution, so an event occurs at rate of the sum of the rates.
@@ -101,7 +101,6 @@ true_gamma <- 0.2 # True removal parameter
 
 # --- Functions for simulating the epidemic ---
 
-# Simulate 1 step of the epidemic
 epidemic_step <- function(state, lambda, gamma, n_total) {
   t <- 0
   t_end <- 1
@@ -128,16 +127,14 @@ epidemic_step <- function(state, lambda, gamma, n_total) {
   c(s, i)
 }
 
-# Simulate epidemic trajectory using Gillespie
 simulate_epidemic <- function(
     n_total, init_infected, lambda, gamma, t_max) {
-  states <- matrix(0, nrow = t_max + 1, ncol = 2)
+  states <- matrix(0, nrow = t_max, ncol = 2)
   # initial state at t = 0
-  states[1, ] <- c(n_total - init_infected, init_infected)
-  state <- states[1, ]
+  state <- c(n_total - init_infected, init_infected)
   for (t in 1:t_max) {
     state <- epidemic_step(state, lambda, gamma, n_total)
-    states[t + 1, ] <- state
+    states[t, ] <- state
   }
   states
 }
@@ -152,15 +149,11 @@ true_states <- simulate_epidemic(
 )
 latent_i <- true_states[, 2]
 
-# 1st observation is deterministic.
-
-observations <- rpois(length(latent_i) - 1, lambda = latent_i[-1])
-
-observations <- c(init_infected, observations)
+observations <- rpois(length(latent_i), lambda = latent_i)
 
 # Display simulated data: time, susceptible, latent infectious, observed counts
 print(data.frame(
-  time = 0:t_max, s = true_states[, 1], i = true_states[, 2], y = observations
+  time = 1:t_max, s = true_states[, 1], i = true_states[, 2], y = observations
 ))
 ```
 
@@ -172,7 +165,7 @@ And plot it:
 prepare_data_for_plot <- function(states, observations, t_max) {
   # Organize the data into a tidy format
   data <- data.frame(
-    time = 0:t_max,
+    time = 1:t_max,
     s = states[, 1],
     i = states[, 2],
     y = observations
@@ -196,7 +189,7 @@ plot_epidemic_data <- function(data_long, t_max) {
     ) +
     theme_minimal() +
     theme(legend.title = element_blank()) +
-    scale_x_continuous(breaks = 0:t_max) +
+    scale_x_continuous(breaks = 1:t_max) +
     theme(
       axis.title = element_text(size = 12),
       plot.title = element_text(size = 14, hjust = 0.5)
@@ -243,6 +236,7 @@ log_prior_phi <- function(phi) {
 
   # Jacobian: |d(1/sqrt(phi))/dphi| = 1/(2 * phi^(3/2))
   log_jacobian <- -log(2) - 1.5 * log(phi)
+  
   extraDistr::dhnorm(1 / sqrt(phi), sigma = 1, log = TRUE) + log_jacobian
 }
 
@@ -266,11 +260,7 @@ init_fn_epidemic <- function(num_particles) {
 }
 
 transition_fn_epidemic <- function(particles, lambda, gamma, t) {
-  # t=1 deterministic
-  if (t == 1) {
-    return(particles)
-  }
-
+  
   new_particles <- t(apply(particles, 1, function(state) {
     s <- state[1]
     i <- state[2]
@@ -284,10 +274,7 @@ transition_fn_epidemic <- function(particles, lambda, gamma, t) {
 
 log_likelihood_fn_epidemic <- function(y, particles) {
   # particles is expected to be a matrix with columns (s, i)
-  # t=1 deterministic
-  if (t == 1) {
-    return(rep(0, nrow(particles)))
-  }
+ 
   dpois(y, lambda = particles[, 2], log = TRUE)
 }
 ```

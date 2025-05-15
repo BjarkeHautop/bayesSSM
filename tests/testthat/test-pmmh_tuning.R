@@ -373,12 +373,27 @@ test_that("Multi dimensional works", {
     matrix(rnorm(num_particles * 2), ncol = 2)
   }
   transition_fn <- function(particles, phi, ...) {
-    particles + rnorm(nrow(particles) * 2, mean = phi)
+    particles + rnorm(ncol(particles), mean = phi)
   }
-  log_likelihood_fn <- function(y, particles, ...) rep(1, nrow(particles))
+  log_likelihood_fn <- function(y, particles, ...) {
+    dnorm(y[1], mean = particles[, 1], sd = 1, log = TRUE) +
+      dnorm(y[2], mean = particles[, 2], sd = 1, log = TRUE)
+  }
 
-  # A vector of observation
-  y <- rep(0, 5)
+
+  init_state <-  matrix(rnorm(2), ncol = 2)
+  num_steps <- 50
+  x <- matrix(0, nrow = num_steps, ncol = 2)
+  y <- matrix(0, nrow = num_steps, ncol = 2)
+  phi <- 1
+  x[1, ] <- init_state + rnorm(2, mean = phi)
+  y[1, ] <- rnorm(2, mean = x[1, ], sd = 1)
+
+  for (t in 2:num_steps) {
+    x[t, ] <- x[t - 1, ] + rnorm(2, mean = phi)
+    y[t, ] <- rnorm(2, mean = x[t, ], sd = 1)
+  }
+  x <- rbind(init_state, x)
 
   log_prior_phi <- function(phi) {
     dnorm(phi, mean = 0, sd = 1, log = TRUE)
@@ -404,5 +419,5 @@ test_that("Multi dimensional works", {
   )
   phi_est <- unname(result$pilot_theta_mean)
 
-  expect_equal(phi_est, 0, tolerance = 0.1)
+  expect_equal(phi_est, phi, tolerance = 0.1)
 })

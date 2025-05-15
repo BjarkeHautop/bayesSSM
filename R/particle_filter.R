@@ -108,8 +108,7 @@
 #'   dnorm(y, mean = particles, sd = 1, log = TRUE)
 #' }
 #'
-#' # Generate data
-#' y <- cumsum(rnorm(50))
+#' y <- cumsum(rnorm(50)) # dummy data
 #' num_particles <- 100
 #'
 #' # Run the particle filter using default settings.
@@ -133,8 +132,7 @@
 #'   dnorm(y, mean = particles, sd = sigma, log = TRUE)
 #' }
 #'
-#' # Generate data
-#' y <- cumsum(rnorm(50))
+#' y <- cumsum(rnorm(50)) # dummy data
 #' num_particles <- 100
 #'
 #' # Run the particle filter using default settings.
@@ -249,12 +247,13 @@ particle_filter <- function(
     stop("obs_times must be strictly increasing ints")
   }
 
-  # Algorithm & resampler
   algorithm <- match.arg(algorithm)
-  resampler <- switch(
-    match.arg(resample_fn),
+  resample_fn <- match.arg(resample_fn)
+
+  resample_func <- switch(
+    resample_fn,
     multinomial = .resample_multinomial,
-    stratified  = .resample_stratified,
+    stratified = .resample_stratified,
     systematic = .resample_systematic
   )
 
@@ -297,10 +296,13 @@ particle_filter <- function(
   }
 
   # t = 0 estimate
-  w0 <- rep(1/num_particles, num_particles)
-  state_est[1] <- if (one_dim) sum(particles * w0) else
-    colSums(particles * w0)
-  ess_vec[1] <- 1/sum(w0^2)
+  w0 <- rep(1 / num_particles, num_particles)
+  if (one_dim) {
+    state_est[1] <- sum(particles * w0)
+  } else {
+    state_est[1, ] <- colSums(particles * w0)
+  }
+  ess_vec[1] <- 1 / sum(w0^2)
   if (return_particles) {
     particles_history[[1]] <- particles
     weights_history[[1]] <- w0
@@ -354,24 +356,29 @@ particle_filter <- function(
     w <- w / norm
     loglike_history[i] <- loglike
 
-    # ESS & resample
-    ess <- 1/sum(w^2)
-    if (
-      algorithm == "SISR" ||
-      (algorithm == "SISAR" && ess < threshold)
-    ) {
-      particles <- resampler(particles, w)
-      w <- rep(1/num_particles, num_particles)
-      ess <- num_particles
+    # Resample
+    if (algorithm == "SISR") {
+      particles <- resample_func(particles, w)
+      w <- rep(1 / num_particles, num_particles)
+      ess_vec[i + 1] <- num_particles
+    } else if (algorithm == "SISAR" && ess_vec[i] < threshold) {
+      particles <- resample_func(particles, w)
+      w <- rep(1 / num_particles, num_particles)
+      ess_vec[i + 1] <- num_particles
+    } else {
+      ess_vec[i + 1] <- 1 / sum(w^2)
     }
 
     # store at i+1
-    state_est[i+1] <- if (one_dim) sum(particles * w) else
-      colSums(particles * w)
-    ess_vec[i+1] <- ess
+    if (one_dim) {
+      state_est[i + 1] <- sum(particles * w)
+    } else {
+      state_est[i + 1, ] <- colSums(particles * w)
+    }
+
     if (return_particles) {
-      particles_history[[i+1]] <- particles
-      weights_history[[i+1]] <- w
+      particles_history[[i + 1]] <- particles
+      weights_history[[i + 1]] <- w
     }
   }
 

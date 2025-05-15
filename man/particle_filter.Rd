@@ -131,8 +131,7 @@ log_likelihood_fn <- function(y, particles) {
   dnorm(y, mean = particles, sd = 1, log = TRUE)
 }
 
-# Generate data
-y <- cumsum(rnorm(50))
+y <- cumsum(rnorm(50)) # dummy data
 num_particles <- 100
 
 # Run the particle filter using default settings.
@@ -156,8 +155,7 @@ log_likelihood_fn <- function(y, particles, sigma) {
   dnorm(y, mean = particles, sd = sigma, log = TRUE)
 }
 
-# Generate data
-y <- cumsum(rnorm(50))
+y <- cumsum(rnorm(50)) # dummy data
 num_particles <- 100
 
 # Run the particle filter using default settings.

@@ -53,9 +53,9 @@ Consider the following SSM:
 
 $$
 \begin{aligned}
-		X_1 &\sim N(0,1) \\
-		Y_t&=X_t+\sigma_y W_t, \quad W_t \sim N(0, 1), \quad t\geq 1 \\
-		X_t&=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0,1), \quad t\geq 2
+		X_0 &\sim N(0,1) \\
+		X_t&=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0,1), \quad t\geq 1 \\
+		Y_t&=X_t+\sigma_y W_t, \quad W_t \sim N(0, 1), \quad t\geq 1 
 \end{aligned}
 $$
 
@@ -63,22 +63,23 @@ Let's first simulate some data from this model with $\phi = 0.8$,
 $\sigma_x = 1$, and $\sigma_y = 0.5$.
 
 ```{r}
+set.seed(1405)
 t_val <- 20
-phi_val <- 0.8
-sigma_x_val <- 1
-sigma_y_val <- 0.5
+phi <- 0.8
+sigma_x <- 1
+sigma_y <- 0.5
 
+init_state <- rnorm(1, mean = 0, sd = sigma_x)
 x <- numeric(t_val)
 y <- numeric(t_val)
-x[1] <- rnorm(1, mean = 0, sd = sigma_x_val)
-y[1] <- rnorm(1, mean = x[1], sd = sigma_y_val)
+x[1] <- phi * init_state + sin(init_state) +
+  rnorm(1, mean = 0, sd = sigma_x)
+y[1] <- x[1] + rnorm(1, mean = 0, sd = sigma_y)
 for (t in 2:t_val) {
-  x[t] <- phi_val * x[t - 1] + sin(x[t - 1]) + rnorm(1,
-    mean = 0,
-    sd = sigma_x_val
-  )
-  y[t] <- x[t] + rnorm(1, mean = 0, sd = sigma_y_val)
+  x[t] <- phi * x[t - 1] + sin(x[t - 1]) + rnorm(1, mean = 0, sd = sigma_x)
+  y[t] <- x[t] + rnorm(1, mean = 0, sd = sigma_y)
 }
+x <- c(init_state, x)
 ```
 
 We define the priors for our model as follows:

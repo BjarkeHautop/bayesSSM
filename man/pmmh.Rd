@@ -154,12 +154,19 @@ log_priors <- list(
 t_val <- 10
 x <- numeric(t_val)
 y <- numeric(t_val)
-x[1] <- rnorm(1, mean = 0, sd = 1)
-y[1] <- rnorm(1, mean = x[1], sd = 0.5)
+phi <- 0.8
+sigma_x <- 1
+sigma_y <- 0.5
+
+init_state <- rnorm(1, mean = 0, sd = 1)
+x[1] <- phi * init_state + sin(init_state) + rnorm(1, mean = 0, sd = sigma_x)
+y[1] <- x[1] + rnorm(1, mean = 0, sd = sigma_y)
 for (t in 2:t_val) {
-  x[t] <- 0.8 * x[t - 1] + sin(x[t - 1]) + rnorm(1, mean = 0, sd = 1)
-  y[t] <- x[t] + rnorm(1, mean = 0, sd = 0.5)
+  x[t] <- phi * x[t - 1] + sin(x[t - 1]) + rnorm(1, mean = 0, sd = sigma_x)
+  y[t] <- x[t] + rnorm(1, mean = 0, sd = sigma_y)
 }
+x <- c(init_state, x)
+
 # Should use much higher MCMC iterations in practice (m)
 pmmh_result <- pmmh(
   y = y,
