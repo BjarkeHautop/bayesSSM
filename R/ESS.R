@@ -78,11 +78,8 @@ ess <- function(chains) {
     for (t in 1:max_pairs) {
       idx1 <- 2 * t     # corresponds to lag (2*t - 1)
       idx2 <- 2 * t + 1 # corresponds to lag (2*t)
-      if (idx2 > length(hat_rho)) {
-        pairs[t] <- hat_rho[idx1]
-      } else {
-        pairs[t] <- hat_rho[idx1] + hat_rho[idx2]
-      }
+
+      pairs[t] <- hat_rho[idx1] + hat_rho[idx2]
     }
 
     # Enforce monotonicity on the pairs:

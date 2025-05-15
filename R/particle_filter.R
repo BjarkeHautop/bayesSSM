@@ -347,6 +347,25 @@ particle_filter <- function(
     if (length(logw) != num_particles) {
       stop("log_likelihood_fn must return num_particles values")
     }
+
+    # If logw is very small return -Inf
+    if (all(logw < -1e8)) {
+      loglike <- -Inf
+      loglike_history[i] <- -Inf
+      result <- list(
+        state_est = state_est,
+        ess = ess_vec,
+        loglike = loglike,
+        loglike_history = loglike_history,
+        algorithm = algorithm
+      )
+      if (return_particles) {
+        result$particles_history <- particles_history
+        result$weights_history <- weights_history
+      }
+      return(result)
+    }
+
     max_lw <- max(logw)
     w <- exp(logw - max_lw)
     norm <- sum(w)
