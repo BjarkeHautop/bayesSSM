@@ -13,7 +13,7 @@ particles for the particle filter, and then runs the main PMMH chain."><meta pro
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9011</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9012</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -102,9 +102,9 @@ The function can optionally depend on time by including a time step argument
 
 
 <dt id="arg-log-likelihood-fn">log_likelihood_fn<a class="anchor" aria-label="anchor" href="#arg-log-likelihood-fn"></a></dt>
-<dd><p>A function that computes the log likelihoods for the
+<dd><p>A function that computes the log-likelihoods for the
 particles. It should take a `y` argument for the observations,
-the current particles, and return a numeric vector of log likelihood
+the current particles, and return a numeric vector of log-likelihood
 values. The function can optionally depend on time by including a time step
 argument `t`. It can include any model-specific parameters as named
 arguments.</p></dd>
@@ -230,7 +230,7 @@ Journal of the Royal Statistical Society: Series B (Statistical Methodology),
 <span class="r-in"><span>    <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">particles</span><span class="op">)</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_x</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span><span class="va">log_likelihood_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">y</span>, <span class="va">particles</span>, <span class="va">sigma_y</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span>, mean <span class="op">=</span> <span class="va">particles</span>, sd <span class="op">=</span> <span class="va">sigma_y</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span>, mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="va">particles</span><span class="op">)</span>, sd <span class="op">=</span> <span class="va">sigma_y</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span><span class="va">log_prior_phi</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">phi</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">phi</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
@@ -259,7 +259,7 @@ Journal of the Royal Statistical Society: Series B (Statistical Methodology),
 <span class="r-in"><span><span class="va">y</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_y</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="kw">for</span> <span class="op">(</span><span class="va">t</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="va">t_val</span><span class="op">)</span> <span class="op">{</span></span></span>
 <span class="r-in"><span>  <span class="va">x</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">phi</span> <span class="op">*</span> <span class="va">x</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_x</span><span class="op">)</span></span></span>
-<span class="r-in"><span>  <span class="va">y</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_y</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="va">y</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="va">t</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_y</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 <span class="r-in"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">init_state</span>, <span class="va">x</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -286,7 +286,7 @@ Journal of the Royal Statistical Society: Series B (Statistical Methodology),
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running chain 1...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running pilot chain for tuning...</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 61 particles for PMMH:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Using 50 particles for PMMH:</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running Particle MCMC chain with tuned settings...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running chain 2...</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running pilot chain for tuning...</span>
@@ -294,9 +294,9 @@ Journal of the Royal Statistical Society: Series B (Statistical Methodology),
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running Particle MCMC chain with tuned settings...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> PMMH Results Summary:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        phi 0.57 0.16   0.59          0.10           0.82  33 1.046</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_x 0.81 0.38   0.80          0.12           1.58  55 1.050</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_y 0.46 0.32   0.36          0.03           1.18  28 1.081</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        phi 0.52 1.02   0.61         -2.01           2.06  57 1.054</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_x 1.24 1.23   0.86          0.04           4.36   9 1.124</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_y 0.66 0.24   0.63          0.30           1.19 119 1.038</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some ESS values are below 400, indicating poor mixing. Consider running the chains for more iterations.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Some Rhat values are above 1.01, indicating that the chains have not converged. </span>
@@ -340,9 +340,9 @@ Journal of the Royal Statistical Society: Series B (Statistical Methodology),
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running Particle MCMC chain with tuned settings...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> PMMH Results Summary:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        phi 0.61 0.14   0.61          0.31           0.88  80 1.003</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_x 0.61 0.36   0.60          0.06           1.50  41 1.013</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_y 0.64 0.27   0.59          0.26           1.23  31 1.023</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        phi 0.56 1.09   0.80         -2.13           2.16  61 1.009</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_x 1.37 1.10   1.13          0.08           4.37 122 1.001</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_y 0.67 0.27   0.61          0.31           1.37  99 1.025</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some ESS values are below 400, indicating poor mixing. Consider running the chains for more iterations.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Some Rhat values are above 1.01, indicating that the chains have not converged. </span>
