@@ -41,9 +41,9 @@ should take `particles` as an argument and return the propagated particles.
 The function can optionally depend on time by including a time step argument
 `t`. It can include any model-specific parameters as named arguments.}
 
-\item{log_likelihood_fn}{A function that computes the log likelihoods for the
+\item{log_likelihood_fn}{A function that computes the log-likelihoods for the
 particles. It should take a `y` argument for the observations,
-the current particles, and return a numeric vector of log likelihood
+the current particles, and return a numeric vector of log-likelihood
 values. The function can optionally depend on time by including a time step
 argument `t`. It can include any model-specific parameters as named
 arguments.}
@@ -134,7 +134,7 @@ transition_fn <- function(particles, phi, sigma_x) {
     rnorm(length(particles), mean = 0, sd = sigma_x)
 }
 log_likelihood_fn <- function(y, particles, sigma_y) {
-  dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
+  dnorm(y, mean = cos(particles), sd = sigma_y, log = TRUE)
 }
 log_prior_phi <- function(phi) {
   dnorm(phi, mean = 0, sd = 1, log = TRUE)
@@ -163,7 +163,7 @@ x[1] <- phi * init_state + sin(init_state) + rnorm(1, mean = 0, sd = sigma_x)
 y[1] <- x[1] + rnorm(1, mean = 0, sd = sigma_y)
 for (t in 2:t_val) {
   x[t] <- phi * x[t - 1] + sin(x[t - 1]) + rnorm(1, mean = 0, sd = sigma_x)
-  y[t] <- x[t] + rnorm(1, mean = 0, sd = sigma_y)
+  y[t] <- cos(x[t]) + rnorm(1, mean = 0, sd = sigma_y)
 }
 x <- c(init_state, x)
 

@@ -26,9 +26,9 @@
 #' should take `particles` as an argument and return the propagated particles.
 #' The function can optionally depend on time by including a time step argument
 #' `t`. It can include any model-specific parameters as named arguments.
-#' @param log_likelihood_fn A function that computes the log likelihoods for the
+#' @param log_likelihood_fn A function that computes the log-likelihoods for the
 #' particles. It should take a `y` argument for the observations,
-#' the current particles, and return a numeric vector of log likelihood
+#' the current particles, and return a numeric vector of log-likelihood
 #' values. The function can optionally depend on time by including a time step
 #' argument `t`. It can include any model-specific parameters as named
 #' arguments.
