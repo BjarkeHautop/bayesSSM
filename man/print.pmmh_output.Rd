@@ -15,7 +15,10 @@
 The object `x` invisibly.
 }
 \description{
-Print method for PMMH output
+Displays a concise summary of parameter estimates from a PMMH output object,
+including means, standard deviations, medians, 95\% credible intervals,
+effective sample sizes (ESS), and Rhat. This provides
+a quick overview of the posterior distribution and convergence diagnostics.
 }
 \examples{
 # Create dummy chains for two parameters across two chains

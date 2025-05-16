@@ -1,4 +1,7 @@
-#' Print method for PMMH output
+#' Summary method for PMMH output
+#'
+#' This function returns summary statistics for PMMH output objects, including
+#' means, standard deviations, medians, credible intervals, and diagnostics.
 #'
 #' @param object An object of class `pmmh_output`.
 #' @param ... Additional arguments.

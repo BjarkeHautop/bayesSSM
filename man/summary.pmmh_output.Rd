@@ -2,7 +2,7 @@
 % Please edit documentation in R/summary.R
 \name{summary.pmmh_output}
 \alias{summary.pmmh_output}
-\title{Print method for PMMH output}
+\title{Summary method for PMMH output}
 \usage{
 \method{summary}{pmmh_output}(object, ...)
 }
@@ -15,7 +15,8 @@
 A data frame containing summary statistics for each parameter.
 }
 \description{
-Print method for PMMH output
+This function returns summary statistics for PMMH output objects, including
+means, standard deviations, medians, credible intervals, and diagnostics.
 }
 \examples{
 # Create dummy chains for two parameters across two chains
