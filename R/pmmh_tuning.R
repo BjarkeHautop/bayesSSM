@@ -238,9 +238,11 @@
         theta = current_theta,
         transform = param_transform
       )
+
       # Propose in the transformed space.
       proposed_theta_trans <- current_theta_trans +
         rnorm(length(current_theta_trans), mean = 0, sd = proposal_sd)
+
       # Back-transform to original scale.
       proposed_theta <- .back_transform_params(
         theta_trans = proposed_theta_trans,

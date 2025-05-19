@@ -60,7 +60,7 @@ phi <- 0.8
 sigma_x <- 1
 sigma_y <- 0.5
 
-init_state <- rnorm(1, mean = 0, sd = sigma_x)
+init_state <- rnorm(1, mean = 0, sd = 1)
 x <- numeric(t_val)
 y <- numeric(t_val)
 x[1] <- phi * init_state + sin(init_state) +
@@ -107,7 +107,7 @@ transition_fn <- function(particles, phi, sigma_x) {
     rnorm(length(particles), mean = 0, sd = sigma_x)
 }
 log_likelihood_fn <- function(y, particles, sigma_y) {
- dnorm(y, mean = cos(particles), sd = sigma_y, log = TRUE)
+ dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
 }
 ```
 
@@ -159,17 +159,17 @@ result <- pmmh(
 )
 #> Running chain 1...
 #> Running pilot chain for tuning...
-#> Using 50 particles for PMMH:
+#> Using 298 particles for PMMH:
 #> Running Particle MCMC chain with tuned settings...
 #> Running chain 2...
 #> Running pilot chain for tuning...
-#> Using 50 particles for PMMH:
+#> Using 242 particles for PMMH:
 #> Running Particle MCMC chain with tuned settings...
 #> PMMH Results Summary:
 #>  Parameter Mean   SD Median 2.5% 97.5% ESS  Rhat
-#>        phi 0.21 0.23   0.13 0.00  0.93   2 1.266
-#>    sigma_x 2.51 3.03   0.60 0.03  8.74   1 2.140
-#>    sigma_y 2.24 0.51   2.13 1.56  3.64   2 1.330
+#>        phi 0.78 0.08   0.79 0.61  0.96 102 1.007
+#>    sigma_x 0.50 0.41   0.36 0.02  1.18   8 1.388
+#>    sigma_y 0.88 0.42   1.04 0.09  1.37   7 1.393
 #> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =
 #> transition_fn, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.

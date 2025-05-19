@@ -41,7 +41,7 @@ phi <- 0.8
 sigma_x <- 1
 sigma_y <- 0.5
 
-init_state <- rnorm(1, mean = 0, sd = sigma_x)
+init_state <- rnorm(1, mean = 0, sd = 1)
 x <- numeric(t_val)
 y <- numeric(t_val)
 x[1] <- phi * init_state + sin(init_state) +
@@ -150,7 +150,7 @@ result <- pmmh(
   num_chains = 2,
   seed = 1405,
   param_transform = list(
-    phi = "identity",
+    phi = "logit",
     sigma_x = "log",
     sigma_y = "log"
   ),
