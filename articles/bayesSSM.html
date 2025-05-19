@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9012</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9013</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -101,10 +101,10 @@ and
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">t_val</span><span class="op">)</span></span>
 <span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">phi</span> <span class="op">*</span> <span class="va">init_state</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">init_state</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_x</span><span class="op">)</span></span>
-<span><span class="va">y</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_y</span><span class="op">)</span></span>
+<span><span class="va">y</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_y</span><span class="op">)</span></span>
 <span><span class="kw">for</span> <span class="op">(</span><span class="va">t</span> <span class="kw">in</span> <span class="fl">2</span><span class="op">:</span><span class="va">t_val</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">x</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">phi</span> <span class="op">*</span> <span class="va">x</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="va">t</span> <span class="op">-</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_x</span><span class="op">)</span></span>
-<span>  <span class="va">y</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="va">x</span><span class="op">[</span><span class="va">t</span><span class="op">]</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_y</span><span class="op">)</span></span>
+<span>  <span class="va">y</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_y</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">init_state</span>, <span class="va">x</span><span class="op">)</span></span></code></pre></div>
 <p>Let’s visualize the data:</p>
@@ -143,7 +143,7 @@ in <code>transition_fn</code> and <code>log_likelihood_fn</code>.</p>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">log_likelihood_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">y</span>, <span class="va">particles</span>, <span class="va">sigma_y</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span>, mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="va">particles</span><span class="op">)</span>, sd <span class="op">=</span> <span class="va">sigma_y</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span>, mean <span class="op">=</span> <span class="va">particles</span>, sd <span class="op">=</span> <span class="va">sigma_y</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>Since we are interested in Bayesian inference, we need to specify the
 priors for our parameters. We will use a normal prior for
@@ -218,31 +218,31 @@ should be on the
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
 <span><span class="co">#&gt; Pilot chain posterior mean:</span></span>
 <span><span class="co">#&gt;       phi   sigma_x   sigma_y </span></span>
-<span><span class="co">#&gt; 0.6755857 1.0990602 0.5077691</span></span>
+<span><span class="co">#&gt; 0.7018566 0.4519345 1.1169538</span></span>
 <span><span class="co">#&gt; Pilot chain posterior covariance (on transformed space):</span></span>
-<span><span class="co">#&gt;                  phi     sigma_x      sigma_y</span></span>
-<span><span class="co">#&gt; phi      0.022652349 -0.03296693 -0.005648567</span></span>
-<span><span class="co">#&gt; sigma_x -0.032966929  0.09411440  0.012430998</span></span>
-<span><span class="co">#&gt; sigma_y -0.005648567  0.01243100  0.015267100</span></span>
+<span><span class="co">#&gt;                  phi      sigma_x     sigma_y</span></span>
+<span><span class="co">#&gt; phi      0.008556143  0.007220183 -0.01466298</span></span>
+<span><span class="co">#&gt; sigma_x  0.007220183  0.036320425 -0.02118126</span></span>
+<span><span class="co">#&gt; sigma_y -0.014662982 -0.021181262  0.04817363</span></span>
 <span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running Particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; Running chain 2...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
 <span><span class="co">#&gt; Pilot chain posterior mean:</span></span>
 <span><span class="co">#&gt;       phi   sigma_x   sigma_y </span></span>
-<span><span class="co">#&gt; 0.5437454 0.5508963 0.6281339</span></span>
+<span><span class="co">#&gt; 0.8633947 0.7962495 1.0493673</span></span>
 <span><span class="co">#&gt; Pilot chain posterior covariance (on transformed space):</span></span>
 <span><span class="co">#&gt;                  phi      sigma_x      sigma_y</span></span>
-<span><span class="co">#&gt; phi      0.007400628  0.002815206 -0.002231895</span></span>
-<span><span class="co">#&gt; sigma_x  0.002815206  0.026658015 -0.007479670</span></span>
-<span><span class="co">#&gt; sigma_y -0.002231895 -0.007479670  0.013901992</span></span>
+<span><span class="co">#&gt; phi      0.003403028 -0.005929153  0.007394396</span></span>
+<span><span class="co">#&gt; sigma_x -0.005929153  0.039885950 -0.053859333</span></span>
+<span><span class="co">#&gt; sigma_y  0.007394396 -0.053859333  0.122962510</span></span>
 <span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running Particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
-<span><span class="co">#&gt;  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS Rhat</span></span>
-<span><span class="co">#&gt;        phi 0.58 0.22   0.58          0.08           0.95   8 1.15</span></span>
-<span><span class="co">#&gt;    sigma_x 1.23 0.91   0.97          0.18           3.31  13 1.26</span></span>
-<span><span class="co">#&gt;    sigma_y 0.59 0.18   0.55          0.33           1.05  20 1.15</span></span>
+<span><span class="co">#&gt;  Parameter Mean   SD Median 2.5% 97.5% ESS  Rhat</span></span>
+<span><span class="co">#&gt;        phi 0.80 0.10   0.80 0.55  0.98  21 1.034</span></span>
+<span><span class="co">#&gt;    sigma_x 0.88 0.43   0.97 0.07  1.50   2 1.427</span></span>
+<span><span class="co">#&gt;    sigma_y 0.71 0.41   0.61 0.18  1.48   1 1.553</span></span>
 <span><span class="co">#&gt; Warning in pmmh(y = y, m = 1000, init_fn = init_fn, transition_fn =</span></span>
 <span><span class="co">#&gt; transition_fn, : Some ESS values are below 400, indicating poor mixing.</span></span>
 <span><span class="co">#&gt; Consider running the chains for more iterations.</span></span>
@@ -258,10 +258,10 @@ be printed from any <code>pmmh_output</code> object by calling
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
-<span><span class="co">#&gt;  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS Rhat</span></span>
-<span><span class="co">#&gt;        phi 0.58 0.22   0.58          0.08           0.95   8 1.15</span></span>
-<span><span class="co">#&gt;    sigma_x 1.23 0.91   0.97          0.18           3.31  13 1.26</span></span>
-<span><span class="co">#&gt;    sigma_y 0.59 0.18   0.55          0.33           1.05  20 1.15</span></span></code></pre></div>
+<span><span class="co">#&gt;  Parameter Mean   SD Median 2.5% 97.5% ESS  Rhat</span></span>
+<span><span class="co">#&gt;        phi 0.80 0.10   0.80 0.55  0.98  21 1.034</span></span>
+<span><span class="co">#&gt;    sigma_x 0.88 0.43   0.97 0.07  1.50   2 1.427</span></span>
+<span><span class="co">#&gt;    sigma_y 0.71 0.41   0.61 0.18  1.48   1 1.553</span></span></code></pre></div>
 <p>The chains are saved as <code>theta_chain</code></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chains</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">theta_chain</span></span></code></pre></div>
