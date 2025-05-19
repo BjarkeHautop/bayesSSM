@@ -129,7 +129,7 @@
     if (transform[j] == "log") {
       log(theta[j])  # log|dx/dz| = log(x)
     } else if (transform[j] == "logit") {
-      log(1 / (theta[j] * (1 - theta[j])))  # log|dx/dz| = -log(x * (1 - x))
+      log(1 / (theta[j] * (1 - theta[j])))  # log|dx/dz|=log(1 / (x * (1 - x)))
     } else {
       0  # no transformation
     }
