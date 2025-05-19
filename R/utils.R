@@ -87,11 +87,11 @@
 .transform_params <- function(theta, transform) {
   sapply(seq_along(theta), function(j) {
     if (transform[j] == "log") {
-      log(theta[j])
-    } else if (transform[j] == "invlogit") {
-      1 / (1 + exp(-theta[j]))
+      log(theta[j])  # (0, inf) to R
+    } else if (transform[j] == "logit") {
+      log(theta[j] / (1 - theta[j]))  # (0, 1) to R
     } else {
-      theta[j]
+      theta[j]  # no transformation
     }
   })
 }
@@ -107,11 +107,11 @@
 .back_transform_params <- function(theta_trans, transform) {
   sapply(seq_along(theta_trans), function(j) {
     if (transform[j] == "log") {
-      exp(theta_trans[j])
-    } else if (transform[j] == "invlogit") {
-      log(theta_trans[j] / (1 - theta_trans[j])) # back-transforming from logit
+      exp(theta_trans[j])  # R to (0, inf)
+    } else if (transform[j] == "logit") {
+      1 / (1 + exp(-theta_trans[j]))  # R to (0, inf)
     } else {
-      theta_trans[j]
+      theta_trans[j]  # no transformation
     }
   })
 }
@@ -127,12 +127,11 @@
 .compute_log_jacobian <- function(theta, transform) {
   sum(sapply(seq_along(theta), function(j) {
     if (transform[j] == "log") {
-      log(theta[j]) # log|dx/dz| = log(x)
-    } else if (transform[j] == "invlogit") {
-      val <- 1 / (1 + exp(-theta[j])) # inverse logit
-      log(val * (1 - val)) # log|dx/dz| = log(x * (1 - x))
+      log(theta[j])  # log|dx/dz| = log(x)
+    } else if (transform[j] == "logit") {
+      log(1 / (theta[j] * (1 - theta[j])))  # log|dx/dz| = -log(x * (1 - x))
     } else {
-      0 # no transformation
+      0  # no transformation
     }
   }))
 }

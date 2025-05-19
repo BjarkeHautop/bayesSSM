@@ -109,7 +109,7 @@ default_tune_control <- function(
 #' transformation applied to each parameter before proposing. The proposal is
 #' made using a multivariate normal distribution on the transformed scale.
 #' Parameters are then mapped back to their original scale before evaluation.
-#' Currently supports \code{"log"}, \code{"invlogit"}, and \code{"identity"}.
+#' Currently supports \code{"log"}, \code{"logit"}, and \code{"identity"}.
 #' If \code{NULL}, the \code{"identity"} transformation is used for all
 #' parameters.
 #' @param tune_control A list of pilot tuning controls
@@ -331,10 +331,10 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     }
 
     # Validate transformations and replace any invalid entries.
-    invalid <- !(param_transform %in% c("log", "invlogit", "identity"))
+    invalid <- !(param_transform %in% c("log", "logit", "identity"))
     if (any(invalid)) {
       warning(paste0(
-        "Only 'log', 'invlogit', and 'identity' transformations are supported.",
+        "Only 'log', 'logit', and 'identity' transformations are supported.",
         " Using 'identity' for invalid entries."
       ))
       param_transform[invalid] <- "identity"
@@ -404,7 +404,7 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     scale_vec <- sapply(seq_along(init_theta), function(j) {
       if (param_transform[j] == "log") {
         init_theta[j]
-      } else if (param_transform[j] == "invlogit") {
+      } else if (param_transform[j] == "logit") {
         init_theta[j] * (1 - init_theta[j])
       } else {
         1

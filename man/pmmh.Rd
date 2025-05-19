@@ -77,7 +77,7 @@ Must be one of \code{"stratified"}, \code{"systematic"}, or
 transformation applied to each parameter before proposing. The proposal is
 made using a multivariate normal distribution on the transformed scale.
 Parameters are then mapped back to their original scale before evaluation.
-Currently supports \code{"log"}, \code{"invlogit"}, and \code{"identity"}.
+Currently supports \code{"log"}, \code{"logit"}, and \code{"identity"}.
 If \code{NULL}, the \code{"identity"} transformation is used for all
 parameters.}
 

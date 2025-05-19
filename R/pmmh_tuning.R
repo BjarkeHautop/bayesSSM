@@ -213,10 +213,10 @@
     param_transform <- unlist(param_transform[names(log_priors)])
 
     # Validate transformations and replace any invalid entries.
-    invalid <- !(param_transform %in% c("log", "invlogit", "identity"))
+    invalid <- !(param_transform %in% c("log", "logit", "identity"))
     if (any(invalid)) {
       warning(paste0(
-        "Only 'log', 'invlogit', and 'identity' transformations are supported.",
+        "Only 'log', 'logit', and 'identity' transformations are supported.",
         " Using 'identity' for invalid entries."
       ))
       param_transform[invalid] <- "identity"
