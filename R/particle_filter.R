@@ -378,11 +378,11 @@ particle_filter <- function(
     # Resample
     if (algorithm == "SISR") {
       particles <- resample_func(particles, weights)
-      w <- rep(1 / num_particles, num_particles)
+      weights <- rep(1 / num_particles, num_particles)
       ess_vec[i + 1] <- num_particles
     } else if (algorithm == "SISAR" && ess_vec[i] < threshold) {
       particles <- resample_func(particles, weights)
-      w <- rep(1 / num_particles, num_particles)
+      weights <- rep(1 / num_particles, num_particles)
       ess_vec[i + 1] <- num_particles
     } else {
       ess_vec[i + 1] <- 1 / sum(weights^2)

@@ -405,7 +405,8 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
       if (param_transform[j] == "log") {
         1 / init_theta[j] # dz/dtheta = 1 / theta
       } else if (param_transform[j] == "logit") {
-        1 / (init_theta[j] * (1 - init_theta[j])) # dz/dtheta = 1 / (theta * (1 - theta))
+        # dz/dtheta = 1 / (theta * (1 - theta))
+        1 / (init_theta[j] * (1 - init_theta[j]))
       } else {
         1
       }

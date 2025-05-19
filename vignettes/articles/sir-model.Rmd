@@ -236,7 +236,6 @@ log_prior_phi <- function(phi) {
 
   # Jacobian: |d(1/sqrt(phi))/dphi| = 1/(2 * phi^(3/2))
   log_jacobian <- -log(2) - 1.5 * log(phi)
-  
   extraDistr::dhnorm(1 / sqrt(phi), sigma = 1, log = TRUE) + log_jacobian
 }
 
@@ -260,7 +259,6 @@ init_fn_epidemic <- function(num_particles) {
 }
 
 transition_fn_epidemic <- function(particles, lambda, gamma, t) {
-  
   new_particles <- t(apply(particles, 1, function(state) {
     s <- state[1]
     i <- state[2]
@@ -274,7 +272,6 @@ transition_fn_epidemic <- function(particles, lambda, gamma, t) {
 
 log_likelihood_fn_epidemic <- function(y, particles) {
   # particles is expected to be a matrix with columns (s, i)
- 
   dpois(y, lambda = particles[, 2], log = TRUE)
 }
 ```

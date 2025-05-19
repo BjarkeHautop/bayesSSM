@@ -26,7 +26,6 @@ test_that("check_params_match stops if log_likelihood_fn lacks 'y'", {
 test_that("logit transformation works correctly", {
   theta <- 0.5  # value in (0, 1)
 
-  # Transform: logit(0.5) = 0
   expect_equal(
     .transform_params(
       theta,
@@ -35,7 +34,6 @@ test_that("logit transformation works correctly", {
     0
   )
 
-  # Transform: logit(theta) = log(theta / (1 - theta))
   expect_equal(
     .transform_params(
       theta,
@@ -44,7 +42,6 @@ test_that("logit transformation works correctly", {
     log(theta / (1 - theta))
   )
 
-  # Back-transform: invlogit(logit(theta)) = theta
   expect_equal(
     .back_transform_params(
       log(theta / (1 - theta)),
@@ -53,7 +50,6 @@ test_that("logit transformation works correctly", {
     theta
   )
 
-  # Jacobian: log(1 / (theta * (1 - theta))) = -log(theta * (1 - theta))
   expect_equal(
     .compute_log_jacobian(
       theta,
