@@ -13,7 +13,7 @@ particles for the particle filter, and then runs the main PMMH chain."><meta pro
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9013</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9014</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -154,7 +154,7 @@ Must be one of <code>"stratified"</code>, <code>"systematic"</code>, or
 transformation applied to each parameter before proposing. The proposal is
 made using a multivariate normal distribution on the transformed scale.
 Parameters are then mapped back to their original scale before evaluation.
-Currently supports <code>"log"</code>, <code>"invlogit"</code>, and <code>"identity"</code>.
+Currently supports <code>"log"</code>, <code>"logit"</code>, and <code>"identity"</code>.
 If <code>NULL</code>, the <code>"identity"</code> transformation is used for all
 parameters.</p></dd>
 
