@@ -46,7 +46,7 @@ $$
 \begin{aligned}
         X_0 &\sim N(0,1) \\
         X_t&=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0,1), \quad t\geq 1 \\
-        Y_t&=\cos(X_t)+\sigma_y W_t, \quad W_t \sim N(0, 1), \quad t\geq 1 
+        Y_t&=X_t+\sigma_y W_t, \quad W_t \sim N(0, 1), \quad t\geq 1 
 \end{aligned}
 $$
 
@@ -65,10 +65,10 @@ x <- numeric(t_val)
 y <- numeric(t_val)
 x[1] <- phi * init_state + sin(init_state) +
   rnorm(1, mean = 0, sd = sigma_x)
-y[1] <- cos(x[1]) + rnorm(1, mean = 0, sd = sigma_y)
+y[1] <- x[1] + rnorm(1, mean = 0, sd = sigma_y)
 for (t in 2:t_val) {
   x[t] <- phi * x[t - 1] + sin(x[t - 1]) + rnorm(1, mean = 0, sd = sigma_x)
-  y[t] <- cos(x[t]) + rnorm(1, mean = 0, sd = sigma_y)
+  y[t] <- x[t] + rnorm(1, mean = 0, sd = sigma_y)
 }
 x <- c(init_state, x)
 ```
@@ -166,10 +166,10 @@ result <- pmmh(
 #> Using 50 particles for PMMH:
 #> Running Particle MCMC chain with tuned settings...
 #> PMMH Results Summary:
-#>  Parameter Mean   SD Median CI Lower.2.5% CI Upper.97.5% ESS  Rhat
-#>        phi 0.62 0.19   0.62          0.24           0.96  32 1.116
-#>    sigma_x 1.12 0.78   0.97          0.03           2.75   4 1.220
-#>    sigma_y 0.59 0.19   0.56          0.30           0.98   7 1.125
+#>  Parameter Mean   SD Median 2.5% 97.5% ESS  Rhat
+#>        phi 0.21 0.23   0.13 0.00  0.93   2 1.266
+#>    sigma_x 2.51 3.03   0.60 0.03  8.74   1 2.140
+#>    sigma_y 2.24 0.51   2.13 1.56  3.64   2 1.330
 #> Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =
 #> transition_fn, : Some ESS values are below 400, indicating poor mixing.
 #> Consider running the chains for more iterations.
