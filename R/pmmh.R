@@ -403,15 +403,15 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     # Precompute the transformed proposal covariance:
     scale_vec <- sapply(seq_along(init_theta), function(j) {
       if (param_transform[j] == "log") {
-        init_theta[j]
+        1 / init_theta[j] # dz/dtheta = 1 / theta
       } else if (param_transform[j] == "logit") {
-        1 / (init_theta[j] * (1 - init_theta[j]))
+        1 / (init_theta[j] * (1 - init_theta[j])) # dz/dtheta = 1 / (theta * (1 - theta))
       } else {
         1
       }
     })
-    proposal_cov_trans <- diag(1 / scale_vec) %*% proposal_cov %*%
-      diag(1 / scale_vec)
+    # Cov(z)=J Cov(theta) J^T, where J=diag(dz/dtheta)
+    proposal_cov_trans <- diag(scale_vec) %*% proposal_cov %*% diag(scale_vec)
 
     # ---------------------------
     # Step 2: Run the PMMH chain using the tuned settings
