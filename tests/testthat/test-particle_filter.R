@@ -183,6 +183,8 @@ test_that("particle_filter works non-trivial setup", {
     algorithm = "SISAR",
     resample_fn = "systematic"
   )
+  # Expect length of result$state_est to be equal to length of x
+  expect_equal(length(result$state_est), length(my_data$x))
   rmse <- sqrt(mean((result$state_est - my_data$x)^2))
   plot(
     result$state_est,

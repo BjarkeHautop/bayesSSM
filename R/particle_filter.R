@@ -63,12 +63,12 @@
 #'     time step.}
 #'     \item{algorithm}{A character string indicating the filtering algorithm
 #'     used.}
-#'     \item{particles_history}{(Optional) A list of particle state matrices
-#'     over time (one per time step), returned if \code{return_particles} is
-#'     \code{TRUE}.}
-#'     \item{weights_history}{(Optional) A list of particle weight vectors over
-#'     time (one per time step), returned if \code{return_particles} is
-#'     \code{TRUE}.}
+#'     \item{particles_history}{(Optional) A matrix of particle states over
+#'     time, with dimension \code{(num_obs + 1) x num_particles}. Returned if
+#'     \code{return_particles} is \code{TRUE}.}
+#'     \item{weights_history}{(Optional) A matrix of particle weights over time,
+#'     with dimension \code{(num_obs + 1) x num_particles}. Returned if
+#'     \code{return_particles} is \code{TRUE}.}
 #'   }
 #'
 #' @details
@@ -192,7 +192,7 @@
 #' )
 #' plot(result$state_est, type = "l", col = "blue", main = "State Estimates",
 #'   ylim = range(c(result$state_est, data)))
-#' points(data, col = "red", pch = 20)
+#' points(data_obs, col = "red", pch = 20)
 particle_filter <- function(
     y, num_particles, init_fn, transition_fn,
     log_likelihood_fn, obs_times = NULL,
@@ -410,6 +410,15 @@ particle_filter <- function(
     algorithm       = algorithm
   )
   if (return_particles) {
+    particles_history <- do.call(
+      rbind,
+      lapply(particles_history, function(m) as.numeric(m))
+    )
+    weights_history <- do.call(
+      rbind,
+      lapply(weights_history, function(w) as.numeric(w))
+    )
+
     result$particles_history <- particles_history
     result$weights_history <- weights_history
   }
