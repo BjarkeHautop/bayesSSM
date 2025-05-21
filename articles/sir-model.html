@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9014</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9019</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -334,7 +334,6 @@ likelihood.</p>
 <span></span>
 <span>  <span class="co"># Jacobian: |d(1/sqrt(phi))/dphi| = 1/(2 * phi^(3/2))</span></span>
 <span>  <span class="va">log_jacobian</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1.5</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">phi</span><span class="op">)</span></span>
-<span>  </span>
 <span>  <span class="fu">extraDistr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/extraDistr/man/HalfNormal.html" class="external-link">dhnorm</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">phi</span><span class="op">)</span>, sigma <span class="op">=</span> <span class="fl">1</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span> <span class="va">log_jacobian</span></span>
 <span><span class="op">}</span></span>
 <span></span>
@@ -355,7 +354,6 @@ for the SIR model.</p>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">transition_fn_epidemic</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">particles</span>, <span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">t</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  </span>
 <span>  <span class="va">new_particles</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/t.html" class="external-link">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html" class="external-link">apply</a></span><span class="op">(</span><span class="va">particles</span>, <span class="fl">1</span>, <span class="kw">function</span><span class="op">(</span><span class="va">state</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">s</span> <span class="op">&lt;-</span> <span class="va">state</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
 <span>    <span class="va">i</span> <span class="op">&lt;-</span> <span class="va">state</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
@@ -369,7 +367,6 @@ for the SIR model.</p>
 <span></span>
 <span><span class="va">log_likelihood_fn_epidemic</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">y</span>, <span class="va">particles</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># particles is expected to be a matrix with columns (s, i)</span></span>
-<span> </span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">dpois</a></span><span class="op">(</span><span class="va">y</span>, lambda <span class="op">=</span> <span class="va">particles</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>Now we can run the PMMH algorithm to estimate the posterior

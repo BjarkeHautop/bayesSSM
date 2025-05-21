@@ -25,7 +25,7 @@ It is recommended to use either SISR or SISAR to avoid weight degeneracy."><meta
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9014</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9019</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -181,14 +181,14 @@ the functions requires them.</p></dd>
     used.</p></dd>
 
     <dt>particles_history</dt>
-<dd><p>(Optional) A list of particle state matrices
-    over time (one per time step), returned if <code>return_particles</code> is
-    <code>TRUE</code>.</p></dd>
+<dd><p>(Optional) A matrix of particle states over
+    time, with dimension <code>(num_obs + 1) x num_particles</code>. Returned if
+    <code>return_particles</code> is <code>TRUE</code>.</p></dd>
 
     <dt>weights_history</dt>
-<dd><p>(Optional) A list of particle weight vectors over
-    time (one per time step), returned if <code>return_particles</code> is
-    <code>TRUE</code>.</p></dd>
+<dd><p>(Optional) A matrix of particle weights over time,
+    with dimension <code>(num_obs + 1) x num_particles</code>. Returned if
+    <code>return_particles</code> is <code>TRUE</code>.</p></dd>
 
 
 </dl></div>
@@ -312,7 +312,7 @@ Accessible at: https://arxiv.org/abs/cs/0507025</p>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">state_est</span>, type <span class="op">=</span> <span class="st">"l"</span>, col <span class="op">=</span> <span class="st">"blue"</span>, main <span class="op">=</span> <span class="st">"State Estimates"</span>,</span></span>
 <span class="r-in"><span>  ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/range.html" class="external-link">range</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">state_est</span>, <span class="va">data</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">data</span>, col <span class="op">=</span> <span class="st">"red"</span>, pch <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/graphics/points.html" class="external-link">points</a></span><span class="op">(</span><span class="va">data_obs</span>, col <span class="op">=</span> <span class="st">"red"</span>, pch <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span></span>
 <span class="r-plt img"><img src="particle_filter-3.png" alt="" width="700" height="433"></span>
 </code></pre></div>
     </div>

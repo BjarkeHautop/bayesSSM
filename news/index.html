@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9014</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9019</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,14 +38,12 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="bayesssm-development-version">bayesSSM (development version)<a class="anchor" aria-label="anchor" href="#bayesssm-development-version"></a></h2>
-<ul><li>The <code>particles</code> argument in <code>init_fn</code> which is passed to <code>particle_filter</code> and <code>pmmh</code> is deprecated. Please use <code>num_particles</code> instead. A warning will be issued if <code>particles</code> is used.</li>
+<ul><li>The <code>particles</code> argument in <code>init_fn</code>, which is passed to <code>particle_filter</code> and <code>pmmh</code>, is <strong>deprecated</strong>. Please use <code>num_particles</code> instead. A warning will be issued if <code>particles</code> is used.</li>
 <li>Added support for time dependency in functions. You can now use <code>t</code> in <code>transition_fn</code> and <code>likelihood_fn</code> when passing them to <code>particle_filter</code> and <code>pmmh</code>. This allows for time-varying transition and likelihood functions.</li>
 <li>Fixed a bug in <code>particle_filter</code> in likelihood calculation causing it to be shifted by a constant.</li>
 <li>Improved robustness of <code>pmmh</code> when encountering very low log-likelihood values.</li>
-<li>dded scaling for the proposal covariance when using <code>"invlogit"</code> in <code>pmmh</code>.</li>
-<li>Improved package description.</li>
-<li>Improved text in the README and <code>bayesSSM</code> vignette.</li>
-<li>Added additional tests.</li>
+<li>Added scaling for the proposal covariance when using <code>"logit"</code> in <code>pmmh</code>.</li>
+<li>Improved documentation: updated package description, clarified text in the README and vignette, and added more unit tests.</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.4.7" id="bayesssm-047">bayesSSM 0.4.7<a class="anchor" aria-label="anchor" href="#bayesssm-047"></a></h2><p class="text-muted">CRAN release: 2025-04-23</p>

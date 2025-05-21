@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9014</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9019</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -102,7 +102,7 @@
 <span><span class="va">sigma_x</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
 <span><span class="va">sigma_y</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span>
 <span></span>
-<span><span class="va">init_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_x</span><span class="op">)</span></span>
+<span><span class="va">init_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">t_val</span><span class="op">)</span></span>
 <span><span class="va">y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="va">t_val</span><span class="op">)</span></span>
 <span><span class="va">x</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">phi</span> <span class="op">*</span> <span class="va">init_state</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">sin</a></span><span class="op">(</span><span class="va">init_state</span><span class="op">)</span> <span class="op">+</span></span>
@@ -133,7 +133,7 @@
 <span>    <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">particles</span><span class="op">)</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_x</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="va">log_likelihood_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">y</span>, <span class="va">particles</span>, <span class="va">sigma_y</span><span class="op">)</span> <span class="op">{</span></span>
-<span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span>, mean <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html" class="external-link">cos</a></span><span class="op">(</span><span class="va">particles</span><span class="op">)</span>, sd <span class="op">=</span> <span class="va">sigma_y</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">dnorm</a></span><span class="op">(</span><span class="va">y</span>, mean <span class="op">=</span> <span class="va">particles</span>, sd <span class="op">=</span> <span class="va">sigma_y</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>The priors for the parameters must be defined as log-prior functions. Every parameter from <code>init_fn</code>, <code>transition_fn</code>, and <code>log_likelihood_fn</code> must have a corresponding log-prior function.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
@@ -174,17 +174,17 @@
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Running chain 1...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
-<span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
+<span><span class="co">#&gt; Using 298 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running Particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; Running chain 2...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
-<span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
+<span><span class="co">#&gt; Using 242 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running Particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
 <span><span class="co">#&gt;  Parameter Mean   SD Median 2.5% 97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;        phi 0.21 0.23   0.13 0.00  0.93   2 1.266</span></span>
-<span><span class="co">#&gt;    sigma_x 2.51 3.03   0.60 0.03  8.74   1 2.140</span></span>
-<span><span class="co">#&gt;    sigma_y 2.24 0.51   2.13 1.56  3.64   2 1.330</span></span>
+<span><span class="co">#&gt;        phi 0.78 0.08   0.79 0.61  0.96 102 1.007</span></span>
+<span><span class="co">#&gt;    sigma_x 0.50 0.41   0.36 0.02  1.18   8 1.388</span></span>
+<span><span class="co">#&gt;    sigma_y 0.88 0.42   1.04 0.09  1.37   7 1.393</span></span>
 <span><span class="co">#&gt; Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =</span></span>
 <span><span class="co">#&gt; transition_fn, : Some ESS values are below 400, indicating poor mixing.</span></span>
 <span><span class="co">#&gt; Consider running the chains for more iterations.</span></span>
