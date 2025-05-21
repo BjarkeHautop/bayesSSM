@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.4.7.9019</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,7 +37,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="bayesssm-development-version">bayesSSM (development version)<a class="anchor" aria-label="anchor" href="#bayesssm-development-version"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.5.0" id="bayesssm-050">bayesSSM 0.5.0<a class="anchor" aria-label="anchor" href="#bayesssm-050"></a></h2><p class="text-muted">CRAN release: 2025-05-21</p>
 <ul><li>The <code>particles</code> argument in <code>init_fn</code>, which is passed to <code>particle_filter</code> and <code>pmmh</code>, is <strong>deprecated</strong>. Please use <code>num_particles</code> instead. A warning will be issued if <code>particles</code> is used.</li>
 <li>Added support for time dependency in functions. You can now use <code>t</code> in <code>transition_fn</code> and <code>likelihood_fn</code> when passing them to <code>particle_filter</code> and <code>pmmh</code>. This allows for time-varying transition and likelihood functions.</li>
 <li>Fixed a bug in <code>particle_filter</code> in likelihood calculation causing it to be shifted by a constant.</li>
