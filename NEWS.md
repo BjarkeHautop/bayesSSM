@@ -1,4 +1,4 @@
-# bayesSSM (development version)
+# bayesSSM 0.5.0
 
 * The `particles` argument in `init_fn`, which is passed to `particle_filter` 
 and `pmmh`, is **deprecated**. Please use `num_particles` instead. 
