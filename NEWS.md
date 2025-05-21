@@ -1,7 +1,7 @@
 # bayesSSM (development version)
 
-* The `particles` argument in `init_fn` which is passed to `particle_filter`
-and `pmmh` is deprecated. Please use `num_particles` instead.
+* The `particles` argument in `init_fn`, which is passed to `particle_filter` 
+and `pmmh`, is **deprecated**. Please use `num_particles` instead. 
 A warning will be issued if `particles` is used.
 * Added support for time dependency in functions. You can now use `t` in 
 `transition_fn` and `likelihood_fn` when passing them to `particle_filter`
@@ -10,10 +10,10 @@ and `pmmh`. This allows for time-varying transition and likelihood functions.
 shifted by a constant.
 * Improved robustness of `pmmh` when encountering very low log-likelihood 
 values.
-* dded scaling for the proposal covariance when using `"invlogit"` in `pmmh`.
-* Improved package description.
-* Improved text in the README and `bayesSSM` vignette.
-* Added additional tests.
+* Added scaling for the proposal covariance when using `"logit"` in `pmmh`.
+* Improved documentation: updated package description, 
+clarified text in the README and vignette, and added more unit tests.
+
 
 # bayesSSM 0.4.7
 

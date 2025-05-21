@@ -80,12 +80,12 @@ A list containing:
     time step.}
     \item{algorithm}{A character string indicating the filtering algorithm
     used.}
-    \item{particles_history}{(Optional) A list of particle state matrices
-    over time (one per time step), returned if \code{return_particles} is
-    \code{TRUE}.}
-    \item{weights_history}{(Optional) A list of particle weight vectors over
-    time (one per time step), returned if \code{return_particles} is
-    \code{TRUE}.}
+    \item{particles_history}{(Optional) A matrix of particle states over
+    time, with dimension \code{(num_obs + 1) x num_particles}. Returned if
+    \code{return_particles} is \code{TRUE}.}
+    \item{weights_history}{(Optional) A matrix of particle weights over time,
+    with dimension \code{(num_obs + 1) x num_particles}. Returned if
+    \code{return_particles} is \code{TRUE}.}
   }
 }
 \description{
@@ -215,7 +215,7 @@ result <- particle_filter(
 )
 plot(result$state_est, type = "l", col = "blue", main = "State Estimates",
   ylim = range(c(result$state_est, data)))
-points(data, col = "red", pch = 20)
+points(data_obs, col = "red", pch = 20)
 }
 \references{
 Douc, R., Cappé, O., & Moulines, E. (2005). Comparison of
