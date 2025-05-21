@@ -50,7 +50,7 @@ $$
 \end{aligned}
 $$
 
-Let’s first simulate some data from this model with $\phi = 0.8$,
+Let’s first simulate 20 data points from this model with $\phi = 0.8$,
 $\sigma_x = 1$, and $\sigma_y = 0.5$.
 
 ``` r
