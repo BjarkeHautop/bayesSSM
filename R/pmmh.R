@@ -374,6 +374,7 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
   # ---------------------------
   chain_result <- function(chain_index) {
     message("Running chain ", chain_index, "...")
+
     # ---------------------------
     # Step 1: Run the pilot (particle) chain for tuning
     # ---------------------------
@@ -435,7 +436,8 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
         log_likelihood_fn = log_likelihood_fn,
         obs_times = obs_times,
         algorithm = algorithm,
-        resample_fn = resample_fn
+        resample_fn = resample_fn,
+        return_particles = FALSE
       ),
       as.list(current_theta)
     ))
@@ -477,7 +479,8 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
           log_likelihood_fn = log_likelihood_fn,
           obs_times = obs_times,
           algorithm = algorithm,
-          resample_fn = resample_fn
+          resample_fn = resample_fn,
+          return_particles = FALSE
         ),
         as.list(proposed_theta)
       ))
@@ -518,7 +521,6 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
       theta_chain[i, ] <- current_theta
       state_est_chain[[i]] <- current_state_est
     }
-
     list(theta_chain = theta_chain,
          state_est_chain = state_est_chain)
   }

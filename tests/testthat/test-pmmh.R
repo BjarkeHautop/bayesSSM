@@ -374,14 +374,17 @@ test_that("pmmh works with valid arguments", {
 
   # Generate data
   t_val <- 10
+  init_state <- rnorm(1, mean = 0, sd = 1)
   x <- numeric(t_val)
   y <- numeric(t_val)
-  x[1] <- rnorm(1, mean = 0, sd = 1)
-  y[1] <- rnorm(1, mean = x[1], sd = 0.5)
+  x[1] <- 0.8 * init_state + sin(init_state) +
+    rnorm(1, mean = 0, sd = 1)
+  y[1] <- x[1] + rnorm(1, mean = 0, sd = 0.5)
   for (t in 2:t_val) {
     x[t] <- 0.8 * x[t - 1] + sin(x[t - 1]) + rnorm(1, mean = 0, sd = 1)
     y[t] <- x[t] + rnorm(1, mean = 0, sd = 0.5)
   }
+  x <- c(init_state, x)
 
   expect_error(
     {

@@ -189,7 +189,8 @@
       log_likelihood_fn = log_likelihood_fn,
       obs_times = obs_times,
       algorithm = algorithm,
-      resample_fn = "stratified"
+      resample_fn = "stratified",
+      return_particles = FALSE
     ),
     current_theta_list,
     list(...)
@@ -285,7 +286,8 @@
         log_likelihood_fn = log_likelihood_fn,
         obs_times = obs_times,
         algorithm = algorithm,
-        resample_fn = resample_fn
+        resample_fn = resample_fn,
+        return_particles = FALSE
       ),
       proposed_theta_list,
       list(...)
