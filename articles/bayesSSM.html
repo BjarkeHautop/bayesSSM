@@ -218,31 +218,31 @@ should be on the
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
 <span><span class="co">#&gt; Pilot chain posterior mean:</span></span>
 <span><span class="co">#&gt;       phi   sigma_x   sigma_y </span></span>
-<span><span class="co">#&gt; 0.8504781 0.8465155 0.9828058</span></span>
+<span><span class="co">#&gt; 0.8366116 0.8055350 0.9033480</span></span>
 <span><span class="co">#&gt; Pilot chain posterior covariance (on transformed space):</span></span>
-<span><span class="co">#&gt;                  phi      sigma_x      sigma_y</span></span>
-<span><span class="co">#&gt; phi      0.002853161 -0.001659855  0.005267221</span></span>
-<span><span class="co">#&gt; sigma_x -0.001659855  0.030056091 -0.019598925</span></span>
-<span><span class="co">#&gt; sigma_y  0.005267221 -0.019598925  0.025940662</span></span>
+<span><span class="co">#&gt;                  phi     sigma_x    sigma_y</span></span>
+<span><span class="co">#&gt; phi      0.002886243  0.00745419 -0.0135152</span></span>
+<span><span class="co">#&gt; sigma_x  0.007454190  0.30397126 -0.2098967</span></span>
+<span><span class="co">#&gt; sigma_y -0.013515201 -0.20989672  0.2087795</span></span>
 <span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running Particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; Running chain 2...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
 <span><span class="co">#&gt; Pilot chain posterior mean:</span></span>
 <span><span class="co">#&gt;       phi   sigma_x   sigma_y </span></span>
-<span><span class="co">#&gt; 0.6443472 1.1777341 0.4654751</span></span>
+<span><span class="co">#&gt; 0.8571384 1.0670945 0.3961579</span></span>
 <span><span class="co">#&gt; Pilot chain posterior covariance (on transformed space):</span></span>
-<span><span class="co">#&gt;                   phi      sigma_x       sigma_y</span></span>
-<span><span class="co">#&gt; phi      4.532081e-03 -0.011399852 -3.544264e-05</span></span>
-<span><span class="co">#&gt; sigma_x -1.139985e-02  0.050376412 -1.354051e-03</span></span>
-<span><span class="co">#&gt; sigma_y -3.544264e-05 -0.001354051  1.003767e-02</span></span>
-<span><span class="co">#&gt; Using 343 particles for PMMH:</span></span>
+<span><span class="co">#&gt;                  phi      sigma_x      sigma_y</span></span>
+<span><span class="co">#&gt; phi      0.003330875 -0.001494631  0.007777211</span></span>
+<span><span class="co">#&gt; sigma_x -0.001494631  0.039551392 -0.027059704</span></span>
+<span><span class="co">#&gt; sigma_y  0.007777211 -0.027059704  0.035093804</span></span>
+<span><span class="co">#&gt; Using 93 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running Particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
 <span><span class="co">#&gt;  Parameter Mean   SD Median 2.5% 97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;        phi 0.95 0.10   1.00 0.68  1.00   2 2.080</span></span>
-<span><span class="co">#&gt;    sigma_x 0.98 0.40   1.04 0.26  1.67   1 1.426</span></span>
-<span><span class="co">#&gt;    sigma_y 0.69 0.53   0.51 0.05  1.57   1 2.584</span></span>
+<span><span class="co">#&gt;        phi 0.99 0.02   1.00 0.91  1.00   4 1.513</span></span>
+<span><span class="co">#&gt;    sigma_x 1.21 0.37   1.21 0.45  1.89  31 1.072</span></span>
+<span><span class="co">#&gt;    sigma_y 0.68 0.37   0.55 0.19  1.36  25 1.070</span></span>
 <span><span class="co">#&gt; Warning in pmmh(y = y, m = 1000, init_fn = init_fn, transition_fn =</span></span>
 <span><span class="co">#&gt; transition_fn, : Some ESS values are below 400, indicating poor mixing.</span></span>
 <span><span class="co">#&gt; Consider running the chains for more iterations.</span></span>
@@ -259,9 +259,9 @@ be printed from any <code>pmmh_output</code> object by calling
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
 <span><span class="co">#&gt;  Parameter Mean   SD Median 2.5% 97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;        phi 0.95 0.10   1.00 0.68  1.00   2 2.080</span></span>
-<span><span class="co">#&gt;    sigma_x 0.98 0.40   1.04 0.26  1.67   1 1.426</span></span>
-<span><span class="co">#&gt;    sigma_y 0.69 0.53   0.51 0.05  1.57   1 2.584</span></span></code></pre></div>
+<span><span class="co">#&gt;        phi 0.99 0.02   1.00 0.91  1.00   4 1.513</span></span>
+<span><span class="co">#&gt;    sigma_x 1.21 0.37   1.21 0.45  1.89  31 1.072</span></span>
+<span><span class="co">#&gt;    sigma_y 0.68 0.37   0.55 0.19  1.36  25 1.070</span></span></code></pre></div>
 <p>The chains are saved as <code>theta_chain</code></p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chains</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">theta_chain</span></span></code></pre></div>
