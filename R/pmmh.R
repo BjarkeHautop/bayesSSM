@@ -257,7 +257,11 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
                  return_latent_state_est = FALSE,
                  seed = NULL,
                  num_cores = 1) {
-  if (!is.null(seed)) set.seed(seed)
+  if (!is.null(seed)) {
+    set.seed(seed)
+  } else {
+    seed <- sample.int(.Machine$integer.max, 1) # Random seed if not provided
+  }
   # ---------------------------
   # Input validation
   # ---------------------------
@@ -372,7 +376,8 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
   # ---------------------------
   # Define inner function for a single chain run
   # ---------------------------
-  chain_result <- function(chain_index) {
+  chain_result <- function(chain_index, seed) {
+    set.seed(seed)
     message("Running chain ", chain_index, "...")
 
     # ---------------------------
@@ -528,13 +533,15 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
   # ---------------------------
   # Run chains (in parallel if more than one core is requested)
   # ---------------------------
+  # Generate seeds
+  seeds <- sample.int(.Machine$integer.max, num_chains)
   if (num_cores > 1) {
     tryCatch({
       # Execute the future parallel code
       chain_results <- future.apply::future_lapply(
         1:num_chains,
-        function(i) chain_result(i), # Pass the current index to chain_result
-        future.seed = TRUE
+        function(i) chain_result(i, seeds[i]),
+        future.seed = FALSE
       )
     }, error = function(e) {
       message("An error occurred: ", e$message)
@@ -545,7 +552,7 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
   } else {
     chain_results <- lapply(
       1:num_chains,
-      function(i) chain_result(i) # Pass the current index to chain_result
+      function(i) chain_result(i, seeds[i])
     )
   }
 

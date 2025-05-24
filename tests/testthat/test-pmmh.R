@@ -450,7 +450,7 @@ test_that("pmmh works with valid arguments", {
   expect_error(
     {
       suppressWarnings({
-        pmmh_result <- pmmh(
+        pmmh_result_2_cores <- pmmh(
           y = y,
           m = 500,
           init_fn = init_fn,
@@ -475,6 +475,12 @@ test_that("pmmh works with valid arguments", {
     },
     regexp = NA
   ) # Expects that no errors are thrown
+
+  # Verify pmmh_result and pmmh_result_2_cores are exactly the same
+  expect_equal(
+    pmmh_result$theta_chain[1:10, ],
+    pmmh_result_2_cores$theta_chain[1:10, ]
+  )
 
   expect_error(
     pmmh(
