@@ -541,7 +541,7 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
       chain_results <- future.apply::future_lapply(
         1:num_chains,
         function(i) chain_result(i, seeds[i]),
-        future.seed = FALSE
+        future.seed = NULL
       )
     }, error = function(e) {
       message("An error occurred: ", e$message)
