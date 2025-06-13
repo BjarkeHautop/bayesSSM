@@ -1,5 +1,10 @@
 # bayesSSM (development version)
 
+* Improved reproducibility of `pmmh`: Setting a seed now ensures consistent 
+results regardless of the number of cores used.
+
+* Improvement performance of `pmmh` slightly. 
+
 # bayesSSM 0.5.0
 
 * The `particles` argument in `init_fn`, which is passed to `particle_filter` 

@@ -113,7 +113,7 @@ default_tune_control <- function(
 #' If \code{NULL}, the \code{"identity"} transformation is used for all
 #' parameters.
 #' @param tune_control A list of pilot tuning controls
-#' (e.g., \code{pilot\_m}, \code{pilot\_reps}).
+#' (e.g., \code{pilot_m}, \code{pilot_reps}).
 #' See \code{\link{default_tune_control}}.
 #' @param verbose A logical value indicating whether to print information about
 #' pilot_run tuning. Defaults to \code{FALSE}.

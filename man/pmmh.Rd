@@ -82,7 +82,7 @@ If \code{NULL}, the \code{"identity"} transformation is used for all
 parameters.}
 
 \item{tune_control}{A list of pilot tuning controls
-(e.g., \code{pilot\_m}, \code{pilot\_reps}).
+(e.g., \code{pilot_m}, \code{pilot_reps}).
 See \code{\link{default_tune_control}}.}
 
 \item{verbose}{A logical value indicating whether to print information about
