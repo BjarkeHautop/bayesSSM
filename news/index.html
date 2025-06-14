@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9004</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,7 +19,8 @@
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/sir-model.html">sir-model</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/detailed-overview.html">Detailed Overview of bayesSSM Package</a></li>
+    <li><a class="dropdown-item" href="../articles/sir-model.html">sir-model</a></li>
   </ul></li>
 <li class="active nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -38,7 +39,9 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="bayesssm-development-version">bayesSSM (development version)<a class="anchor" aria-label="anchor" href="#bayesssm-development-version"></a></h2>
-</div>
+<ul><li><p>Improved reproducibility of <code>pmmh</code>: Setting a seed now ensures consistent results regardless of the number of cores used.</p></li>
+<li><p>Improvement performance of <code>pmmh</code> slightly.</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.5.0" id="bayesssm-050">bayesSSM 0.5.0<a class="anchor" aria-label="anchor" href="#bayesssm-050"></a></h2><p class="text-muted">CRAN release: 2025-05-21</p>
 <ul><li>The <code>particles</code> argument in <code>init_fn</code>, which is passed to <code>particle_filter</code> and <code>pmmh</code>, is <strong>deprecated</strong>. Please use <code>num_particles</code> instead. A warning will be issued if <code>particles</code> is used.</li>
@@ -61,7 +64,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer></div>
