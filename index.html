@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9005</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9008</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -43,7 +43,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="articles/detailed-overview.html">Detailed Overview of bayesSSM Package</a></li>
-    <li><a class="dropdown-item" href="articles/sir-model.html">sir-model</a></li>
+    <li><a class="dropdown-item" href="articles/sir-model.html">Stochastic SIR Model</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
@@ -71,7 +71,7 @@
 <div class="section level2">
 <h2 id="why-bayesssm">Why bayesSSM?<a class="anchor" aria-label="anchor" href="#why-bayesssm"></a>
 </h2>
-<p>While there are several alternative packages available for performing Particle MCMC, bayesSSM is designed to be simple and easy to use. It was alongside my Master’s thesis about Particle MCMC, since I was implementing everything from scratch anyway. Everything is written in R, so performance is not the best.</p>
+<p>While there are several alternative packages available for performing Particle MCMC, bayesSSM is designed to be simple and easy to use. It was alongside my Master’s thesis about Particle MCMC, since I was implementing everything from scratch anyway.</p>
 </div>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
@@ -175,17 +175,17 @@
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; Running chain 1...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
-<span><span class="co">#&gt; Using 298 particles for PMMH:</span></span>
+<span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running Particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; Running chain 2...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
-<span><span class="co">#&gt; Using 242 particles for PMMH:</span></span>
+<span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running Particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
 <span><span class="co">#&gt;  Parameter Mean   SD Median 2.5% 97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;        phi 0.78 0.08   0.79 0.61  0.96 102 1.007</span></span>
-<span><span class="co">#&gt;    sigma_x 0.50 0.41   0.36 0.02  1.18   8 1.388</span></span>
-<span><span class="co">#&gt;    sigma_y 0.88 0.42   1.04 0.09  1.37   7 1.393</span></span>
+<span><span class="co">#&gt;        phi 0.80 0.10   0.82 0.60  0.97  10 1.228</span></span>
+<span><span class="co">#&gt;    sigma_x 0.58 0.50   0.46 0.00  1.71   2 1.376</span></span>
+<span><span class="co">#&gt;    sigma_y 0.97 0.35   1.05 0.13  1.46   5 1.272</span></span>
 <span><span class="co">#&gt; Warning in pmmh(y = y, m = 500, init_fn = init_fn, transition_fn =</span></span>
 <span><span class="co">#&gt; transition_fn, : Some ESS values are below 400, indicating poor mixing.</span></span>
 <span><span class="co">#&gt; Consider running the chains for more iterations.</span></span>
