@@ -49,15 +49,14 @@
 #' the scaled value with a minimum of 50 and a maximum of 1000.
 #'
 #' @keywords internal
-.pilot_run <- function(y, pilot_n, pilot_reps, init_fn,
-                       transition_fn, log_likelihood_fn,
-                       obs_times = NULL,
-                       algorithm = c("SISAR", "SISR", "SIS"),
-                       resample_fn = c(
-                         "stratified", "systematic",
-                         "multinomial"
-                       ),
-                       ...) {
+#' @noRd
+.pilot_run <- function(
+  y, pilot_n, pilot_reps, init_fn, transition_fn, log_likelihood_fn,
+  obs_times = NULL,
+  algorithm = c("SISAR", "SISR", "SIS"),
+  resample_fn = c("stratified", "systematic", "multinomial"),
+  ...
+) {
   pilot_loglikes <- numeric(pilot_reps)
   for (i in seq_len(pilot_reps)) {
     pf_result <- particle_filter(
@@ -142,19 +141,18 @@
 #'
 #' @importFrom stats rnorm runif var cov
 #' @keywords internal
-.run_pilot_chain <- function(y, pilot_m, pilot_n, pilot_reps, init_fn,
-                             transition_fn, log_likelihood_fn,
-                             log_priors, proposal_sd,
-                             obs_times = NULL,
-                             algorithm = c("SISAR", "SISR", "SIS"),
-                             resample_fn = c(
-                               "stratified", "systematic",
-                               "multinomial"
-                             ),
-                             param_transform = NULL,
-                             pilot_init_params = NULL,
-                             verbose = FALSE,
-                             ...) {
+#' @noRd
+.run_pilot_chain <- function(
+  y, pilot_m, pilot_n, pilot_reps, init_fn, transition_fn, log_likelihood_fn,
+  log_priors, proposal_sd,
+  obs_times = NULL,
+  algorithm = c("SISAR", "SISR", "SIS"),
+  resample_fn = c("stratified", "systematic", "multinomial"),
+  param_transform = NULL,
+  pilot_init_params = NULL,
+  verbose = FALSE,
+  ...
+) {
   num_params <- length(log_priors)
   pilot_theta_chain <- matrix(NA, nrow = pilot_m, ncol = num_params)
   colnames(pilot_theta_chain) <- names(log_priors)

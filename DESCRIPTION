@@ -26,7 +26,9 @@ Imports:
     dplyr,
     future,
     future.apply,
-    lifecycle
+    lifecycle,
+    Rcpp
+LinkingTo: Rcpp
 Suggests: 
     knitr,
     rmarkdown,
@@ -34,8 +36,7 @@ Suggests:
     ggplot2,
     tidyr,
     extraDistr,
-    rlang,
-    Rcpp
+    rlang
 Config/testthat/edition: 3
 URL: https://github.com/BjarkeHautop/bayesSSM, https://bjarkehautop.github.io/bayesSSM/
 BugReports: https://github.com/BjarkeHautop/bayesSSM/issues
