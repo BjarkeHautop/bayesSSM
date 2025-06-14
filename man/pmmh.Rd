@@ -27,7 +27,9 @@ pmmh(
 }
 \arguments{
 \item{y}{A numeric vector or matrix of observations. Each row represents an
-observation at a time step.}
+observation at a time step. If observations not equally spaced, use the
+\code{obs_times} argument to specify the time points at which
+observations are available.}
 
 \item{m}{An integer specifying the total number of MCMC iterations.}
 

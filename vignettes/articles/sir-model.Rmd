@@ -1,5 +1,5 @@
 ---
-title: "sir-model"
+title: "Stochastic SIR Model"
 ---
 
 ```{r, include = FALSE}

@@ -1,7 +1,7 @@
 #' @title Internal Resampling Functions (old)
 #' @description Helper functions for resampling particles in a particle filter.
 #' These functions implement multinomial, stratified, and systematic resampling.
-#' Old version written purely in R.
+#' Old version written purely in R, which is no longer used.
 #'
 #' @importFrom stats runif
 #'

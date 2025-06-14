@@ -70,23 +70,8 @@ default_tune_control <- function(
 #' runs a pilot chain to tune the proposal distribution and the number of
 #' particles for the particle filter, and then runs the main PMMH chain.
 #'
-#' @param y A numeric vector or matrix of observations. Each row represents an
-#' observation at a time step.
+#' @inheritParams particle_filter
 #' @param m An integer specifying the total number of MCMC iterations.
-#' @param init_fn A function that initializes the particle states. It should
-#' take `num_particles` as an argument for initializing the particles and return
-#' a vector or matrix of initial particle states. It can include any
-#' model-specific parameters as named arguments.
-#' @param transition_fn A function describing the state transition model. It
-#' should take `particles` as an argument and return the propagated particles.
-#' The function can optionally depend on time by including a time step argument
-#' `t`. It can include any model-specific parameters as named arguments.
-#' @param log_likelihood_fn A function that computes the log-likelihoods for the
-#' particles. It should take a `y` argument for the observations,
-#' the current particles, and return a numeric vector of log-likelihood
-#' values. The function can optionally depend on time by including a time step
-#' argument `t`. It can include any model-specific parameters as named
-#' arguments.
 #' @param log_priors A list of functions for computing the log-prior of each
 #' parameter.
 #' @param pilot_init_params A list of initial parameter values. Should be a list
@@ -95,16 +80,6 @@ default_tune_control <- function(
 #' @param burn_in An integer indicating the number of initial MCMC iterations
 #' to discard as burn-in.
 #' @param num_chains An integer specifying the number of PMMH chains to run.
-#' @param obs_times A numeric vector indicating the time points at which
-#' observations in \code{y} are available. Must be of the same length as the
-#' number of rows in \code{y}. If not specified, it is assumed that observations
-#' are available at consecutive time steps, i.e., \code{obs_times = 1:nrow(y)}.
-#' @param algorithm A character string specifying the particle filtering
-#' algorithm to use. Must be one of \code{"SISAR"}, \code{"SISR"}, or
-#' \code{"SIS"}. Defaults to \code{"SISAR"}.
-#' @param resample_fn A character string specifying the resampling method.
-#' Must be one of \code{"stratified"}, \code{"systematic"}, or
-#' \code{"multinomial"}. Defaults to \code{"stratified"}.
 #' @param param_transform An optional character vector that specifies the
 #' transformation applied to each parameter before proposing. The proposal is
 #' made using a multivariate normal distribution on the transformed scale.

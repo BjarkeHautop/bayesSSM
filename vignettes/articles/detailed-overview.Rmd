@@ -1,10 +1,5 @@
 ---
 title: "Detailed Overview of bayesSSM Package"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{Detailed Overview of bayesSSM Package}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
 ---
 
 ```{r, include = FALSE}
@@ -25,7 +20,7 @@ library(tidyr)
 set.seed(1405)
 ```
 
-In this vignette, we will provide a detailed overview of the `bayesSSM` package. 
+In this article, we will provide a detailed overview of the `bayesSSM` package. 
 It will include some brief theoretical background and tips on how to use the 
 package effectively.
 
@@ -520,15 +515,10 @@ result_obs_times <- pmmh(
 ```
 
 # Conclusion
-In this vignette, we have provided a detailed overview of the `bayesSSM` package 
+In this article, we have provided a detailed overview of the `bayesSSM` package 
 and how to use it for Bayesian inference in state space models. We have shown 
 how to define the model, simulate data, and fit the model using the PMMH 
 algorithm. We also provided some tips and tricks for using the package
 effectively, including how to use several cores, sample on an unconstrained
 space, and use Rcpp for faster sampling.
-
-
-
-
-
 
