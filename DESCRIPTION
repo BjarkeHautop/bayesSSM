@@ -1,7 +1,7 @@
 Package: bayesSSM
 Type: Package
 Title: Bayesian Methods for State Space Models
-Version: 0.5.0.9008
+Version: 0.5.0.9009
 Year: 2025
 Authors@R: c(
     person(
