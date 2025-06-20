@@ -121,11 +121,13 @@ particles for the particle filter, and then runs the main PMMH chain.
 }
 \details{
 The PMMH algorithm is essentially a Metropolis Hastings algorithm
-where instead of using the exact likelihood it instead uses an estimated
-using likelihood using a particle filter (see also
-\code{\link{particle_filter}}). Values are proposed using a multivariate
-normal distribution in the transformed space. The proposal covariance is
-estimated using the pilot chain.
+where instead of using the intractable marginal likelihood
+\eqn{p(y_{1:T}\mid \theta)} it instead uses the estimated likelihood using
+a particle filter (see also \code{\link{particle_filter}}). Values are
+proposed using a multivariate normal distribution in the transformed space.
+The proposal covariance and the number of particles is chosen based on a
+pilot run. The minimum number of particles is chosen as 50 and maximum as
+1000.
 }
 \examples{
 init_fn <- function(num_particles) {
