@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9014</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9015</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -88,9 +88,8 @@
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
 <p>Consider the following SSM:</p>
-<figure><img src="reference/figures/SSM_equation.png" alt="SSM equations"><figcaption aria-hidden="true">
-SSM equations
-</figcaption></figure><p>Let’s first simulate 20 data points from this model with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mo>=</mo><mn>0.8</mn></mrow><annotation encoding="application/x-tex">\phi = 0.8</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>σ</mi><mi>x</mi></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\sigma_x = 1</annotation></semantics></math>, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>σ</mi><mi>y</mi></msub><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">\sigma_y = 0.5</annotation></semantics></math>.</p>
+<p><img src="reference/figures/SSM_equation.png"></p>
+<p>Let’s first simulate 20 data points from this model with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mo>=</mo><mn>0.8</mn></mrow><annotation encoding="application/x-tex">\phi = 0.8</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>σ</mi><mi>x</mi></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\sigma_x = 1</annotation></semantics></math>, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>σ</mi><mi>y</mi></msub><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">\sigma_y = 0.5</annotation></semantics></math>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1405</span><span class="op">)</span></span>
 <span><span class="va">t_val</span> <span class="op">&lt;-</span> <span class="fl">20</span></span>
@@ -110,9 +109,8 @@ SSM equations
 <span><span class="op">}</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">init_state</span>, <span class="va">x</span><span class="op">)</span></span></code></pre></div>
 <p>We define the priors for our model as follows:</p>
-<figure><img src="reference/figures/priors.png" alt="priors"><figcaption aria-hidden="true">
-priors
-</figcaption></figure><p>We can use <code>pmmh</code> to perform Bayesian inference on this model. To use <code>pmmh</code> we need to define the functions for the SSM and the priors.</p>
+<p><img src="reference/figures/priors.png"></p>
+<p>We can use <code>pmmh</code> to perform Bayesian inference on this model. To use <code>pmmh</code> we need to define the functions for the SSM and the priors.</p>
 <p>The functions <code>init_fn</code>, <code>transition_fn</code> should be functions that simulates the latent states. <code>init_fn</code> must contain the argument <code>num_particles</code> for initializing the particles, and <code>transition_fn</code> must contain the argument <code>particles</code>, which is a vector of particles, and can contain any other arguments for model-specific parameters.</p>
 <p>The function <code>log_likelihood_fn</code> should be a function that calculates the log-likelihood of the observed data given the latent state variables. It must contain the arguments <code>y</code> for the data and <code>particles</code>. Time-dependency can be implemented by giving a <code>t</code> argument in <code>transition_fn</code> and <code>log_likelihood_fn</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
