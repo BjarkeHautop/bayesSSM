@@ -42,14 +42,6 @@ pak::pak("BjarkeHautop/bayesSSM")
 
 Consider the following SSM:
 
-$$
-\begin{aligned}
-        X_0 &\sim N(0,1) \\
-        X_t&=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0,1), \quad t\geq 1 \\
-        Y_t&=X_t+\sigma_y W_t, \quad W_t \sim N(0, 1), \quad t\geq 1 
-\end{aligned}
-$$
-
 Let’s first simulate 20 data points from this model with $\phi = 0.8$,
 $\sigma_x = 1$, and $\sigma_y = 0.5$.
 
@@ -75,13 +67,7 @@ x <- c(init_state, x)
 
 We define the priors for our model as follows:
 
-$$
-\begin{aligned}
-        \phi &\sim \text{Uniform}(0,1), \\
-        \sigma_x &\sim \text{Exp}(1), \\
-        \sigma_y &\sim \text{Exp}(1).
-\end{aligned}
-$$
+\begin{alig} &(0,1), \\ \_x &(1), \\ \_y &(1). \end{align}
 
 We can use `pmmh` to perform Bayesian inference on this model. To use
 `pmmh` we need to define the functions for the SSM and the priors.
@@ -191,7 +177,7 @@ and observation densities for simplicity.
 
 The core function, `pmmh`, implements the Particle Marginal
 Metropolis-Hastings, which is an algorithm that first generates a set of
-$N$ particles to approximate the likelihood and then uses this
-approximation in the acceptance probability. The implementation
-automatically tunes the number of particles and the proposal
-distribution for the parameters.
+$N$ particles to approximate the intractable marginal likelihood
+$p(y_{1:T} \mid \theta)$ and then uses this approximation in the
+acceptance probability. The implementation automatically tunes the
+number of particles and the proposal distribution for the parameters.
