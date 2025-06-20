@@ -13,7 +13,7 @@ particles for the particle filter, and then runs the main PMMH chain."><meta pro
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9011</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9012</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -210,11 +210,13 @@ using more than one core.</p></dd>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p>The PMMH algorithm is essentially a Metropolis Hastings algorithm
-where instead of using the exact likelihood it instead uses an estimated
-using likelihood using a particle filter (see also
-<code><a href="particle_filter.html">particle_filter</a></code>). Values are proposed using a multivariate
-normal distribution in the transformed space. The proposal covariance is
-estimated using the pilot chain.</p>
+where instead of using the intractable marginal likelihood
+\(p(y_{1:T}\mid \theta)\) it instead uses the estimated likelihood using
+a particle filter (see also <code><a href="particle_filter.html">particle_filter</a></code>). Values are
+proposed using a multivariate normal distribution in the transformed space.
+The proposal covariance and the number of particles is chosen based on a
+pilot run. The minimum number of particles is chosen as 50 and maximum as
+1000.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
@@ -297,9 +299,9 @@ Journal of the Royal Statistical Society: Series B (Statistical Methodology),
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running Particle MCMC chain with tuned settings...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> PMMH Results Summary:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Parameter Mean   SD Median  2.5% 97.5% ESS  Rhat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        phi 0.54 1.03   0.66 -1.68  2.34  25 1.022</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_x 1.55 1.23   1.29  0.08  4.75  64 1.044</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_y 0.64 0.24   0.61  0.30  1.21  91 1.016</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        phi 0.17 1.17   0.29 -2.27  2.23  26 1.084</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_x 1.65 1.31   1.43  0.06  4.94  60 1.055</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_y 0.78 0.30   0.73  0.37  1.50 149 1.017</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some ESS values are below 400, indicating poor mixing. Consider running the chains for more iterations.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Some Rhat values are above 1.01, indicating that the chains have not converged. </span>
@@ -343,9 +345,9 @@ Journal of the Royal Statistical Society: Series B (Statistical Methodology),
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running Particle MCMC chain with tuned settings...</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> PMMH Results Summary:</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Parameter Mean   SD Median  2.5% 97.5% ESS  Rhat</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>        phi 0.14 1.21   0.37 -2.24  2.23  36 1.088</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_x 1.68 1.21   1.49  0.07  4.59  68 1.046</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_y 0.67 0.24   0.62  0.33  1.28  83 1.017</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        phi 0.10 1.25   0.21 -2.16  2.16  48 1.054</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_x 1.43 1.13   1.23  0.12  4.53 125 1.005</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    sigma_y 0.79 0.36   0.72  0.32  1.66  53 1.054</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Some ESS values are below 400, indicating poor mixing. Consider running the chains for more iterations.</span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span></span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> Some Rhat values are above 1.01, indicating that the chains have not converged. </span>
