@@ -41,14 +41,15 @@ pak::pak("BjarkeHautop/bayesSSM")
 
 ## Example
 
-Consider the following SSM: $$
-\begin{aligned}
-        X_0 &\sim N(0,1) \\
-        X_t&=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0,1), \quad t\geq 1 \\
-        Y_t&=X_t+\sigma_y W_t, \quad W_t \sim N(0, 1), \quad t\geq 1 
-\end{aligned}
-$$ Let’s first simulate 20 data points from this model with
-$\phi = 0.8$, $\sigma_x = 1$, and $\sigma_y = 0.5$.
+Consider the following SSM:
+
+<figure>
+<img src="man/figures/SSM_equation.png" alt="SSM equations" />
+<figcaption aria-hidden="true">SSM equations</figcaption>
+</figure>
+
+Let’s first simulate 20 data points from this model with $\phi = 0.8$,
+$\sigma_x = 1$, and $\sigma_y = 0.5$.
 
 ``` r
 set.seed(1405)
@@ -70,13 +71,14 @@ for (t in 2:t_val) {
 x <- c(init_state, x)
 ```
 
-We define the priors for our model as follows: $$
-\begin{aligned}
-        \phi &\sim \text{Uniform}(0,1), \\
-        \sigma_x &\sim \text{Exp}(1), \\
-        \sigma_y &\sim \text{Exp}(1).
-\end{aligned}
-$$ We can use `pmmh` to perform Bayesian inference on this model. To use
+We define the priors for our model as follows:
+
+<figure>
+<img src="man/figures/priors.png" alt="priors" />
+<figcaption aria-hidden="true">priors</figcaption>
+</figure>
+
+We can use `pmmh` to perform Bayesian inference on this model. To use
 `pmmh` we need to define the functions for the SSM and the priors.
 
 The functions `init_fn`, `transition_fn` should be functions that
