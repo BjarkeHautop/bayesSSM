@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9012</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9013</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -87,8 +87,13 @@
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
-<p>Consider the following SSM:</p>
-<p>Let’s first simulate 20 data points from this model with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mo>=</mo><mn>0.8</mn></mrow><annotation encoding="application/x-tex">\phi = 0.8</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>σ</mi><mi>x</mi></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\sigma_x = 1</annotation></semantics></math>, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>σ</mi><mi>y</mi></msub><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">\sigma_y = 0.5</annotation></semantics></math>.</p>
+<p>Consider the following SSM: <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>X</mi><mn>0</mn></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>X</mi><mi>t</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><mi>ϕ</mi><msub><mi>X</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo>+</mo><mo>sin</mo><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>X</mi><mrow><mi>t</mi><mo>−</mo><mn>1</mn></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>+</mo><msub><mi>σ</mi><mi>x</mi></msub><msub><mi>V</mi><mi>t</mi></msub><mo>,</mo><mspace width="1.0em"></mspace><msub><mi>V</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="1.0em"></mspace><mi>t</mi><mo>≥</mo><mn>1</mn></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>Y</mi><mi>t</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>=</mo><msub><mi>X</mi><mi>t</mi></msub><mo>+</mo><msub><mi>σ</mi><mi>y</mi></msub><msub><mi>W</mi><mi>t</mi></msub><mo>,</mo><mspace width="1.0em"></mspace><msub><mi>W</mi><mi>t</mi></msub><mo>∼</mo><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mspace width="1.0em"></mspace><mi>t</mi><mo>≥</mo><mn>1</mn></mtd></mtr></mtable><annotation encoding="application/x-tex">
+\begin{aligned}
+        X_0 &amp;\sim N(0,1) \\
+        X_t&amp;=\phi X_{t-1}+\sin(X_{t-1})+\sigma_x V_t, \quad V_t \sim N(0,1), \quad t\geq 1 \\
+        Y_t&amp;=X_t+\sigma_y W_t, \quad W_t \sim N(0, 1), \quad t\geq 1
+\end{aligned}
+</annotation></semantics></math> Let’s first simulate 20 data points from this model with <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>ϕ</mi><mo>=</mo><mn>0.8</mn></mrow><annotation encoding="application/x-tex">\phi = 0.8</annotation></semantics></math>, <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>σ</mi><mi>x</mi></msub><mo>=</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">\sigma_x = 1</annotation></semantics></math>, and <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>σ</mi><mi>y</mi></msub><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">\sigma_y = 0.5</annotation></semantics></math>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1405</span><span class="op">)</span></span>
 <span><span class="va">t_val</span> <span class="op">&lt;-</span> <span class="fl">20</span></span>
@@ -107,9 +112,13 @@
 <span>  <span class="va">y</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">x</span><span class="op">[</span><span class="va">t</span><span class="op">]</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="fl">1</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="va">sigma_y</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">init_state</span>, <span class="va">x</span><span class="op">)</span></span></code></pre></div>
-<p>We define the priors for our model as follows:</p>
-<p>\begin{alig} &amp;(0,1), \ _x &amp;(1), \ _y &amp;(1). \end{align}</p>
-<p>We can use <code>pmmh</code> to perform Bayesian inference on this model. To use <code>pmmh</code> we need to define the functions for the SSM and the priors.</p>
+<p>We define the priors for our model as follows: <math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>ϕ</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mtext mathvariant="normal">Uniform</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>σ</mi><mi>x</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mtext mathvariant="normal">Exp</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><msub><mi>σ</mi><mi>y</mi></msub></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mtext mathvariant="normal">Exp</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">
+\begin{aligned}
+        \phi &amp;\sim \text{Uniform}(0,1), \\
+        \sigma_x &amp;\sim \text{Exp}(1), \\
+        \sigma_y &amp;\sim \text{Exp}(1).
+\end{aligned}
+</annotation></semantics></math> We can use <code>pmmh</code> to perform Bayesian inference on this model. To use <code>pmmh</code> we need to define the functions for the SSM and the priors.</p>
 <p>The functions <code>init_fn</code>, <code>transition_fn</code> should be functions that simulates the latent states. <code>init_fn</code> must contain the argument <code>num_particles</code> for initializing the particles, and <code>transition_fn</code> must contain the argument <code>particles</code>, which is a vector of particles, and can contain any other arguments for model-specific parameters.</p>
 <p>The function <code>log_likelihood_fn</code> should be a function that calculates the log-likelihood of the observed data given the latent state variables. It must contain the arguments <code>y</code> for the data and <code>particles</code>. Time-dependency can be implemented by giving a <code>t</code> argument in <code>transition_fn</code> and <code>log_likelihood_fn</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
