@@ -5,6 +5,12 @@ results regardless of the number of cores used.
 
 * Improvement performance of `pmmh` slightly. 
 
+* Added new article `detailed-overview` which goes over some theory, 
+implementation details, and tips for using the package effectively.
+
+* Rewrote resampling step in `particle_filter` to C++ for improved 
+performance.
+
 # bayesSSM 0.5.0
 
 * The `particles` argument in `init_fn`, which is passed to `particle_filter` 
