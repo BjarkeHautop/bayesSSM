@@ -43,10 +43,7 @@ pak::pak("BjarkeHautop/bayesSSM")
 
 Consider the following SSM:
 
-<figure>
-<img src="man/figures/SSM_equation.png" alt="SSM equations" />
-<figcaption aria-hidden="true">SSM equations</figcaption>
-</figure>
+![](man/figures/SSM_equation.png)
 
 Let’s first simulate 20 data points from this model with $\phi = 0.8$,
 $\sigma_x = 1$, and $\sigma_y = 0.5$.
@@ -73,10 +70,7 @@ x <- c(init_state, x)
 
 We define the priors for our model as follows:
 
-<figure>
-<img src="man/figures/priors.png" alt="priors" />
-<figcaption aria-hidden="true">priors</figcaption>
-</figure>
+![](man/figures/priors.png)
 
 We can use `pmmh` to perform Bayesian inference on this model. To use
 `pmmh` we need to define the functions for the SSM and the priors.
