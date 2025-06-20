@@ -18,7 +18,8 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![Codecov test coverage](https://codecov.io/gh/BjarkeHautop/bayesSSM/graph/badge.svg)](https://app.codecov.io/gh/BjarkeHautop/bayesSSM)
 [![R-CMD-check](https://github.com/BjarkeHautop/bayesSSM/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/BjarkeHautop/bayesSSM/actions/workflows/R-CMD-check.yaml)
-[![](https://cranlogs.r-pkg.org/badges/bayesSSM)](https://cran.r-project.org/package=bayesSSM)
+[![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/bayesSSM)](https://cran.r-project.org/package=bayesSSM)
+[![CRAN_Downloads](https://cranlogs.r-pkg.org/badges/bayesSSM)](https://cran.r-project.org/package=bayesSSM)
 <!-- badges: end -->
 
 bayesSSM is an R package offering a set of tools for performing Bayesian
