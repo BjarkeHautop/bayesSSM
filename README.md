@@ -42,8 +42,8 @@ a **simulator**, not via an explicit transition density. This includes:
 - Ecological or physical systems with complex latent dynamics
 
 In these cases, the joint posterior density cannot be computed directly,
-and the marginal likelihood ![](man/figures/marginal_posterior.png) is
-intractable, and traditional MCMC methods cannot be used.
+and the marginal likelihood is intractable, and traditional MCMC methods
+cannot be used.
 
 The Particle Markov Chain Monte Carlo (PMCMC) methods, such as the
 Particle Marginal Metropolis-Hastings (PMMH) implemented in this
@@ -61,10 +61,10 @@ and observation densities for simplicity.
 
 The core function, `pmmh`, implements the Particle Marginal
 Metropolis-Hastings, which is an algorithm that first generates a set of
-$N$ particles to approximate the intractable marginal likelihood
-$p(y_{1:T} \mid \theta)$ and then uses this approximation in the
-acceptance probability. The implementation automatically tunes the
-number of particles and the proposal distribution for the parameters.
+$N$ particles to approximate the intractable marginal likelihood and
+then uses this approximation in the acceptance probability. The
+implementation automatically tunes the number of particles and the
+proposal distribution for the parameters.
 
 ## Installation
 
