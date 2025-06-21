@@ -28,7 +28,7 @@
 
     <a class="navbar-brand me-2" href="index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9015</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9017</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -74,6 +74,28 @@
 <p>While there are several alternative packages available for performing Particle MCMC, bayesSSM is designed to be simple and easy to use. It was alongside my Master’s thesis about Particle MCMC, since I was implementing everything from scratch anyway.</p>
 </div>
 <div class="section level2">
+<h2 id="why-pmcmc">Why PMCMC?<a class="anchor" aria-label="anchor" href="#why-pmcmc"></a>
+</h2>
+<p>In some state-space models, the full joint density of latent states and observations</p>
+<p><img src="reference/figures/joint_posterior.png"></p>
+<p>can be written out explicitly. In these cases, inference tools like Stan (which uses Hamiltonian Monte Carlo) are very efficient.</p>
+<p>However, many real-world models define the latent dynamics only through a <strong>simulator</strong>, not via an explicit transition density. This includes:</p>
+<ul>
+<li>Epidemic models with Gillespie-like stochastic simulation</li>
+<li>Agent-based models</li>
+<li>Ecological or physical systems with complex latent dynamics</li>
+</ul>
+<p>In these cases, the joint posterior density cannot be computed directly, and the marginal likelihood <img src="reference/figures/marginal_posterior.png"> is intractable, and traditional MCMC methods cannot be used.</p>
+<p>The Particle Markov Chain Monte Carlo (PMCMC) methods, such as the Particle Marginal Metropolis-Hastings (PMMH) implemented in this package, are designed to handle these situations. They use particle filters to approximate the marginal likelihood and allow for efficient sampling from the posterior density of the latent states and parameters.</p>
+</div>
+<div class="section level2">
+<h2 id="state-space-models">State-space Models<a class="anchor" aria-label="anchor" href="#state-space-models"></a>
+</h2>
+<p>A state-space model (SSM) has the structure given in the following diagram, where we omitted potential time dependency in the transition and observation densities for simplicity.</p>
+<p><img src="reference/figures/DAG_SSM.png"></p>
+<p>The core function, <code>pmmh</code>, implements the Particle Marginal Metropolis-Hastings, which is an algorithm that first generates a set of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math> particles to approximate the intractable marginal likelihood <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mn>1</mn><mo>:</mo><mi>T</mi></mrow></msub><mo>∣</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p(y_{1:T} \mid \theta)</annotation></semantics></math> and then uses this approximation in the acceptance probability. The implementation automatically tunes the number of particles and the proposal distribution for the parameters.</p>
+</div>
+<div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
 <p>You can install the latest stable version of bayesSSM from CRAN with:</p>
@@ -111,8 +133,8 @@
 <p>We define the priors for our model as follows:</p>
 <p><img src="reference/figures/priors.png"></p>
 <p>We can use <code>pmmh</code> to perform Bayesian inference on this model. To use <code>pmmh</code> we need to define the functions for the SSM and the priors.</p>
-<p>The functions <code>init_fn</code>, <code>transition_fn</code> should be functions that simulates the latent states. <code>init_fn</code> must contain the argument <code>num_particles</code> for initializing the particles, and <code>transition_fn</code> must contain the argument <code>particles</code>, which is a vector of particles, and can contain any other arguments for model-specific parameters.</p>
-<p>The function <code>log_likelihood_fn</code> should be a function that calculates the log-likelihood of the observed data given the latent state variables. It must contain the arguments <code>y</code> for the data and <code>particles</code>. Time-dependency can be implemented by giving a <code>t</code> argument in <code>transition_fn</code> and <code>log_likelihood_fn</code>.</p>
+<p>The functions <code>init_fn</code>, <code>transition_fn</code> should be functions that simulate the latent states. <code>init_fn</code> must contain the argument <code>num_particles</code> for initializing the particles, and <code>transition_fn</code> must contain the argument <code>particles</code>, which is a vector of particles, and can contain any other arguments for model-specific parameters.</p>
+<p>The function <code>log_likelihood_fn</code> should be a function that calculates the log-likelihood of the observed data given the latent state variables. It must contain the arguments <code>y</code> for the data and <code>particles</code>. Time dependency can be implemented by giving a <code>t</code> argument in <code>transition_fn</code> and <code>log_likelihood_fn</code>.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">init_fn</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">num_particles</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html" class="external-link">rnorm</a></span><span class="op">(</span><span class="va">num_particles</span>, mean <span class="op">=</span> <span class="fl">0</span>, sd <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
@@ -141,7 +163,7 @@
 <span>  sigma_x <span class="op">=</span> <span class="va">log_prior_sigma_x</span>,</span>
 <span>  sigma_y <span class="op">=</span> <span class="va">log_prior_sigma_y</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>Now we can run the PMMH algorithm using the <code>pmmh</code> function. For this README we use a lower number of samples and a smaller burn-in period, and also modify the pilot chains to only use 200 samples. This is to make the example run faster.</p>
+<p>Now we can run the PMMH algorithm using the <code>pmmh</code> function. For this README we use a lower number of samples and a smaller burn-in period, and also modify the pilot chains to only use 200 samples. This is done to make the example run faster.</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/BjarkeHautop/bayesSSM" class="external-link">bayesSSM</a></span><span class="op">)</span></span>
 <span></span>
@@ -181,13 +203,6 @@
 <span><span class="co">#&gt; Some Rhat values are above 1.01, indicating that the chains have not converged. </span></span>
 <span><span class="co">#&gt; Consider running the chains for more iterations and/or increase burn_in.</span></span></code></pre></div>
 <p>We get convergence warnings as expected due to the small number of iterations.</p>
-</div>
-<div class="section level2">
-<h2 id="state-space-models">State-space Models<a class="anchor" aria-label="anchor" href="#state-space-models"></a>
-</h2>
-<p>A state-space model (SSM) has the structure given in the following diagram, where we omitted potential time-dependency in the transition and observation densities for simplicity.</p>
-<p><img src="reference/figures/DAG_SSM.png"></p>
-<p>The core function, <code>pmmh</code>, implements the Particle Marginal Metropolis-Hastings, which is an algorithm that first generates a set of <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math> particles to approximate the intractable marginal likelihood <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mn>1</mn><mo>:</mo><mi>T</mi></mrow></msub><mo>∣</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p(y_{1:T} \mid \theta)</annotation></semantics></math> and then uses this approximation in the acceptance probability. The implementation automatically tunes the number of particles and the proposal distribution for the parameters.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
