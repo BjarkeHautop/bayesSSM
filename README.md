@@ -54,7 +54,7 @@ sampling from the posterior density of the latent states and parameters.
 ## State-space Models
 
 A state-space model (SSM) has the structure given in the following
-diagram, where we omitted potential time-dependency in the transition
+diagram, where we omitted potential time dependency in the transition
 and observation densities for simplicity.
 
 ![](man/figures/DAG_SSM.png)
@@ -118,7 +118,7 @@ We can use `pmmh` to perform Bayesian inference on this model. To use
 `pmmh` we need to define the functions for the SSM and the priors.
 
 The functions `init_fn`, `transition_fn` should be functions that
-simulates the latent states. `init_fn` must contain the argument
+simulate the latent states. `init_fn` must contain the argument
 `num_particles` for initializing the particles, and `transition_fn` must
 contain the argument `particles`, which is a vector of particles, and
 can contain any other arguments for model-specific parameters.
@@ -126,7 +126,7 @@ can contain any other arguments for model-specific parameters.
 The function `log_likelihood_fn` should be a function that calculates
 the log-likelihood of the observed data given the latent state
 variables. It must contain the arguments `y` for the data and
-`particles`. Time-dependency can be implemented by giving a `t` argument
+`particles`. Time dependency can be implemented by giving a `t` argument
 in `transition_fn` and `log_likelihood_fn`.
 
 ``` r
@@ -166,8 +166,8 @@ log_priors <- list(
 
 Now we can run the PMMH algorithm using the `pmmh` function. For this
 README we use a lower number of samples and a smaller burn-in period,
-and also modify the pilot chains to only use 200 samples. This is to
-make the example run faster.
+and also modify the pilot chains to only use 200 samples. This is done
+to make the example run faster.
 
 ``` r
 library(bayesSSM)
