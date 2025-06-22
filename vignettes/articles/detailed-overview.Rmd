@@ -280,8 +280,8 @@ log_likelihood_fn_epidemic <- function(y, particles, t) {
 
 With priors for $\lambda, \gamma$ as
 \begin{align*}
-	\lambda &\sim \text{half-}N(1), \\
-	\gamma &\sim \text{half-}N(2). 
+	\lambda &\sim \operatorname{Normal^+}(0, 1^2), \\
+	\gamma &\sim \operatorname{Normal^+}(0, 2^2). 
 \end{align*}
 
 ```{r}
@@ -325,6 +325,7 @@ result <- pmmh(
 # Tips and Tricks
 
 ## Using Several Cores
+
 To use several cores (up to the number of chains), you can set the `num_cores`
 argument in the `pmmh` function. The code below will run the PMMH algorithm
 using 2 cores, which is useful for speeding up the sampling process,
@@ -358,6 +359,7 @@ result <- pmmh(
 ```
 
 ## Sampling on an Unconstrained Space
+
 To allow for more efficient sampling, we can use the `param_transform` 
 argument to propose new parameters on an unconstrained space, leading to
 more efficient sampling. Since $\lambda$ and $\gamma$ both take values in
@@ -543,6 +545,7 @@ log_prior_phi <- function(phi) {
 ```
 
 # Conclusion
+
 In this article, we have provided a detailed overview of the `bayesSSM` package 
 and how to use it for Bayesian inference in state space models. We have shown 
 how to define the model, simulate data, and fit the model using the PMMH 

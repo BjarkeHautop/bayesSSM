@@ -1,4 +1,6 @@
 url: https://bjarkehautop.github.io/bayesSSM/
 template:
   bootstrap: 5
+  math-rendering: katex
+
 
