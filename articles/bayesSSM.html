@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9020</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9021</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,6 +85,10 @@
 \end{align*}</span> that is <span class="math inline">X_t</span> is a
 latent state and <span class="math inline">Y_t</span> is an observed
 value. The parameters of the model are <span class="math inline">\sigma_x</span> and <span class="math inline">\sigma_y</span>.</p>
+<p>Note: While this example uses pmmh, the model is simple enough that
+standard MCMC methods could also be applied. For a more complicated
+example where standard MCMC methods cannot be used, see the article
+Stochastic SIR Model article <a href="https://bjarkehautop.github.io/bayesSSM/articles/stochastic-sir-model.html">here</a>.</p>
 <p>First, we will simulate some data from this model:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1405</span><span class="op">)</span></span>
