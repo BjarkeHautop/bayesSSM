@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9018</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9019</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,7 +40,7 @@
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/detailed-overview.html">Detailed Overview of bayesSSM Package</a></li>
-    <li><a class="dropdown-item" href="../articles/sir-model.html">Stochastic SIR Model</a></li>
+    <li><a class="dropdown-item" href="../articles/stochastic-sir-model.html">Stochastic SIR Model</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -139,9 +139,10 @@ high probability).</p>
 <h2 id="example-fitting-a-state-space-model">Example: Fitting a State Space Model<a class="anchor" aria-label="anchor" href="#example-fitting-a-state-space-model"></a>
 </h2>
 <p>We will show how to fit a stochastic SIR model using the
-<code>bayesSSM</code> package ( see also the sir-model article in the
-<code>bayesSSM</code> package). First, we will generate some synthetic
-data from the model.</p>
+<code>bayesSSM</code> package ( see also the stochastic-sir-model
+article <a href="https://bjarkehautop.github.io/bayesSSM/articles/stochastic-sir-model.html">here</a>
+for more details). First, we will generate some synthetic data from the
+model.</p>
 <div class="section level3">
 <h3 id="simulate-data">Simulate data<a class="anchor" aria-label="anchor" href="#simulate-data"></a>
 </h3>
@@ -369,9 +370,9 @@ dependency, so we do not use the <code>t</code> argument.</p>
 <p>With priors for
 <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>,</mo><mi>γ</mi></mrow><annotation encoding="application/x-tex">\lambda, \gamma</annotation></semantics></math>
 as
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>λ</mi><mo>∼</mo><mtext mathvariant="normal">half-</mtext><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mi>γ</mi><mo>∼</mo><mtext mathvariant="normal">half-</mtext><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
-    \lambda \sim \text{half-}N(1), \\
-    \gamma \sim \text{half-}N(2). \\
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>λ</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mtext mathvariant="normal">half-</mtext><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mi>γ</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mtext mathvariant="normal">half-</mtext><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+    \lambda &amp;\sim \text{half-}N(1), \\
+    \gamma &amp;\sim \text{half-}N(2). 
 \end{align*}</annotation></semantics></math></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">log_prior_lambda</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">lambda</span><span class="op">)</span> <span class="op">{</span></span>
@@ -667,6 +668,36 @@ where we assume that the observations were made at times 1, 2, 3 and
 <span>  param_transform <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>lambda <span class="op">=</span> <span class="st">"log"</span>, gamma <span class="op">=</span> <span class="st">"log"</span><span class="op">)</span>,</span>
 <span>  obs_times <span class="op">=</span> <span class="va">obs_times</span></span>
 <span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="specifying-prior-on-a-different-scale">Specifying Prior on a Different Scale<a class="anchor" aria-label="anchor" href="#specifying-prior-on-a-different-scale"></a>
+</h3>
+<p>Sometimes, it is useful to specify the prior on a different scale
+than the parameter space. For instance, it is common to specify the
+prior for the over-dispersion parameter
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ϕ</mi><annotation encoding="application/x-tex">\phi</annotation></semantics></math>
+in a negative binomial model on a different scale, such as
+<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>1</mn><msqrt><mi>ϕ</mi></msqrt></mfrac><mo>∼</mo><mrow><mi mathvariant="normal">N</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">a</mi><msup><mi mathvariant="normal">l</mi><mo mathvariant="normal">+</mo></msup></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+\frac{1}{\sqrt{\phi}} \sim \operatorname{Normal^+}(0, 1),
+</annotation></semantics></math> where
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">N</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">a</mi><msup><mi mathvariant="normal">l</mi><mo mathvariant="normal">+</mo></msup></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\operatorname{Normal^+}(0, 1)</annotation></semantics></math>
+is a truncated normal distribution on the positive real line. To do
+this, you need to add the log_jacobian of the transformation in the
+specified log-prior function. This is shown in the following function,
+which implements the prior for
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ϕ</mi><annotation encoding="application/x-tex">\phi</annotation></semantics></math>
+on the scale of
+<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><mn>1</mn><msqrt><mi>ϕ</mi></msqrt></mfrac><annotation encoding="application/x-tex">\frac{1}{\sqrt{\phi}}</annotation></semantics></math>.</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">log_prior_phi</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">phi</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">phi</span> <span class="op">&lt;=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="co"># Ensure phi is positive</span></span>
+<span></span>
+<span>  <span class="co"># Jacobian: |d(1/sqrt(phi))/dphi| = 1/(2 * phi^(3/2))</span></span>
+<span>  <span class="va">log_jacobian</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1.5</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html" class="external-link">log</a></span><span class="op">(</span><span class="va">phi</span><span class="op">)</span></span>
+<span>  <span class="fu">extraDistr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/extraDistr/man/HalfNormal.html" class="external-link">dhnorm</a></span><span class="op">(</span><span class="fl">1</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">sqrt</a></span><span class="op">(</span><span class="va">phi</span><span class="op">)</span>, sigma <span class="op">=</span> <span class="fl">1</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span> <span class="va">log_jacobian</span></span>
+<span><span class="op">}</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
