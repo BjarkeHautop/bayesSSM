@@ -1,4 +1,4 @@
-# bayesSSM (development version)
+# bayesSSM 0.6.0
 
 * Improved reproducibility of `pmmh`: Setting a seed now ensures consistent 
 results regardless of the number of cores used.
