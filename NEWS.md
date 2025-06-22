@@ -2,14 +2,13 @@
 
 * Improved reproducibility of `pmmh`: Setting a seed now ensures consistent 
 results regardless of the number of cores used.
-
 * Improvement performance of `pmmh` slightly. 
-
-* Added new article `detailed-overview` which goes over some theory, 
-implementation details, and tips for using the package effectively.
-
 * Rewrote resampling step in `particle_filter` to C++ for improved 
 performance.
+* Added new article `detailed-overview` which goes over some theory, 
+implementation details, and tips for using the package effectively.
+* Improved the documentation of the package, including the README and
+articles, to provide clearer explanations and examples.
 
 # bayesSSM 0.5.0
 

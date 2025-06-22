@@ -16,70 +16,211 @@ library(bayesSSM)
 library(ggplot2)
 library(tidyr)
 library(extraDistr)
+library(expm) # For matrix exponentiation
 set.seed(1405)
 ```
 
-# SIR model
+# Stochastic SIR Model
 
-We will implement the following SIR model. Consider a 
-closed population of size $N$ (i.e. no births, deaths or migration)
-and three compartments: susceptible, infected and recovered. We assume that
-initially every individual is susceptible except for $m$ infected individuals.
+We consider a stochastic SIR (Susceptible–Infectious–Recovered) model for the 
+spread of an infectious disease in a **closed population** of size $N$, 
+meaning there are no births, deaths, or migration. The population is divided 
+into three compartments: susceptible (S), infectious (I), and recovered (R). 
+Initially, all individuals are susceptible except for $m$ infectious
+individuals.
 
-We assume the any indivudlas infectious period, contacts with any given member 
-of the population occur according to a time-homogeneous Poisson process with 
-rate $\lambda/n$, where $\lambda > 0$ and $n$ the number of susceptible.
-When a susceptible individual is contacted, they become infected 
-instantaneously and subsequently follow the same infectious process.
+Note that most of the literature on SIR models assumes a **deterministic**
+model, where the compartments are treated as continuous and are 
+described by ordinary differential equations (ODEs). 
 
-We let the distribution of the infection period, $I$ be exponential distributed:
-$$I \sim \text{Exp}(\gamma)$$
-where $\gamma > 0$.
+Each infectious individual makes contact with any given member of the
+population according to a **time-homogeneous Poisson process** with rate
+$\lambda/N$, where $\lambda > 0$. Thus, each infectious individual makes contact 
+with any other individual at an overall rate of $\lambda$, independent of the 
+population size. 
 
-Let $S(t)$ denote the number of susceptible individuals and $I(t)$ denote the 
-number of infectious individuals at time $t \geq 0$. Note, that under these 
-assumptions
+The duration of the infectious period for each individual is assumed to follow 
+an **exponential distribution**:
+$$
+I \sim \text{Exp}(\gamma),
+$$
+where $\gamma > 0$ is the recovery rate.
+
+Let $S(t)$ and $I(t)$ denote the number of susceptible and infectious
+individuals at time $t \geq 0$, respectively. Under the assumptions above,
+the process
 $$
 \{(S(t), I(t)) : t \geq 0\}
 $$
-is a Markov process, since the infection event is exponential distributed 
-(since time to next event of a Poisson process is exponential) and
-so is the removal event, thus *memoryless*.
+forms a **continuous-time Markov process**, since both infection and recovery
+events are exponentially distributed and are therefore memoryless. Since
+$N$ is fixed, we have $R(t) = N - S(t) - I(t)$, and thus the process can be
+described by the pair $(S(t), I(t))$.
 
-The infection and removal events have the following rates:
+## Transition Rates
 
-- **Infection Event:** The transition
-	$$
-	(s,i) \to (s-1, i+1)
-	$$
-	occurs at rate
-	$$
-	\frac{\lambda}{n}\, s\, i,
-	$$
-	for $s > 0$ and $i > 0$.
-	
-- **Removal Event:** The transition
-	$$
-	(s,i) \to (s, i-1)
-	$$
-	occurs at rate
-	$$
-	\gamma\, i,
-	$$
-	for $i > 0$.
-	
-## Partial observations and noisy measurements	
-Suppose we only observe the initial state and the
-number of infectious individuals, $I(t)$, at discrete times 
-$t = 0, 1, \ldots, T$. We assume that the true number of infectious individuals
-is a latent state and we observe a noisy version of this state, that could 
-either be higher or lower (often it is lower). We model this as a Poisson 
-distribution:
+- **Infection Event:**
+
+  $$
+  (s, i, r) \to (s - 1, i + 1, r)
+  $$
+
+  occurs at rate
+
+  $$
+  \frac{\lambda}{N} \, s \, i,
+  $$
+
+  for $s > 0$ and $i > 0$.
+
+- **Recovery Event:**
+
+  $$
+  (s, i, r) \to (s, i - 1, r + 1)
+  $$
+
+  occurs at rate
+
+  $$
+  \gamma \, i,
+  $$
+
+  for $i > 0$.
+
+## Partial Observations and Noisy Measurements
+
+Suppose we only observe the initial state and the number of infectious 
+individuals $I(t)$ at discrete time points $t = 0, 1, \ldots, T$. The true 
+number of infectious individuals is unobserved (latent), and instead we observe
+a **noisy measurement** that may either overestimate or underestimate the 
+true count.
+
+We model the observed counts $Y_t$ in this article using a 
+**Poisson observation model**:
 $$
 Y_t \mid I(t) \sim \operatorname{Pois}(I(t)).
 $$
+To account for over-dispersion, one could instead use a negative binomial
+observation model.
+
+We are now in a State Space Model (SSM) setup, where the latent state is 
+$\bigl(S(t), I(t)\bigr)$, and the observations are $Y_t$. Note that due to
+the memoryless property of the exponential distribution, the latent state
+$(S(t), I(t))$ is fully determined by the initial state and the sequence of
+infection and recovery events that have occurred up to time $t$, thus a
+Markov process.
+
+# Why Standard MCMC Methods Are Infeasible
+
+If one wanted to use standard MCMC methods to estimate the joint posterior of
+the parameters and latent states, one would need to compute the exact
+transition probabilities for the SIR model, which quickly becomes 
+infeasible as the number of infectious individuals increases. We illustrate how
+this can be done using matrix exponentiation for small populations.
+
+The probability distribution of the state at time $t$ is given by:
+$$
+P(t) = e^{Qt},
+$$
+where $Q$ is the generator matrix of the Markov process, which contains the
+transition rates between states. 
+
+We define functions below to generate the state space for a small SIR system, 
+build the generator matrix, and compute the transition probabilities at a 
+given time $t$.
+
+```{r}
+# Generate state space for small SIR system
+generate_sir_states <- function(N) {
+  # Returns all (s, i) pairs where s + i <= N
+  states <- expand.grid(s = 0:N, i = 0:N)
+  states <- subset(states, s + i <= N)
+  states <- states[order(states$s, states$i), ]
+  states
+}
+
+# Build generator matrix Q
+build_generator_matrix <- function(states, lambda, gamma, N) {
+  n_states <- nrow(states)
+  Q <- matrix(0, n_states, n_states)
+
+  for (k in 1:n_states) {
+    s <- states$s[k]
+    i <- states$i[k]
+
+    rate_infection <- (lambda / N) * s * i
+    rate_recovery <- gamma * i
+
+    # Infection transition
+    if (s > 0 && i > 0) {
+      next_state <- c(s - 1, i + 1)
+      idx <- which(states$s == next_state[1] & states$i == next_state[2])
+      Q[k, idx] <- rate_infection
+    }
+
+    # Recovery transition
+    if (i > 0) {
+      next_state <- c(s, i - 1)
+      idx <- which(states$s == next_state[1] & states$i == next_state[2])
+      Q[k, idx] <- rate_recovery
+    }
+
+    # Diagonal: exit rate
+    Q[k, k] <- -(rate_infection + rate_recovery)
+  }
+
+  Q
+}
+
+# Compute transition probabilities at time t
+compute_transition_probs <- function(lambda, gamma, N, t, init_state) {
+  states <- generate_sir_states(N)
+  Q <- build_generator_matrix(states, lambda, gamma, N)
+
+  P <- expm(Q * t) # matrix exponential
+
+  init_index <- which(states$s == init_state[1] & states$i == init_state[2])
+  p_t <- P[init_index, ]
+
+  data.frame(
+    s = states$s,
+    i = states$i,
+    prob = p_t
+  )
+}
+```
+
+This can then be run to compute the transition probabilities for a given 
+state and time point. For example, if we have a population of size $N=5$ with
+state $(S(t), I(t)) = (4, 1)$ at time $t$, we can compute the transition
+probabilities for the next time point $t+1$ as
+
+```{r}
+# Example with very small population
+lambda <- 1.0
+gamma <- 0.5
+N <- 5 # Small population
+t <- 1 # Time point
+init_state <- c(4, 1) # (s, i)
+
+transition_probs <- compute_transition_probs(
+  lambda, gamma, N, t, init_state
+)
+
+# Show the most probable next states
+transition_probs[order(-transition_probs$prob), ][1:5, ]
+```
+
+Note, that this scales poorly with larger populations, as the number of states
+is given by
+$$
+N+2 \choose 2,
+$$
+which for $N=100$ is already over 5000 states. Thus, this whole approach
+is only feasible for very small populations. 
 
 # Simulate data
+
 We will simulate data from the SIR model with the following parameters:
 - At $t=0$ we have $S(0) = 90$, $I(0) = 10$ and $R(0) = 0$.
 - Infection rate $\lambda=1.5$ and removal rate $\gamma=0.5$.
@@ -203,21 +344,15 @@ data_long <- prepare_data_for_plot(true_states, observations, t_max)
 plot_epidemic_data(data_long, t_max)
 ```
 
-We are interested in performing Bayesian inference in this setup. So we define
-our priors as
-We define the priors for $\lambda, \gamma$ and $\phi$ as
-\begin{align*}
-	\lambda \sim \text{half-}N(1), \\
-	\gamma \sim \text{half-}N(2), \\
-	\frac{1}{\sqrt{\phi}} \sim \text{half-}N(1),
-\end{align*}
-where $\text{half-}N(a)$ denotes a half-normal distribution with mean $0$ and
-standard deviation $a$. The prior for the over-dispersion parameter $\phi$ 
-follows the recommendation by 
-[https://mc-stan.org/users/documentation/case-studies](Stan).
+# Bayesian Inference with PMMH
 
-We define these priors, where since we specify the prior for $\phi$ 
-on another scale we need to include the Jacobian term in the likelihood.
+We are interested in performing Bayesian inference in this setup, and define 
+the priors as follows:
+\begin{align*}
+	\lambda &\sim \operatorname{Normal^+}(0, 1^2), \\
+	\gamma &\sim \operatorname{Normal^+}(0, 2^2),
+\end{align*}
+where $\operatorname{Normal^+}$ denotes a truncated at $0$ normal distribution. 
 
 ```{r}
 # Define the log-prior for the parameters
@@ -227,16 +362,6 @@ log_prior_lambda <- function(lambda) {
 
 log_prior_gamma <- function(gamma) {
   extraDistr::dhnorm(gamma, sigma = 2, log = TRUE)
-}
-
-log_prior_phi <- function(phi) {
-  if (phi <= 0) {
-    return(-Inf)
-  } # Ensure phi is positive
-
-  # Jacobian: |d(1/sqrt(phi))/dphi| = 1/(2 * phi^(3/2))
-  log_jacobian <- -log(2) - 1.5 * log(phi)
-  extraDistr::dhnorm(1 / sqrt(phi), sigma = 1, log = TRUE) + log_jacobian
 }
 
 log_priors <- list(
@@ -341,5 +466,3 @@ ggplot(chains, aes(x = gamma, fill = factor(chain))) +
   ) +
   theme_minimal()
 ```
-
-

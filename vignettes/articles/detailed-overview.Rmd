@@ -66,10 +66,11 @@ resampling, to focus on the particles with higher weights
 # Example: Fitting a State Space Model
 
 We will show how to fit a stochastic SIR model using the `bayesSSM` package (
-see also the sir-model article in the `bayesSSM` package). First, we
-will generate some synthetic data from the model.
+see also the stochastic-sir-model article [here](https://bjarkehautop.github.io/bayesSSM/articles/stochastic-sir-model.html)
+for more details). First, we will generate some synthetic data from the model.
 
 ## Simulate data
+
 We will simulate data from the SIR model with the following parameters:
 
 - At $t=0$ we have $S(0) = 90$, $I(0) = 10$ and $R(0) = 0$.
@@ -279,8 +280,8 @@ log_likelihood_fn_epidemic <- function(y, particles, t) {
 
 With priors for $\lambda, \gamma$ as
 \begin{align*}
-	\lambda \sim \text{half-}N(1), \\
-	\gamma \sim \text{half-}N(2). \\
+	\lambda &\sim \text{half-}N(1), \\
+	\gamma &\sim \text{half-}N(2). 
 \end{align*}
 
 ```{r}
@@ -512,6 +513,33 @@ result_obs_times <- pmmh(
   param_transform = list(lambda = "log", gamma = "log"),
   obs_times = obs_times
 )
+```
+
+## Specifying Prior on a Different Scale
+
+Sometimes, it is useful to specify the prior on a different scale than the
+parameter space. For instance, it is common to specify the prior for the 
+over-dispersion parameter $\phi$ in a negative binomial model on a different
+scale, such as
+$$
+\frac{1}{\sqrt{\phi}} \sim \operatorname{Normal^+}(0, 1),
+$$
+where $\operatorname{Normal^+}(0, 1)$ is a truncated normal distribution
+on the positive real line. To do this, you need to add the log_jacobian of the 
+transformation in the specified log-prior function. This is shown in the
+following function, which implements the prior for $\phi$ on the scale of
+$\frac{1}{\sqrt{\phi}}$.
+
+```{r}
+log_prior_phi <- function(phi) {
+  if (phi <= 0) {
+    return(-Inf)
+  } # Ensure phi is positive
+
+  # Jacobian: |d(1/sqrt(phi))/dphi| = 1/(2 * phi^(3/2))
+  log_jacobian <- -log(2) - 1.5 * log(phi)
+  extraDistr::dhnorm(1 / sqrt(phi), sigma = 1, log = TRUE) + log_jacobian
+}
 ```
 
 # Conclusion

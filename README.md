@@ -21,7 +21,7 @@ Bayesian inference in SSMs.
 
 While there are several alternative packages available for performing
 Particle MCMC, bayesSSM is designed to be simple and easy to use. It was
-alongside my Master’s thesis about Particle MCMC, since I was
+developed alongside my Master’s thesis about Particle MCMC, since I was
 implementing everything from scratch anyway.
 
 ## Why PMCMC?
@@ -37,13 +37,14 @@ can be written out explicitly. In these cases, inference tools like Stan
 However, many real-world models define the latent dynamics only through
 a **simulator**, not via an explicit transition density. This includes:
 
-- Epidemic models with Gillespie-like stochastic simulation
+- Epidemic models with stochastic transmission dynamics
 - Agent-based models
 - Ecological or physical systems with complex latent dynamics
 
 In these cases, the joint posterior density cannot be computed directly,
-and the marginal likelihood is intractable, and traditional MCMC methods
-cannot be used.
+and the marginal likelihood is intractable. Thus, standard MCMC methods
+like Hamiltonian Monte Carlo (HMC) or Metropolis-Hastings (MH) cannot be
+applied directly.
 
 The Particle Markov Chain Monte Carlo (PMCMC) methods, such as the
 Particle Marginal Metropolis-Hastings (PMMH) implemented in this
@@ -59,7 +60,7 @@ and observation densities for simplicity.
 
 ![](man/figures/DAG_SSM.png)
 
-The core function, `pmmh`, implements the Particle Marginal
+The core function, `pmmh`, implements Particle Marginal
 Metropolis-Hastings, which is an algorithm that first generates a set of
 $N$ particles to approximate the intractable marginal likelihood and
 then uses this approximation in the acceptance probability. The
@@ -83,7 +84,15 @@ pak::pak("BjarkeHautop/bayesSSM")
 
 ## Example
 
-Consider the following SSM:
+To illustrate how to use the `pmmh` function, we will simulate a simple
+state-space model (SSM) and perform Bayesian inference on it. Note:
+While this example uses `pmmh`, the model is simple enough that standard
+MCMC methods could also be applied. For a more complicated example where
+standard MCMC methods cannot be used, see the article Stochastic SIR
+Model article
+[here](https://bjarkehautop.github.io/bayesSSM/articles/stochastic-sir-model.html).
+
+We will simulate a state-space model with the following structure:
 
 ![](man/figures/SSM_equation.png)
 
