@@ -2,7 +2,7 @@
 title: "Stochastic SIR Model"
 ---
 
-```{r, include = FALSE}
+```{r settings, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -11,7 +11,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-```{r setup}
+```{r setup, message = FALSE, warning = FALSE}
 library(bayesSSM)
 library(ggplot2)
 library(tidyr)
@@ -23,24 +23,24 @@ set.seed(1405)
 # Stochastic SIR Model
 
 We consider a stochastic SIR (Susceptible–Infectious–Recovered) model for the 
-spread of an infectious disease in a **closed population** of size $N$, 
+spread of an infectious disease in a *closed population* of size $N$, 
 meaning there are no births, deaths, or migration. The population is divided 
 into three compartments: susceptible (S), infectious (I), and recovered (R). 
 Initially, all individuals are susceptible except for $m$ infectious
 individuals.
 
-Note that most of the literature on SIR models assumes a **deterministic**
+Note that most of the literature on SIR models assumes a deterministic
 model, where the compartments are treated as continuous and are 
 described by ordinary differential equations (ODEs). 
 
 Each infectious individual makes contact with any given member of the
-population according to a **time-homogeneous Poisson process** with rate
+population according to a time-homogeneous Poisson process with rate
 $\lambda/N$, where $\lambda > 0$. Thus, each infectious individual makes contact 
 with any other individual at an overall rate of $\lambda$, independent of the 
 population size. 
 
 The duration of the infectious period for each individual is assumed to follow 
-an **exponential distribution**:
+an exponential distribution:
 $$
 I \sim \text{Exp}(\gamma),
 $$
@@ -52,7 +52,7 @@ the process
 $$
 \{(S(t), I(t)) : t \geq 0\}
 $$
-forms a **continuous-time Markov process**, since both infection and recovery
+forms a continuous-time Markov process, since both infection and recovery
 events are exponentially distributed and are therefore memoryless. Since
 $N$ is fixed, we have $R(t) = N - S(t) - I(t)$, and thus the process can be
 described by the pair $(S(t), I(t))$.
@@ -92,11 +92,11 @@ described by the pair $(S(t), I(t))$.
 Suppose we only observe the initial state and the number of infectious 
 individuals $I(t)$ at discrete time points $t = 0, 1, \ldots, T$. The true 
 number of infectious individuals is unobserved (latent), and instead we observe
-a **noisy measurement** that may either overestimate or underestimate the 
+a noisy measurement that may either overestimate or underestimate the 
 true count.
 
 We model the observed counts $Y_t$ in this article using a 
-**Poisson observation model**:
+Poisson observation model:
 $$
 Y_t \mid I(t) \sim \operatorname{Pois}(I(t)).
 $$
@@ -129,7 +129,7 @@ We define functions below to generate the state space for a small SIR system,
 build the generator matrix, and compute the transition probabilities at a 
 given time $t$.
 
-```{r}
+```{r transition-probabilities}
 # Generate state space for small SIR system
 generate_sir_states <- function(N) {
   # Returns all (s, i) pairs where s + i <= N
@@ -195,7 +195,7 @@ state and time point. For example, if we have a population of size $N=5$ with
 state $(S(t), I(t)) = (4, 1)$ at time $t$, we can compute the transition
 probabilities for the next time point $t+1$ as
 
-```{r}
+```{r transition-probabilities-example}
 # Example with very small population
 lambda <- 1.0
 gamma <- 0.5
@@ -231,7 +231,7 @@ each day.
 We can simulate using the fact that we have two independent
 exponential distribution, so an event occurs at rate of the sum of the rates.
 
-```{r}
+```{r simulate-sir functions}
 # --- Simulation settings and true parameters ---
 n_total <- 500 # Total population size
 init_infected <- 70 # Initially infectious individuals
@@ -283,7 +283,7 @@ simulate_epidemic <- function(
 
 Now, we generate some data:
 
-```{r}
+```{r simulate-data}
 # Simulate an epidemic dataset
 true_states <- simulate_epidemic(
   n_total, init_infected, true_lambda, true_gamma, t_max
@@ -300,7 +300,7 @@ print(data.frame(
 
 And plot it:
 
-```{r}
+```{r plot-simulated-data}
 #| fig.alt: "Simulated epidemic data"
 # Function to create a tidy dataset for ggplot
 prepare_data_for_plot <- function(states, observations, t_max) {
@@ -354,7 +354,7 @@ the priors as follows:
 \end{align*}
 where $\operatorname{Normal^+}$ denotes a truncated at $0$ normal distribution. 
 
-```{r}
+```{r priors}
 # Define the log-prior for the parameters
 log_prior_lambda <- function(lambda) {
   extraDistr::dhnorm(lambda, sigma = 1, log = TRUE)
@@ -373,7 +373,7 @@ log_priors <- list(
 We now define the initial state, transition and likelihood functions for the
 SIR model. 
 
-```{r}
+```{r sir-functions}
 init_fn_epidemic <- function(num_particles) {
   # Return a matrix with particles rows; each row is the initial state (s, i)
   matrix(
@@ -406,7 +406,7 @@ For this vignette we only use a small number of iterations (1000) and 2 chains
 (and we also modify the tuning to only use 100 iterations with a burn-in of 10).
 In practice, these should be much higher.
 
-```{r}
+```{r run-pmmh}
 result <- bayesSSM::pmmh(
   y = observations,
   m = 1000,
@@ -432,13 +432,13 @@ around the true value.
 
 We can access the chains and plot the densities:
 
-```{r}
+```{r chains}
 chains <- result$theta_chain
 ```
 
 For $\lambda$:
 
-```{r}
+```{r lambda-plot}
 #| fig.alt: "Density plot of lambda chains"
 
 ggplot(chains, aes(x = lambda, fill = factor(chain))) +
@@ -454,7 +454,7 @@ ggplot(chains, aes(x = lambda, fill = factor(chain))) +
 
 And for $\gamma$:
 
-```{r}
+```{r gamma-plot}
 #| fig.alt: "Density plot of gamma chains"
 ggplot(chains, aes(x = gamma, fill = factor(chain))) +
   geom_density(alpha = 0.5) +

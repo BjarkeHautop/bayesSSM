@@ -32,6 +32,11 @@ We will show how to fit the following SSM model using the `bayesSSM` package:
 that is $X_t$ is a latent state and $Y_t$ is an observed value. 
 The parameters of the model are $\sigma_x$ and $\sigma_y$.
 
+Note: While this example uses pmmh, the model is simple enough that standard 
+MCMC methods could also be applied. For a more complicated example where 
+standard MCMC methods cannot be used, see the article Stochastic SIR Model
+article [here](https://bjarkehautop.github.io/bayesSSM/articles/stochastic-sir-model.html).
+
 First, we will simulate some data from this model:
 
 ```{r}
