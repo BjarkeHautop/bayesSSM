@@ -11,7 +11,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- katex math --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script><script src="../katex-auto.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -25,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9019</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9020</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -94,80 +95,60 @@
 </h2>
 <p>We consider a stochastic SIR (Susceptible–Infectious–Recovered) model
 for the spread of an infectious disease in a <strong>closed
-population</strong> of size
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>,
-meaning there are no births, deaths, or migration. The population is
-divided into three compartments: susceptible (S), infectious (I), and
-recovered (R). Initially, all individuals are susceptible except for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>m</mi><annotation encoding="application/x-tex">m</annotation></semantics></math>
-infectious individuals.</p>
+population</strong> of size <span class="math inline">N</span>, meaning
+there are no births, deaths, or migration. The population is divided
+into three compartments: susceptible (S), infectious (I), and recovered
+(R). Initially, all individuals are susceptible except for <span class="math inline">m</span> infectious individuals.</p>
 <p>Note that most of the literature on SIR models assumes a
 <strong>deterministic</strong> model, where the compartments are treated
 as continuous and are described by ordinary differential equations
 (ODEs).</p>
 <p>Each infectious individual makes contact with any given member of the
 population according to a <strong>time-homogeneous Poisson
-process</strong> with rate
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mi>/</mi><mi>N</mi></mrow><annotation encoding="application/x-tex">\lambda/N</annotation></semantics></math>,
-where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\lambda &gt; 0</annotation></semantics></math>.
-Thus, each infectious individual makes contact with any other individual
-at an overall rate of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>,
-independent of the population size.</p>
+process</strong> with rate <span class="math inline">\lambda/N</span>,
+where <span class="math inline">\lambda &gt; 0</span>. Thus, each
+infectious individual makes contact with any other individual at an
+overall rate of <span class="math inline">\lambda</span>, independent of
+the population size.</p>
 <p>The duration of the infectious period for each individual is assumed
-to follow an <strong>exponential distribution</strong>:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>I</mi><mo>∼</mo><mtext mathvariant="normal">Exp</mtext><mrow><mo stretchy="true" form="prefix">(</mo><mi>γ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+to follow an <strong>exponential distribution</strong>: <span class="math display">
 I \sim \text{Exp}(\gamma),
-</annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>γ</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">\gamma &gt; 0</annotation></semantics></math>
-is the recovery rate.</p>
-<p>Let
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">S(t)</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>I</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">I(t)</annotation></semantics></math>
-denote the number of susceptible and infectious individuals at time
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>≥</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">t \geq 0</annotation></semantics></math>,
-respectively. Under the assumptions above, the process
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="false" form="prefix">{</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mi>I</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>:</mo><mi>t</mi><mo>≥</mo><mn>0</mn><mo stretchy="false" form="postfix">}</mo></mrow><annotation encoding="application/x-tex">
+</span> where <span class="math inline">\gamma &gt; 0</span> is the
+recovery rate.</p>
+<p>Let <span class="math inline">S(t)</span> and <span class="math inline">I(t)</span> denote the number of susceptible and
+infectious individuals at time <span class="math inline">t \geq
+0</span>, respectively. Under the assumptions above, the process <span class="math display">
 \{(S(t), I(t)) : t \geq 0\}
-</annotation></semantics></math> forms a <strong>continuous-time Markov
-process</strong>, since both infection and recovery events are
-exponentially distributed and are therefore memoryless. Since
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>N</mi><annotation encoding="application/x-tex">N</annotation></semantics></math>
-is fixed, we have
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mi>N</mi><mo>−</mo><mi>S</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>−</mo><mi>I</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">R(t) = N - S(t) - I(t)</annotation></semantics></math>,
-and thus the process can be described by the pair
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mi>I</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(S(t), I(t))</annotation></semantics></math>.</p>
+</span> forms a <strong>continuous-time Markov process</strong>, since
+both infection and recovery events are exponentially distributed and are
+therefore memoryless. Since <span class="math inline">N</span> is fixed,
+we have <span class="math inline">R(t) = N - S(t) - I(t)</span>, and
+thus the process can be described by the pair <span class="math inline">(S(t), I(t))</span>.</p>
 <div class="section level3">
 <h3 id="transition-rates">Transition Rates<a class="anchor" aria-label="anchor" href="#transition-rates"></a>
 </h3>
 <ul>
 <li>
 <p><strong>Infection Event:</strong></p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mo>,</mo><mi>i</mi><mo>,</mo><mi>r</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>→</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mo>−</mo><mn>1</mn><mo>,</mo><mi>i</mi><mo>+</mo><mn>1</mn><mo>,</mo><mi>r</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+<p><span class="math display">
 (s, i, r) \to (s - 1, i + 1, r)
-</annotation></semantics></math></p>
+</span></p>
 <p>occurs at rate</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mi>λ</mi><mi>N</mi></mfrac><mspace width="0.167em"></mspace><mi>s</mi><mspace width="0.167em"></mspace><mi>i</mi><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<p><span class="math display">
 \frac{\lambda}{N} \, s \, i,
-</annotation></semantics></math></p>
-<p>for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>s</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">s &gt; 0</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">i &gt; 0</annotation></semantics></math>.</p>
+</span></p>
+<p>for <span class="math inline">s &gt; 0</span> and <span class="math inline">i &gt; 0</span>.</p>
 </li>
 <li>
 <p><strong>Recovery Event:</strong></p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mo>,</mo><mi>i</mi><mo>,</mo><mi>r</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>→</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>s</mi><mo>,</mo><mi>i</mi><mo>−</mo><mn>1</mn><mo>,</mo><mi>r</mi><mo>+</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">
+<p><span class="math display">
 (s, i, r) \to (s, i - 1, r + 1)
-</annotation></semantics></math></p>
+</span></p>
 <p>occurs at rate</p>
-<p><math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>γ</mi><mspace width="0.167em"></mspace><mi>i</mi><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<p><span class="math display">
 \gamma \, i,
-</annotation></semantics></math></p>
-<p>for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>i</mi><mo>&gt;</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">i &gt; 0</annotation></semantics></math>.</p>
+</span></p>
+<p>for <span class="math inline">i &gt; 0</span>.</p>
 </li>
 </ul>
 </div>
@@ -175,32 +156,24 @@ and
 <h3 id="partial-observations-and-noisy-measurements">Partial Observations and Noisy Measurements<a class="anchor" aria-label="anchor" href="#partial-observations-and-noisy-measurements"></a>
 </h3>
 <p>Suppose we only observe the initial state and the number of
-infectious individuals
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>I</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">I(t)</annotation></semantics></math>
-at discrete time points
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mi>T</mi></mrow><annotation encoding="application/x-tex">t = 0, 1, \ldots, T</annotation></semantics></math>.
-The true number of infectious individuals is unobserved (latent), and
+infectious individuals <span class="math inline">I(t)</span> at discrete
+time points <span class="math inline">t = 0, 1, \ldots, T</span>. The
+true number of infectious individuals is unobserved (latent), and
 instead we observe a <strong>noisy measurement</strong> that may either
 overestimate or underestimate the true count.</p>
-<p>We model the observed counts
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Y</mi><mi>t</mi></msub><annotation encoding="application/x-tex">Y_t</annotation></semantics></math>
-in this article using a <strong>Poisson observation model</strong>:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>Y</mi><mi>t</mi></msub><mo>∣</mo><mi>I</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>∼</mo><mo>Pois</mo><mrow><mo stretchy="true" form="prefix">(</mo><mi>I</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mrow><annotation encoding="application/x-tex">
+<p>We model the observed counts <span class="math inline">Y_t</span> in
+this article using a <strong>Poisson observation model</strong>: <span class="math display">
 Y_t \mid I(t) \sim \operatorname{Pois}(I(t)).
-</annotation></semantics></math> To account for over-dispersion, one
-could instead use a negative binomial observation model.</p>
+</span> To account for over-dispersion, one could instead use a negative
+binomial observation model.</p>
 <p>We are now in a State Space Model (SSM) setup, where the latent state
-is
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo minsize="1.2" maxsize="1.2" stretchy="false" form="prefix">(</mo><mi>S</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mi>I</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo minsize="1.2" maxsize="1.2" stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">\bigl(S(t), I(t)\bigr)</annotation></semantics></math>,
-and the observations are
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>Y</mi><mi>t</mi></msub><annotation encoding="application/x-tex">Y_t</annotation></semantics></math>.
-Note that due to the memoryless property of the exponential
-distribution, the latent state
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mi>I</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(S(t), I(t))</annotation></semantics></math>
-is fully determined by the initial state and the sequence of infection
-and recovery events that have occurred up to time
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>,
-thus a Markov process.</p>
+is <span class="math inline">\bigl(S(t), I(t)\bigr)</span>, and the
+observations are <span class="math inline">Y_t</span>. Note that due to
+the memoryless property of the exponential distribution, the latent
+state <span class="math inline">(S(t), I(t))</span> is fully determined
+by the initial state and the sequence of infection and recovery events
+that have occurred up to time <span class="math inline">t</span>, thus a
+Markov process.</p>
 </div>
 </div>
 <div class="section level2">
@@ -212,19 +185,14 @@ the exact transition probabilities for the SIR model, which quickly
 becomes infeasible as the number of infectious individuals increases. We
 illustrate how this can be done using matrix exponentiation for small
 populations.</p>
-<p>The probability distribution of the state at time
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>
-is given by:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>P</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><msup><mi>e</mi><mrow><mi>Q</mi><mi>t</mi></mrow></msup><mo>,</mo></mrow><annotation encoding="application/x-tex">
+<p>The probability distribution of the state at time <span class="math inline">t</span> is given by: <span class="math display">
 P(t) = e^{Qt},
-</annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math>
-is the generator matrix of the Markov process, which contains the
-transition rates between states.</p>
+</span> where <span class="math inline">Q</span> is the generator matrix
+of the Markov process, which contains the transition rates between
+states.</p>
 <p>We define functions below to generate the state space for a small SIR
 system, build the generator matrix, and compute the transition
-probabilities at a given time
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>.</p>
+probabilities at a given time <span class="math inline">t</span>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generate state space for small SIR system</span></span>
 <span><span class="va">generate_sir_states</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">N</span><span class="op">)</span> <span class="op">{</span></span>
@@ -286,14 +254,8 @@ probabilities at a given time
 <span><span class="op">}</span></span></code></pre></div>
 <p>This can then be run to compute the transition probabilities for a
 given state and time point. For example, if we have a population of size
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>5</mn></mrow><annotation encoding="application/x-tex">N=5</annotation></semantics></math>
-with state
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mo stretchy="true" form="prefix">(</mo><mi>S</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo><mi>I</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>t</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mrow><mo stretchy="true" form="prefix">(</mo><mn>4</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">(S(t), I(t)) = (4, 1)</annotation></semantics></math>
-at time
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>t</mi><annotation encoding="application/x-tex">t</annotation></semantics></math>,
-we can compute the transition probabilities for the next time point
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>+</mo><mn>1</mn></mrow><annotation encoding="application/x-tex">t+1</annotation></semantics></math>
-as</p>
+<span class="math inline">N=5</span> with state <span class="math inline">(S(t), I(t)) = (4, 1)</span> at time <span class="math inline">t</span>, we can compute the transition
+probabilities for the next time point <span class="math inline">t+1</span> as</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Example with very small population</span></span>
 <span><span class="va">lambda</span> <span class="op">&lt;-</span> <span class="fl">1.0</span></span>
@@ -315,34 +277,22 @@ as</p>
 <span><span class="co">#&gt; 17 3 1 0.08872580</span></span>
 <span><span class="co">#&gt; 15 2 3 0.06343076</span></span></code></pre></div>
 <p>Note, that this scales poorly with larger populations, as the number
-of states is given by
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mfrac linethickness="0"><mrow><mi>N</mi><mo>+</mo><mn>2</mn></mrow><mrow><mn>2</mn><mo>,</mo></mrow></mfrac><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">
+of states is given by <span class="math display">
 N+2 \choose 2,
-</annotation></semantics></math> which for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>N</mi><mo>=</mo><mn>100</mn></mrow><annotation encoding="application/x-tex">N=100</annotation></semantics></math>
-is already over 5000 states. Thus, this whole approach is only feasible
-for very small populations.</p>
+</span> which for <span class="math inline">N=100</span> is already over
+5000 states. Thus, this whole approach is only feasible for very small
+populations.</p>
 </div>
 <div class="section level2">
 <h2 id="simulate-data">Simulate data<a class="anchor" aria-label="anchor" href="#simulate-data"></a>
 </h2>
 <p>We will simulate data from the SIR model with the following
-parameters: - At
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">t=0</annotation></semantics></math>
-we have
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>90</mn></mrow><annotation encoding="application/x-tex">S(0) = 90</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>I</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">I(0) = 10</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">R(0) = 0</annotation></semantics></math>.
-- Infection rate
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>=</mo><mn>1.5</mn></mrow><annotation encoding="application/x-tex">\lambda=1.5</annotation></semantics></math>
-and removal rate
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>γ</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">\gamma=0.5</annotation></semantics></math>.
-- We observe the initial state at
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">t=0</annotation></semantics></math>
-complete, and then noisy version of infectious individuals at times
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">t=1, \ldots, 10</annotation></semantics></math>
-representing observations for each day.</p>
+parameters: - At <span class="math inline">t=0</span> we have <span class="math inline">S(0) = 90</span>, <span class="math inline">I(0) =
+10</span> and <span class="math inline">R(0) = 0</span>. - Infection
+rate <span class="math inline">\lambda=1.5</span> and removal rate <span class="math inline">\gamma=0.5</span>. - We observe the initial state at
+<span class="math inline">t=0</span> complete, and then noisy version of
+infectious individuals at times <span class="math inline">t=1, \ldots,
+10</span> representing observations for each day.</p>
 <p>We can simulate using the fact that we have two independent
 exponential distribution, so an event occurs at rate of the sum of the
 rates.</p>
@@ -467,15 +417,11 @@ rates.</p>
 <h2 id="bayesian-inference-with-pmmh">Bayesian Inference with PMMH<a class="anchor" aria-label="anchor" href="#bayesian-inference-with-pmmh"></a>
 </h2>
 <p>We are interested in performing Bayesian inference in this setup, and
-define the priors as follows:
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>λ</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mrow><mi mathvariant="normal">N</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">a</mi><msup><mi mathvariant="normal">l</mi><mo mathvariant="normal">+</mo></msup></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><msup><mn>1</mn><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mi>γ</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mrow><mi mathvariant="normal">N</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">a</mi><msup><mi mathvariant="normal">l</mi><mo mathvariant="normal">+</mo></msup></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><msup><mn>2</mn><mn>2</mn></msup><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
+define the priors as follows: <span class="math display">\begin{align*}
     \lambda &amp;\sim \operatorname{Normal^+}(0, 1^2), \\
     \gamma &amp;\sim \operatorname{Normal^+}(0, 2^2),
-\end{align*}</annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="normal">N</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">a</mi><msup><mi mathvariant="normal">l</mi><mo mathvariant="normal">+</mo></msup></mrow><annotation encoding="application/x-tex">\operatorname{Normal^+}</annotation></semantics></math>
-denotes a truncated at
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>0</mn><annotation encoding="application/x-tex">0</annotation></semantics></math>
-normal distribution.</p>
+\end{align*}</span> where <span class="math inline">\operatorname{Normal^+}</span> denotes a truncated
+at <span class="math inline">0</span> normal distribution.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define the log-prior for the parameters</span></span>
 <span><span class="va">log_prior_lambda</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">lambda</span><span class="op">)</span> <span class="op">{</span></span>
@@ -579,8 +525,7 @@ centered around the true value.</p>
 <p>We can access the chains and plot the densities:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chains</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">theta_chain</span></span></code></pre></div>
-<p>For
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>:</p>
+<p>For <span class="math inline">\lambda</span>:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">chains</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">lambda</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">chain</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html" class="external-link">geom_density</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
@@ -592,8 +537,7 @@ centered around the true value.</p>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="stochastic-sir-model_files/figure-html/unnamed-chunk-11-1.png" alt="Density plot of lambda chains" width="576"></p>
-<p>And for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>γ</mi><annotation encoding="application/x-tex">\gamma</annotation></semantics></math>:</p>
+<p>And for <span class="math inline">\gamma</span>:</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">chains</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">gamma</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">chain</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html" class="external-link">geom_density</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>

@@ -11,7 +11,8 @@
 <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
 <link rel="icon" sizes="any" href="../favicon.ico">
 <link rel="manifest" href="../site.webmanifest">
-<script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- katex math --><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+" crossorigin="anonymous">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" integrity="sha384-7zkQWkzuo3B5mTepMUcHkMB5jZaolc2xDwL6VFqjFALcbeS9Ggm/Yr2r3Dy4lfFg" crossorigin="anonymous"></script><script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js" integrity="sha384-43gviWU0YVjaDtb/GhzOouOXtZMP/7XUzwPTstBeZFe/+rCMvRwr4yROQP43s0Xk" crossorigin="anonymous" onload="renderMathInElement(document.body);"></script><script src="../katex-auto.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
@@ -25,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9019</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.5.0.9020</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,44 +90,32 @@ inference for state space models (SSMs). This package defines a state
 space model as in the diagram below (where potential time dependency is
 not shown for simplicity):</p>
 <p>We wish to perform Bayesian inference in this setting, that is the
-target distribution is
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mrow><mn>0</mn><mo>:</mo><mi>T</mi></mrow></msub><mo>,</mo><mi>θ</mi><mo>∣</mo><msub><mi>y</mi><mrow><mn>1</mn><mo>:</mo><mi>T</mi></mrow></msub><mo stretchy="true" form="postfix">)</mo></mrow><mo>∝</mo><mi>π</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mspace width="0.167em"></mspace><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mrow><mn>0</mn><mo>:</mo><mi>T</mi></mrow></msub><mo>∣</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mspace width="0.167em"></mspace><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mn>1</mn><mo>:</mo><mi>T</mi></mrow></msub><mo>∣</mo><msub><mi>x</mi><mrow><mn>0</mn><mo>:</mo><mi>T</mi></mrow></msub><mo>,</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
-p(x_{0:T}, \theta \mid y_{1:T}) \propto \pi(\theta) \, p(x_{0:T} \mid \theta) 
+target distribution is <span class="math display">
+p(x_{0:T}, \theta \mid y_{1:T}) \propto \pi(\theta) \, p(x_{0:T} \mid
+\theta)
 \, p(y_{1:T} \mid x_{0:T}, \theta),
-</annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>π</mi><mrow><mo stretchy="true" form="prefix">(</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\pi(\theta)</annotation></semantics></math>
-is the prior distribution of the parameters
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mrow><mn>0</mn><mo>:</mo><mi>T</mi></mrow></msub><mo>∣</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p(x_{0:T} \mid \theta)</annotation></semantics></math>
-is the distribution of the latent states, and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>p</mi><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>y</mi><mrow><mn>1</mn><mo>:</mo><mi>T</mi></mrow></msub><mo>∣</mo><msub><mi>x</mi><mrow><mn>0</mn><mo>:</mo><mi>T</mi></mrow></msub><mo>,</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">p(y_{1:T} \mid x_{0:T}, \theta)</annotation></semantics></math>
-is the distribution of the observations given the latent states and
+</span> where <span class="math inline">\pi(\theta)</span> is the prior
+distribution of the parameters <span class="math inline">\theta</span>,
+<span class="math inline">p(x_{0:T} \mid \theta)</span> is the
+distribution of the latent states, and <span class="math inline">p(y_{1:T} \mid x_{0:T}, \theta)</span> is the
+distribution of the observations given the latent states and
 parameters.</p>
-<p>Some naive MCMC approaches would be to sample
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><msub><mi>x</mi><mrow><mn>0</mn><mo>:</mo><mi>T</mi></mrow></msub><mo>,</mo><mi>θ</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(x_{0:T}, \theta)</annotation></semantics></math>
-jointly, but this is often infeasible due to the high dimensionality of
-the latent states. Another approach would be to marginalize out the
-latent states and sample the parameters
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>,
-but this is also often infeasible due to the integral being
-intractable.</p>
+<p>Some naive MCMC approaches would be to sample <span class="math inline">(x_{0:T}, \theta)</span> jointly, but this is often
+infeasible due to the high dimensionality of the latent states. Another
+approach would be to marginalize out the latent states and sample the
+parameters <span class="math inline">\theta</span>, but this is also
+often infeasible due to the integral being intractable.</p>
 <p>Instead, we use a Particle Markov chain Monte Carlo (PMMH) approach,
 which samples the latent states and parameters in two steps:</p>
 <ol style="list-style-type: decimal">
-<li>Sample the latent states
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mrow><mn>0</mn><mo>:</mo><mi>T</mi></mrow></msub><annotation encoding="application/x-tex">x_{0:T}</annotation></semantics></math>
-given the parameters
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>
-and the observations
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mrow><mn>1</mn><mo>:</mo><mi>T</mi></mrow></msub><annotation encoding="application/x-tex">y_{1:T}</annotation></semantics></math>
-using a particle filter.</li>
-<li>Sample the parameters
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>θ</mi><annotation encoding="application/x-tex">\theta</annotation></semantics></math>
-given the latent states
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>x</mi><mrow><mn>0</mn><mo>:</mo><mi>T</mi></mrow></msub><annotation encoding="application/x-tex">x_{0:T}</annotation></semantics></math>
-and the observations
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>y</mi><mrow><mn>1</mn><mo>:</mo><mi>T</mi></mrow></msub><annotation encoding="application/x-tex">y_{1:T}</annotation></semantics></math>
-using a Metropolis-Hastings step.</li>
+<li>Sample the latent states <span class="math inline">x_{0:T}</span>
+given the parameters <span class="math inline">\theta</span> and the
+observations <span class="math inline">y_{1:T}</span> using a particle
+filter.</li>
+<li>Sample the parameters <span class="math inline">\theta</span> given
+the latent states <span class="math inline">x_{0:T}</span> and the
+observations <span class="math inline">y_{1:T}</span> using a
+Metropolis-Hastings step.</li>
 </ol>
 <p>The key idea is that, since the particle filter provides an unbiased
 estimate of the likelihood, the PMMH algorithm still targets the correct
@@ -149,22 +138,14 @@ model.</p>
 <p>We will simulate data from the SIR model with the following
 parameters:</p>
 <ul>
-<li>At
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">t=0</annotation></semantics></math>
-we have
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>S</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>90</mn></mrow><annotation encoding="application/x-tex">S(0) = 90</annotation></semantics></math>,
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>I</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">I(0) = 10</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>R</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">R(0) = 0</annotation></semantics></math>.</li>
-<li>Infection rate
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>=</mo><mn>0.5</mn></mrow><annotation encoding="application/x-tex">\lambda=0.5</annotation></semantics></math>
-and removal rate
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>γ</mi><mo>=</mo><mn>0.2</mn></mrow><annotation encoding="application/x-tex">\gamma=0.2</annotation></semantics></math>.</li>
-<li>We observe the initial state at
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>0</mn></mrow><annotation encoding="application/x-tex">t=0</annotation></semantics></math>
+<li>At <span class="math inline">t=0</span> we have <span class="math inline">S(0) = 90</span>, <span class="math inline">I(0) =
+10</span> and <span class="math inline">R(0) = 0</span>.</li>
+<li>Infection rate <span class="math inline">\lambda=0.5</span> and
+removal rate <span class="math inline">\gamma=0.2</span>.</li>
+<li>We observe the initial state at <span class="math inline">t=0</span>
 complete, and then noisy version of infectious individuals at times
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>t</mi><mo>=</mo><mn>1</mn><mo>,</mo><mi>…</mi><mo>,</mo><mn>10</mn></mrow><annotation encoding="application/x-tex">t=1, \ldots, 10</annotation></semantics></math>
-representing observations for each day.</li>
+<span class="math inline">t=1, \ldots, 10</span> representing
+observations for each day.</li>
 </ul>
 <p>We can simulate using the fact that we have two independent
 exponential distribution, so an event occurs at rate of the sum of the
@@ -367,13 +348,11 @@ dependency, so we do not use the <code>t</code> argument.</p>
 <span>  <span class="co"># particles is expected to be a matrix with columns (s, i)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/stats/Poisson.html" class="external-link">dpois</a></span><span class="op">(</span><span class="va">y</span>, lambda <span class="op">=</span> <span class="va">particles</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code></pre></div>
-<p>With priors for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>λ</mi><mo>,</mo><mi>γ</mi></mrow><annotation encoding="application/x-tex">\lambda, \gamma</annotation></semantics></math>
-as
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mtable><mtr><mtd columnalign="right" style="text-align: right"><mi>λ</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mtext mathvariant="normal">half-</mtext><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mtd></mtr><mtr><mtd columnalign="right" style="text-align: right"><mi>γ</mi></mtd><mtd columnalign="left" style="text-align: left"><mo>∼</mo><mtext mathvariant="normal">half-</mtext><mi>N</mi><mrow><mo stretchy="true" form="prefix">(</mo><mn>2</mn><mo stretchy="true" form="postfix">)</mo></mrow><mi>.</mi></mtd></mtr></mtable><annotation encoding="application/x-tex">\begin{align*}
-    \lambda &amp;\sim \text{half-}N(1), \\
-    \gamma &amp;\sim \text{half-}N(2). 
-\end{align*}</annotation></semantics></math></p>
+<p>With priors for <span class="math inline">\lambda, \gamma</span> as
+<span class="math display">\begin{align*}
+    \lambda &amp;\sim \operatorname{Normal^+}(0, 1^2), \\
+    \gamma &amp;\sim \operatorname{Normal^+}(0, 2^2).
+\end{align*}</span></p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">log_prior_lambda</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">lambda</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu">extraDistr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/extraDistr/man/HalfNormal.html" class="external-link">dhnorm</a></span><span class="op">(</span><span class="va">lambda</span>, sigma <span class="op">=</span> <span class="fl">1</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -484,13 +463,8 @@ functions that are exported to the worker processes. I.e, the
 </h3>
 <p>To allow for more efficient sampling, we can use the
 <code>param_transform</code> argument to propose new parameters on an
-unconstrained space, leading to more efficient sampling. Since
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>λ</mi><annotation encoding="application/x-tex">\lambda</annotation></semantics></math>
-and
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>γ</mi><annotation encoding="application/x-tex">\gamma</annotation></semantics></math>
-both take values in
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mi>∞</mi><mo stretchy="true" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">(0, \infty)</annotation></semantics></math>,
-we can use the <code>log</code> transformation.</p>
+unconstrained space, leading to more efficient sampling. Since <span class="math inline">\lambda</span> and <span class="math inline">\gamma</span> both take values in <span class="math inline">(0, \infty)</span>, we can use the <code>log</code>
+transformation.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pmmh.html">pmmh</a></span><span class="op">(</span></span>
 <span>  y <span class="op">=</span> <span class="va">observations</span>,</span>
@@ -674,20 +648,14 @@ where we assume that the observations were made at times 1, 2, 3 and
 </h3>
 <p>Sometimes, it is useful to specify the prior on a different scale
 than the parameter space. For instance, it is common to specify the
-prior for the over-dispersion parameter
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ϕ</mi><annotation encoding="application/x-tex">\phi</annotation></semantics></math>
-in a negative binomial model on a different scale, such as
-<math display="block" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mfrac><mn>1</mn><msqrt><mi>ϕ</mi></msqrt></mfrac><mo>∼</mo><mrow><mi mathvariant="normal">N</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">a</mi><msup><mi mathvariant="normal">l</mi><mo mathvariant="normal">+</mo></msup></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow><mo>,</mo></mrow><annotation encoding="application/x-tex">
+prior for the over-dispersion parameter <span class="math inline">\phi</span> in a negative binomial model on a
+different scale, such as <span class="math display">
 \frac{1}{\sqrt{\phi}} \sim \operatorname{Normal^+}(0, 1),
-</annotation></semantics></math> where
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mrow><mi mathvariant="normal">N</mi><mi mathvariant="normal">o</mi><mi mathvariant="normal">r</mi><mi mathvariant="normal">m</mi><mi mathvariant="normal">a</mi><msup><mi mathvariant="normal">l</mi><mo mathvariant="normal">+</mo></msup></mrow><mrow><mo stretchy="true" form="prefix">(</mo><mn>0</mn><mo>,</mo><mn>1</mn><mo stretchy="true" form="postfix">)</mo></mrow></mrow><annotation encoding="application/x-tex">\operatorname{Normal^+}(0, 1)</annotation></semantics></math>
-is a truncated normal distribution on the positive real line. To do
-this, you need to add the log_jacobian of the transformation in the
-specified log-prior function. This is shown in the following function,
-which implements the prior for
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ϕ</mi><annotation encoding="application/x-tex">\phi</annotation></semantics></math>
-on the scale of
-<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mfrac><mn>1</mn><msqrt><mi>ϕ</mi></msqrt></mfrac><annotation encoding="application/x-tex">\frac{1}{\sqrt{\phi}}</annotation></semantics></math>.</p>
+</span> where <span class="math inline">\operatorname{Normal^+}(0,
+1)</span> is a truncated normal distribution on the positive real line.
+To do this, you need to add the log_jacobian of the transformation in
+the specified log-prior function. This is shown in the following
+function, which implements the prior for <span class="math inline">\phi</span> on the scale of <span class="math inline">\frac{1}{\sqrt{\phi}}</span>.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">log_prior_phi</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">phi</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="kw">if</span> <span class="op">(</span><span class="va">phi</span> <span class="op">&lt;=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
