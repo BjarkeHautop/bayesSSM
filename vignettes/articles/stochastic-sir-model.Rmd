@@ -222,8 +222,11 @@ is only feasible for very small populations.
 # Simulate data
 
 We will simulate data from the SIR model with the following parameters:
+
 - At $t=0$ we have $S(0) = 90$, $I(0) = 10$ and $R(0) = 0$.
+
 - Infection rate $\lambda=1.5$ and removal rate $\gamma=0.5$.
+
 - We observe the initial state at $t=0$ complete, and then noisy version of 
 infectious individuals at times $t=1, \ldots, 10$ representing observations for
 each day.
