@@ -26,8 +26,8 @@ implementing everything from scratch anyway.
 
 ## Why PMCMC?
 
-In some state-space models, the full joint density of latent states and
-observations
+In some state-space models, the full joint density of the parameters and
+the latent states
 
 ![](man/figures/joint_posterior.png)
 
