@@ -56,11 +56,11 @@ the marginal likelihood is intractable. Thus, standard MCMC methods like
 Hamiltonian Monte Carlo (HMC) or Metropolis-Hastings (MH) cannot be applied
 directly. 
 
-The Particle Markov Chain Monte Carlo (PMCMC) methods, such as the Particle
+Particle Markov Chain Monte Carlo (PMCMC) methods, such as the Particle
 Marginal Metropolis-Hastings (PMMH) implemented in this package, are designed
 to handle these situations. They use particle filters to approximate the
-marginal likelihood and allow for efficient sampling from the posterior
-density of the latent states and parameters.
+marginal likelihood and allow for efficient sampling from the joint posterior
+density.
 
 ## State-space Models
 
