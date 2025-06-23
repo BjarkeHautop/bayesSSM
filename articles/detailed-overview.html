@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,21 +90,33 @@ inference for state space models (SSMs). This package defines a state
 space model as in the diagram below (where potential time dependency is
 not shown for simplicity):</p>
 <p>We wish to perform Bayesian inference in this setting, that is the
-target distribution is <span class="math display">
-p(x_{0:T}, \theta \mid y_{1:T}) \propto \pi(\theta) \, p(x_{0:T} \mid
-\theta)
-\, p(y_{1:T} \mid x_{0:T}, \theta),
-</span> where <span class="math inline">\pi(\theta)</span> is the prior
-distribution of the parameters <span class="math inline">\theta</span>,
-<span class="math inline">p(x_{0:T} \mid \theta)</span> is the
-distribution of the latent states, and <span class="math inline">p(y_{1:T} \mid x_{0:T}, \theta)</span> is the
+target distribution is the posterior distribution of the latent states
+and the parameters given the observations: <span class="math display">\begin{align*}
+p(x_{0:T}, \theta \mid y_{1:T}) &amp;\propto \pi(\theta) \mu_\theta(x_0)
+\prod_{t=1}^T f_\theta(x_t \mid x_{t-1}) \prod_{t=1}^T g_\theta(y_t \mid
+x_t) \\
+&amp;= \pi(\theta) p(x_{0:T} \mid \theta) p(y_{1:T} \mid x_{0:T},
+\theta),
+\end{align*}</span> where <span class="math inline">\pi(\theta)</span>
+is the prior distribution of the parameters <span class="math inline">\theta</span>, <span class="math inline">p(x_{0:T}
+\mid \theta)</span> is the distribution of the latent states, and <span class="math inline">p(y_{1:T} \mid x_{0:T}, \theta)</span> is the
 distribution of the observations given the latent states and
 parameters.</p>
-<p>Some naive MCMC approaches would be to sample <span class="math inline">(x_{0:T}, \theta)</span> jointly, but this is often
-infeasible due to the high dimensionality of the latent states. Another
-approach would be to marginalize out the latent states and sample the
-parameters <span class="math inline">\theta</span>, but this is also
-often infeasible due to the integral being intractable.</p>
+<p>To do standard MCMC we need to be able to compute these terms
+exactly, which is often not possible. Often we only have a
+<strong>simulator</strong> for the likelihood and not via a closed form
+expression. This includes:</p>
+<ul>
+<li><p>Epidemic models with stochastic transmission dynamics</p></li>
+<li><p>Agent-based models</p></li>
+<li><p>Ecological or physical systems with complex latent
+dynamics</p></li>
+</ul>
+<p>Thus we can’t use standard MCMC methods like Hamiltonian Monte Carlo
+(HMC) or Metropolis-Hastings (MH) directly.</p>
+<p>Another approach would be to marginalize out the latent states and
+sample the parameters <span class="math inline">\theta</span>, but this
+is also often infeasible due to the integral being intractable.</p>
 <p>Instead, we use a Particle Markov chain Monte Carlo (PMMH) approach,
 which samples the latent states and parameters in two steps:</p>
 <ol style="list-style-type: decimal">

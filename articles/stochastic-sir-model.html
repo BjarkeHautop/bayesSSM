@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1.9002</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1.9003</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -275,12 +275,16 @@ populations.</p>
 <h2 id="simulate-data">Simulate data<a class="anchor" aria-label="anchor" href="#simulate-data"></a>
 </h2>
 <p>We will simulate data from the SIR model with the following
-parameters: - At <span class="math inline">t=0</span> we have <span class="math inline">S(0) = 90</span>, <span class="math inline">I(0) =
-10</span> and <span class="math inline">R(0) = 0</span>. - Infection
-rate <span class="math inline">\lambda=1.5</span> and removal rate <span class="math inline">\gamma=0.5</span>. - We observe the initial state at
-<span class="math inline">t=0</span> complete, and then noisy version of
+parameters:</p>
+<ul>
+<li><p>At <span class="math inline">t=0</span> we have <span class="math inline">S(0) = 90</span>, <span class="math inline">I(0) =
+10</span> and <span class="math inline">R(0) = 0</span>.</p></li>
+<li><p>Infection rate <span class="math inline">\lambda=1.5</span> and
+removal rate <span class="math inline">\gamma=0.5</span>.</p></li>
+<li><p>We observe the initial state at <span class="math inline">t=0</span> complete, and then noisy version of
 infectious individuals at times <span class="math inline">t=1, \ldots,
-10</span> representing observations for each day.</p>
+10</span> representing observations for each day.</p></li>
+</ul>
 <p>We can simulate using the fact that we have two independent
 exponential distribution, so an event occurs at rate of the sum of the
 rates.</p>
