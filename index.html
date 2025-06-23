@@ -77,7 +77,7 @@
 <div class="section level2">
 <h2 id="why-pmcmc">Why PMCMC?<a class="anchor" aria-label="anchor" href="#why-pmcmc"></a>
 </h2>
-<p>In some state-space models, the full joint density of latent states and observations</p>
+<p>In some state-space models, the full joint density of the parameters and the latent states</p>
 <p><img src="reference/figures/joint_posterior.png"></p>
 <p>can be written out explicitly. In these cases, inference tools like Stan (which uses Hamiltonian Monte Carlo) are very efficient.</p>
 <p>However, many real-world models define the latent dynamics only through a <strong>simulator</strong>, not via an explicit transition density. This includes:</p>
