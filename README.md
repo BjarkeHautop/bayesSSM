@@ -89,7 +89,7 @@ state-space model (SSM) and perform Bayesian inference on it. Note:
 While this example uses `pmmh`, the model is simple enough that standard
 MCMC methods could also be applied. For a more complicated example where
 standard MCMC methods cannot be used, see the article Stochastic SIR
-Model article
+Model
 [here](https://bjarkehautop.github.io/bayesSSM/articles/stochastic-sir-model.html).
 
 We will simulate a state-space model with the following structure:
