@@ -1,4 +1,6 @@
-# bayesSSM (development version)
+# bayesSSM 0.6.2
+
+* Minor edits to README and vignettes for clarity.
 
 # bayesSSM 0.6.1
 
