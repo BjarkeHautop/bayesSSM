@@ -72,6 +72,22 @@
   }
 }
 
+#' Ensure that a function has a `...` argument
+#'
+#' @param fun A function to modify
+#'
+#' @return The modified function with `...` added to its formals if it was
+#' not already present.
+#'
+#' @keywords internal
+.ensure_dots <- function(fun) {
+  if (!"..." %in% names(formals(fun))) {
+    formals(fun) <- c(formals(fun), alist(... = ))
+  }
+  fun
+}
+
+
 # ---------------------------
 # Helper functions for parameter transformation
 # ---------------------------
