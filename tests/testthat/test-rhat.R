@@ -28,11 +28,15 @@ test_that("Non-stationary gives large Rhat", {
 
 
 test_that("rhat stops for non-valid input", {
-  expect_error(rhat(list(1, 2, 3)),
-               "Input must be a matrix or a data frame with a 'chain' column.")
+  expect_error(
+    rhat(list(1, 2, 3)),
+    "Input must be a matrix or a data frame with a 'chain' column."
+  )
   # Data frame with no 'chain' column
-  expect_error(rhat(data.frame(a = c(1, 2, 3), b = c(4, 5, 6))),
-               "Data frame must contain a 'chain' column.")
+  expect_error(
+    rhat(data.frame(a = c(1, 2, 3), b = c(4, 5, 6))),
+    "Data frame must contain a 'chain' column."
+  )
 })
 
 test_that("rhat 0 variance", {

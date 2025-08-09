@@ -503,8 +503,10 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
       theta_chain[i, ] <- current_theta
       state_est_chain[[i]] <- current_state_est
     }
-    list(theta_chain = theta_chain,
-         state_est_chain = state_est_chain)
+    list(
+      theta_chain = theta_chain,
+      state_est_chain = state_est_chain
+    )
   }
 
   # ---------------------------
@@ -585,8 +587,10 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     } else {
       param_ess[[param]] <- NA
       if (!ess_message_shown) {
-        message(paste0("ESS cannot be computed with only one chain ",
-                       "Run at least 2 chains."))
+        message(paste0(
+          "ESS cannot be computed with only one chain ",
+          "Run at least 2 chains."
+        ))
         ess_message_shown <- TRUE
       }
     }

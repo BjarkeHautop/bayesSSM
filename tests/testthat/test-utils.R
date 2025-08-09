@@ -24,7 +24,7 @@ test_that("check_params_match stops if log_likelihood_fn lacks 'y'", {
 })
 
 test_that("logit transformation works correctly", {
-  theta <- 0.5  # value in (0, 1)
+  theta <- 0.5 # value in (0, 1)
 
   expect_equal(
     .transform_params(

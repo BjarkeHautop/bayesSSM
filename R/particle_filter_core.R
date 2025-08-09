@@ -34,17 +34,17 @@
   algorithm <- match.arg(algorithm)
   resample_algorithm <- match.arg(resample_algorithm)
   resample_fn <- switch(match.arg(resample_fn),
-                        multinomial = .resample_multinomial,
-                        stratified = .resample_stratified,
-                        systematic = .resample_systematic
+    multinomial = .resample_multinomial,
+    stratified = .resample_stratified,
+    systematic = .resample_systematic
   )
 
   # Auto-set threshold
   if (is.null(threshold)) {
     threshold <- switch(resample_algorithm,
-                        SIS = Inf,
-                        SISR = num_particles,
-                        SISAR = num_particles / 2
+      SIS = Inf,
+      SISR = num_particles,
+      SISAR = num_particles / 2
     )
   }
 
@@ -211,9 +211,9 @@
     ess_vec[i + 1] <- ess
 
     should_resample <- switch(resample_algorithm,
-                              SIS = FALSE,
-                              SISR = TRUE,
-                              SISAR = ess < threshold
+      SIS = FALSE,
+      SISR = TRUE,
+      SISAR = ess < threshold
     )
 
     if (algorithm == "RMPF" || should_resample) {

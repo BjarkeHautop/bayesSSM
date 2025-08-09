@@ -38,7 +38,7 @@ summary.pmmh_output <- function(object, ...) {
       median = median(samples),
       quantile(samples, probs = c(0.025, 0.975))
     )
-    names(stats)[4:5] <- c("2.5%", "97.5%")  # clean names
+    names(stats)[4:5] <- c("2.5%", "97.5%") # clean names
     stats
   })
 

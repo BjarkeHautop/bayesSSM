@@ -1,11 +1,13 @@
-test_that(".pilot_run works non-trivial setup", {
+##### Tests for .pilot_run ######
+
+test_that(".pilot_run works with bootstrap_filter", {
   set.seed(1405)
+
   init_fn <- function(num_particles, ...) {
     rnorm(num_particles, mean = 0, sd = 1)
   }
 
   transition_fn <- function(particles, t, phi, sigma_x, ...) {
-    # X_t = phi*X_{t-1} + sin(X_{t-1}) + sigma_x*V_t,  V_t ~ N(0,1)
     phi * particles + sin(particles) +
       rnorm(length(particles), mean = 0, sd = sigma_x)
   }
@@ -25,8 +27,11 @@ test_that(".pilot_run works non-trivial setup", {
     }
     list(x = x, y = y)
   }
+
   my_data <- simulate_ssm(50, phi = 0.8, sigma_x = 1, sigma_y = 0.5)
+
   result <- .pilot_run(
+    pf_wrapper = bootstrap_filter,
     y = my_data$y,
     pilot_n = 100,
     pilot_reps = 10,
@@ -36,15 +41,125 @@ test_that(".pilot_run works non-trivial setup", {
     phi = 0.8,
     sigma_x = 1,
     sigma_y = 0.5,
-    algorithm = "SISAR",
-    resample_fn = "systematic"
+    resample_algorithm = "SISAR",
+    resample_fn = "stratified"
   )
+
   expect_lt(result$target_n, 1000)
 })
 
-# .run_pilot_chain works
+test_that(".pilot_run works with auxiliary_filter", {
+  set.seed(1405)
+
+  init_fn <- function(num_particles, ...) {
+    rnorm(num_particles, mean = 0, sd = 1)
+  }
+
+  transition_fn <- function(particles, t, phi, sigma_x, ...) {
+    phi * particles + sin(particles) +
+      rnorm(length(particles), mean = 0, sd = sigma_x)
+  }
+
+  log_likelihood_fn <- function(y, particles, t, sigma_y, ...) {
+    dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
+  }
+
+  aux_log_likelihood_fn <- function(y, particles, t, sigma_y, ...) {
+    # Can use same structure or something simpler
+    dnorm(y, mean = particles, sd = sigma_y * 1.5, log = TRUE)
+  }
+
+  simulate_ssm <- function(num_steps, phi, sigma_x, sigma_y) {
+    x <- numeric(num_steps)
+    y <- numeric(num_steps)
+    x[1] <- rnorm(1, mean = 0, sd = sigma_x)
+    y[1] <- rnorm(1, mean = x[1], sd = sigma_y)
+    for (t in 2:num_steps) {
+      x[t] <- phi * x[t - 1] + sin(x[t - 1]) + rnorm(1, mean = 0, sd = sigma_x)
+      y[t] <- x[t] + rnorm(1, mean = 0, sd = sigma_y)
+    }
+    list(x = x, y = y)
+  }
+
+  my_data <- simulate_ssm(50, phi = 0.8, sigma_x = 1, sigma_y = 0.5)
+
+  result <- .pilot_run(
+    pf_wrapper = auxiliary_filter,
+    y = my_data$y,
+    pilot_n = 100,
+    pilot_reps = 10,
+    init_fn = init_fn,
+    transition_fn = transition_fn,
+    log_likelihood_fn = log_likelihood_fn,
+    aux_log_likelihood_fn = aux_log_likelihood_fn,
+    phi = 0.8,
+    sigma_x = 1,
+    sigma_y = 0.5,
+    resample_algorithm = "SISR",
+    resample_fn = "systematic"
+  )
+
+  expect_lt(result$target_n, 1000)
+})
+
+test_that(".pilot_run works with resample_move_filter", {
+  set.seed(1405)
+
+  init_fn <- function(num_particles, ...) {
+    rnorm(num_particles, mean = 0, sd = 1)
+  }
+
+  transition_fn <- function(particles, t, phi, sigma_x, ...) {
+    phi * particles + sin(particles) +
+      rnorm(length(particles), mean = 0, sd = sigma_x)
+  }
+
+  log_likelihood_fn <- function(y, particles, t, sigma_y, ...) {
+    dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
+  }
+
+  move_fn <- function(particles, t, ...) {
+    particles + rnorm(length(particles), mean = 0, sd = 0.1)
+  }
+
+  simulate_ssm <- function(num_steps, phi, sigma_x, sigma_y) {
+    x <- numeric(num_steps)
+    y <- numeric(num_steps)
+    x[1] <- rnorm(1, mean = 0, sd = sigma_x)
+    y[1] <- rnorm(1, mean = x[1], sd = sigma_y)
+    for (t in 2:num_steps) {
+      x[t] <- phi * x[t - 1] + sin(x[t - 1]) + rnorm(1, mean = 0, sd = sigma_x)
+      y[t] <- x[t] + rnorm(1, mean = 0, sd = sigma_y)
+    }
+    list(x = x, y = y)
+  }
+
+  my_data <- simulate_ssm(50, phi = 0.8, sigma_x = 1, sigma_y = 0.5)
+
+  result <- .pilot_run(
+    pf_wrapper = resample_move_filter,
+    y = my_data$y,
+    pilot_n = 100,
+    pilot_reps = 10,
+    init_fn = init_fn,
+    transition_fn = transition_fn,
+    log_likelihood_fn = log_likelihood_fn,
+    move_fn = move_fn,
+    phi = 0.8,
+    sigma_x = 1,
+    sigma_y = 0.5,
+    resample_fn = "multinomial"
+  )
+
+  expect_lt(result$target_n, 1000)
+})
+
+
+##### Tests for .run_pilot_chain ######
+
 test_that(".run_pilot_chain works", {
   set.seed(1405)
+
   init_fn <- function(num_particles, ...) {
     rnorm(num_particles, mean = 0, sd = 1)
   }
@@ -68,6 +183,7 @@ test_that(".run_pilot_chain works", {
     }
     list(x = x, y = y)
   }
+
   my_data <- simulate_ssm(50, phi = 0.8)
 
   log_prior_phi <- function(phi) {
@@ -77,7 +193,9 @@ test_that(".run_pilot_chain works", {
   log_priors <- list(
     phi = log_prior_phi
   )
+
   result <- .run_pilot_chain(
+    pf_wrapper = bootstrap_filter,
     y = my_data$y,
     pilot_m = 100,
     pilot_n = 100,
@@ -86,20 +204,58 @@ test_that(".run_pilot_chain works", {
     transition_fn = transition_fn,
     log_likelihood_fn = log_likelihood_fn,
     log_priors = log_priors,
-    proposal_sd = c(0.1),
-    algorithm = "SISR",
-    resample_fn = "systematic"
+    proposal_sd = 0.1,
+    resample_algorithm = "SISAR",
+    resample_fn = "stratified"
   )
-  expect_lt(result$target_n, 500)
 
-  # Expect error if init_param outside of log_priors domain
-  log_prior_phi <- function(phi) {
-    dunif(phi, min = 0, max = 1, log = TRUE)
+
+  expect_lt(result$target_n, 500)
+})
+
+test_that(".run_pilot_chain works with auxiliary_filter", {
+  set.seed(1405)
+
+  init_fn <- function(num_particles, ...) {
+    rnorm(num_particles, mean = 0, sd = 1)
   }
+
+  transition_fn <- function(particles, t, phi, ...) {
+    phi * particles + rnorm(length(particles), mean = 0, sd = 1)
+  }
+
+  log_likelihood_fn <- function(y, particles, t, ...) {
+    dnorm(y, mean = particles, sd = 1, log = TRUE)
+  }
+
+  aux_log_likelihood_fn <- function(y, particles, t, ...) {
+    dnorm(y, mean = particles, sd = 1.5, log = TRUE)
+  }
+
+  simulate_ssm <- function(num_steps, phi) {
+    x <- numeric(num_steps)
+    y <- numeric(num_steps)
+    x[1] <- rnorm(1, mean = 0, sd = 1)
+    y[1] <- rnorm(1, mean = x[1], sd = 1)
+    for (t in 2:num_steps) {
+      x[t] <- phi * x[t - 1] + rnorm(1, mean = 0, sd = 1)
+      y[t] <- x[t] + rnorm(1, mean = 0, sd = 1)
+    }
+    list(x = x, y = y)
+  }
+
+  my_data <- simulate_ssm(50, phi = 0.8)
+
+  log_prior_phi <- function(phi) {
+    dnorm(phi, mean = 0, sd = 1, log = TRUE)
+  }
+
   log_priors <- list(
     phi = log_prior_phi
   )
-  expect_error(.run_pilot_chain(
+
+  result <- .run_pilot_chain(
+    pf_wrapper = auxiliary_filter,
     y = my_data$y,
     pilot_m = 100,
     pilot_n = 100,
@@ -107,15 +263,59 @@ test_that(".run_pilot_chain works", {
     init_fn = init_fn,
     transition_fn = transition_fn,
     log_likelihood_fn = log_likelihood_fn,
+    aux_log_likelihood_fn = aux_log_likelihood_fn,
     log_priors = log_priors,
-    proposal_sd = c(0.1),
-    pilot_init_params = c(phi = 1.5),
-    algorithm = "SISR",
+    proposal_sd = 0.1,
+    resample_algorithm = "SISR",
     resample_fn = "systematic"
-  ), "Invalid initial parameters:")
+  )
 
-  # Expect error if param_transform does not have phi
-  expect_error(.run_pilot_chain(
+  expect_lt(result$target_n, 500)
+})
+
+test_that(".run_pilot_chain works with resample_move_filter", {
+  set.seed(1405)
+
+  init_fn <- function(num_particles, ...) {
+    rnorm(num_particles, mean = 0, sd = 1)
+  }
+
+  transition_fn <- function(particles, t, phi, ...) {
+    phi * particles + rnorm(length(particles), mean = 0, sd = 1)
+  }
+
+  log_likelihood_fn <- function(y, particles, t, ...) {
+    dnorm(y, mean = particles, sd = 1, log = TRUE)
+  }
+
+  move_fn <- function(particles, t, ...) {
+    particles + rnorm(length(particles), mean = 0, sd = 0.1)
+  }
+
+  simulate_ssm <- function(num_steps, phi) {
+    x <- numeric(num_steps)
+    y <- numeric(num_steps)
+    x[1] <- rnorm(1, mean = 0, sd = 1)
+    y[1] <- rnorm(1, mean = x[1], sd = 1)
+    for (t in 2:num_steps) {
+      x[t] <- phi * x[t - 1] + rnorm(1, mean = 0, sd = 1)
+      y[t] <- x[t] + rnorm(1, mean = 0, sd = 1)
+    }
+    list(x = x, y = y)
+  }
+
+  my_data <- simulate_ssm(50, phi = 0.8)
+
+  log_prior_phi <- function(phi) {
+    dnorm(phi, mean = 0, sd = 1, log = TRUE)
+  }
+
+  log_priors <- list(
+    phi = log_prior_phi
+  )
+
+  result <- .run_pilot_chain(
+    pf_wrapper = resample_move_filter,
     y = my_data$y,
     pilot_m = 100,
     pilot_n = 100,
@@ -123,55 +323,57 @@ test_that(".run_pilot_chain works", {
     init_fn = init_fn,
     transition_fn = transition_fn,
     log_likelihood_fn = log_likelihood_fn,
+    move_fn = move_fn,
     log_priors = log_priors,
-    proposal_sd = c(0.1),
-    pilot_init_params = c(phi = 0.5),
-    algorithm = "SISR",
-    resample_fn = "systematic",
-    param_transform = list(
-      sigma_x = "log"
-    )
-  ), "param_transform must include an entry")
+    proposal_sd = 0.1,
+    resample_fn = "multinomial"
+  )
 
-  # Expect error if param_transform not a list
-  expect_error(.run_pilot_chain(
-    y = my_data$y,
-    pilot_m = 100,
-    pilot_n = 100,
-    pilot_reps = 10,
-    init_fn = init_fn,
-    transition_fn = transition_fn,
-    log_likelihood_fn = log_likelihood_fn,
-    log_priors = log_priors,
-    proposal_sd = c(0.1),
-    pilot_init_params = c(phi = 0.5),
-    algorithm = "SISR",
-    resample_fn = "systematic",
-    param_transform = "log"
-  ), "param_transform must be a list")
+  expect_lt(result$target_n, 500)
+})
 
-  # Expect warning if param_transform not supported (e.g. arctan)
-  expect_warning(.run_pilot_chain(
-    y = my_data$y,
-    pilot_m = 100,
-    pilot_n = 100,
-    pilot_reps = 10,
-    init_fn = init_fn,
-    transition_fn = transition_fn,
-    log_likelihood_fn = log_likelihood_fn,
-    log_priors = log_priors,
-    proposal_sd = c(0.1),
-    pilot_init_params = c(phi = 0.5),
-    algorithm = "SISR",
-    resample_fn = "systematic",
-    param_transform = list(
-      phi = "arctan"
-    )
-  ), "Only 'log', 'logit', and 'identity' transformations are supported.")
+test_that(".run_pilot_chain works and handles inputs correctly", {
+  set.seed(1405)
 
-  # Check verbose works
-  expect_message(
+  init_fn <- function(num_particles, ...) {
+    rnorm(num_particles, mean = 0, sd = 1)
+  }
+
+  transition_fn <- function(particles, t, phi, ...) {
+    phi * particles + rnorm(length(particles), mean = 0, sd = 1)
+  }
+
+  log_likelihood_fn <- function(y, particles, t, ...) {
+    dnorm(y, mean = particles, sd = 1, log = TRUE)
+  }
+
+  simulate_ssm <- function(num_steps, phi) {
+    x <- numeric(num_steps)
+    y <- numeric(num_steps)
+    x[1] <- rnorm(1, mean = 0, sd = 1)
+    y[1] <- rnorm(1, mean = x[1], sd = 1)
+    for (t in 2:num_steps) {
+      x[t] <- phi * x[t - 1] + rnorm(1, mean = 0, sd = 1)
+      y[t] <- x[t] + rnorm(1, mean = 0, sd = 1)
+    }
+    list(x = x, y = y)
+  }
+
+  my_data <- simulate_ssm(50, phi = 0.8)
+
+  log_prior_phi <- function(phi) {
+    dnorm(phi, mean = 0, sd = 1, log = TRUE)
+  }
+
+  log_priors <- list(phi = log_prior_phi)
+
+  # Error: init_param outside prior support
+  log_prior_phi <- function(phi) dunif(phi, min = 0, max = 1, log = TRUE)
+  log_priors <- list(phi = log_prior_phi)
+
+  expect_error(
     .run_pilot_chain(
+      pf_wrapper = bootstrap_filter,
       y = my_data$y,
       pilot_m = 100,
       pilot_n = 100,
@@ -180,18 +382,102 @@ test_that(".run_pilot_chain works", {
       transition_fn = transition_fn,
       log_likelihood_fn = log_likelihood_fn,
       log_priors = log_priors,
-      proposal_sd = c(0.1),
+      proposal_sd = 0.1,
+      pilot_init_params = c(phi = 1.5),
+      resample_algorithm = "SISR",
+      resample_fn = "systematic"
+    ),
+    "Initial parameter values are invalid:"
+  )
+
+  # Error: param_transform missing parameter key (phi)
+  expect_error(
+    .run_pilot_chain(
+      pf_wrapper = bootstrap_filter,
+      y = my_data$y,
+      pilot_m = 100,
+      pilot_n = 100,
+      pilot_reps = 10,
+      init_fn = init_fn,
+      transition_fn = transition_fn,
+      log_likelihood_fn = log_likelihood_fn,
+      log_priors = log_priors,
+      proposal_sd = 0.1,
       pilot_init_params = c(phi = 0.5),
-      algorithm = "SISR",
+      resample_algorithm = "SISR",
+      resample_fn = "systematic",
+      param_transform = list(sigma_x = "log")
+    ),
+    "param_transform must include every parameter"
+  )
+
+  # Error: param_transform not a list
+  expect_error(
+    .run_pilot_chain(
+      pf_wrapper = bootstrap_filter,
+      y = my_data$y,
+      pilot_m = 100,
+      pilot_n = 100,
+      pilot_reps = 10,
+      init_fn = init_fn,
+      transition_fn = transition_fn,
+      log_likelihood_fn = log_likelihood_fn,
+      log_priors = log_priors,
+      proposal_sd = 0.1,
+      pilot_init_params = c(phi = 0.5),
+      resample_algorithm = "SISR",
+      resample_fn = "systematic",
+      param_transform = "log"
+    ),
+    "param_transform must be a list"
+  )
+
+  # Warning: unsupported param_transform value
+  expect_warning(
+    .run_pilot_chain(
+      pf_wrapper = bootstrap_filter,
+      y = my_data$y,
+      pilot_m = 100,
+      pilot_n = 100,
+      pilot_reps = 10,
+      init_fn = init_fn,
+      transition_fn = transition_fn,
+      log_likelihood_fn = log_likelihood_fn,
+      log_priors = log_priors,
+      proposal_sd = 0.1,
+      pilot_init_params = c(phi = 0.5),
+      resample_algorithm = "SISR",
+      resample_fn = "systematic",
+      param_transform = list(phi = "arctan")
+    ),
+    "Only 'log', 'logit', 'identity' supported."
+  )
+
+  # Verbose output test
+  expect_message(
+    .run_pilot_chain(
+      pf_wrapper = bootstrap_filter,
+      y = my_data$y,
+      pilot_m = 100,
+      pilot_n = 100,
+      pilot_reps = 10,
+      init_fn = init_fn,
+      transition_fn = transition_fn,
+      log_likelihood_fn = log_likelihood_fn,
+      log_priors = log_priors,
+      proposal_sd = 0.1,
+      pilot_init_params = c(phi = 0.5),
+      resample_algorithm = "SISR",
       resample_fn = "systematic",
       verbose = TRUE
     ),
     "Pilot chain posterior variance:"
   )
 
-  # Check works with transformation
+  # Verbose output with parameter transformation
   expect_message(
     .run_pilot_chain(
+      pf_wrapper = bootstrap_filter,
       y = my_data$y,
       pilot_m = 100,
       pilot_n = 100,
@@ -200,19 +486,17 @@ test_that(".run_pilot_chain works", {
       transition_fn = transition_fn,
       log_likelihood_fn = log_likelihood_fn,
       log_priors = log_priors,
-      proposal_sd = c(0.1),
+      proposal_sd = 0.1,
       pilot_init_params = c(phi = 0.5),
-      algorithm = "SISR",
+      resample_algorithm = "SISR",
       resample_fn = "systematic",
-      param_transform = list(
-        phi = "log"
-      ),
+      param_transform = list(phi = "log"),
       verbose = TRUE
     ),
-    "Pilot chain posterior variance \\(on transformed space\\):"
+    "Pilot chain posterior variance \\(transformed space\\):"
   )
 
-  # Check works with transformation multi-dim example ...
+  # Add additional tests for multi-dimensional param_transform here if needed...
 })
 
 
@@ -270,6 +554,7 @@ test_that("More complicated example", {
   )
 
   result <- .run_pilot_chain(
+    pf_wrapper = bootstrap_filter,
     y = my_data$y,
     pilot_m = 1000,
     pilot_n = 100,
@@ -280,9 +565,10 @@ test_that("More complicated example", {
     log_priors = log_priors,
     proposal_sd = c(0.1, 0.1, 0.1),
     pilot_init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
-    algorithm = "SISAR",
+    resample_algorithm = "SISAR",
     resample_fn = "stratified"
   )
+
   means <- unname(result$pilot_theta_mean)
   expect_equal(means[1], phi, tolerance = 0.5)
   expect_equal(means[2], sigma_x, tolerance = 0.5)
@@ -341,6 +627,7 @@ test_that("More complicated example with transformation", {
   )
 
   result <- .run_pilot_chain(
+    pf_wrapper = bootstrap_filter,
     y = my_data$y,
     pilot_m = 1000,
     pilot_n = 100,
@@ -351,7 +638,7 @@ test_that("More complicated example with transformation", {
     log_priors = log_priors,
     proposal_sd = c(0.1, 0.1, 0.1),
     pilot_init_params = c(phi = 0.8, sigma_x = 1, sigma_y = 0.5),
-    algorithm = "SISAR",
+    resample_algorithm = "SISAR",
     resample_fn = "stratified",
     param_transform = list(
       phi = "identity",
@@ -381,7 +668,7 @@ test_that("Multi dimensional works", {
   }
 
 
-  init_state <-  matrix(rnorm(2), ncol = 2)
+  init_state <- matrix(rnorm(2), ncol = 2)
   num_steps <- 50
   x <- matrix(0, nrow = num_steps, ncol = 2)
   y <- matrix(0, nrow = num_steps, ncol = 2)
@@ -404,6 +691,7 @@ test_that("Multi dimensional works", {
   )
 
   result <- .run_pilot_chain(
+    pf_wrapper = bootstrap_filter,
     y = y,
     pilot_m = 1000,
     pilot_n = 100,
@@ -414,7 +702,7 @@ test_that("Multi dimensional works", {
     log_priors = log_priors,
     proposal_sd = c(0.1),
     pilot_init_params = c(phi = 0.8),
-    algorithm = "SISAR",
+    resample_algorithm = "SISAR",
     resample_fn = "stratified"
   )
   phi_est <- unname(result$pilot_theta_mean)

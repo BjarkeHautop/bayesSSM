@@ -18,48 +18,48 @@ test_that("particle_filter_core returns errors on wrong input", {
 
   expect_error(
     .particle_filter_core(y,
-                          num_particles = 0, init_fn, transition_fn,
-                          weight_fn, resample_algorithm = "SIS"
+      num_particles = 0, init_fn, transition_fn,
+      weight_fn, resample_algorithm = "SIS"
     ),
     "Assertion on 'num_particles' failed"
   )
 
   expect_error(
     .particle_filter_core(y,
-                          num_particles = 10, wrong_init_fn, transition_fn,
-                          weight_fn, resample_resample_algorithm = "SISAR"
+      num_particles = 10, wrong_init_fn, transition_fn,
+      weight_fn, resample_resample_algorithm = "SISAR"
     ),
     "init_fn must return num_particles"
   )
 
   expect_error(
     .particle_filter_core(y,
-                          num_particles = 10, wrong_init_fn_matrix,
-                          transition_fn, weight_fn, resample_algorithm = "SIS"
+      num_particles = 10, wrong_init_fn_matrix,
+      transition_fn, weight_fn, resample_algorithm = "SIS"
     ),
     "init_fn must return num_particles rows"
   )
 
   expect_error(
     .particle_filter_core(y,
-                          num_particles = 10, init_fn,
-                          wrong_transition_fn, weight_fn, resample_algorithm = "SIS"
+      num_particles = 10, init_fn,
+      wrong_transition_fn, weight_fn, resample_algorithm = "SIS"
     ),
     "transition_fn must return num_particles"
   )
 
   expect_error(
     .particle_filter_core(y,
-                          num_particles = 10, init_fn,
-                          transition_fn, wrong_weight_fn, resample_algorithm = "SIS"
+      num_particles = 10, init_fn,
+      transition_fn, wrong_weight_fn, resample_algorithm = "SIS"
     ),
     "weight_fn must return num_particles"
   )
 
   expect_error(
     .particle_filter_core(wrong_y,
-                          num_particles = 10, init_fn,
-                          transition_fn, weight_fn, resample_algorithm = "SIS"
+      num_particles = 10, init_fn,
+      transition_fn, weight_fn, resample_algorithm = "SIS"
     ),
     "Assertion on 'y' failed"
   )

@@ -42,7 +42,7 @@ rhat <- function(chains) {
     for (i in 1:k) {
       # Split the k-th chain into two parts
       chains_split[, 2 * i - 1] <- mat[1:(m %/% 2), i]
-      chains_split[, 2 * i]     <- mat[(m %/% 2 + 1):m, i]
+      chains_split[, 2 * i] <- mat[(m %/% 2 + 1):m, i]
     }
 
     chain_means <- colMeans(chains_split)

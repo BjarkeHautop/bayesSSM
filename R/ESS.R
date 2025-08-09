@@ -28,7 +28,6 @@
 #' )
 #' ess(chains_df)
 ess <- function(chains) {
-
   # Helper function to compute ESS from a matrix.
   compute_ess_matrix <- function(mat) {
     m <- nrow(mat)
@@ -63,7 +62,7 @@ ess <- function(chains) {
     acf_matrix <- matrix(NA, nrow = m, ncol = k)
     for (i in 1:k) {
       acf_obj <- acf(mat[, i], lag.max = m - 1, plot = FALSE)
-      acf_matrix[, i] <- acf_obj$acf[, 1, 1]  # Extract as vector
+      acf_matrix[, i] <- acf_obj$acf[, 1, 1] # Extract as vector
     }
 
     hat_rho <- numeric(m)
@@ -76,7 +75,7 @@ ess <- function(chains) {
     max_pairs <- floor((length(hat_rho) - 1) / 2)
     pairs <- numeric(max_pairs)
     for (t in 1:max_pairs) {
-      idx1 <- 2 * t     # corresponds to lag (2*t - 1)
+      idx1 <- 2 * t # corresponds to lag (2*t - 1)
       idx2 <- 2 * t + 1 # corresponds to lag (2*t)
 
       pairs[t] <- hat_rho[idx1] + hat_rho[idx2]

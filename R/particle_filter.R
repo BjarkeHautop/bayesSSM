@@ -119,8 +119,10 @@
 #'   transition_fn = transition_fn,
 #'   log_likelihood_fn = log_likelihood_fn
 #' )
-#' plot(result$state_est, type = "l", col = "blue", main = "State Estimates",
-#'   ylim = range(c(result$state_est, y)))
+#' plot(result$state_est,
+#'   type = "l", col = "blue", main = "State Estimates",
+#'   ylim = range(c(result$state_est, y))
+#' )
 #' points(y, col = "red", pch = 20)
 #'
 #' # With parameters
@@ -145,8 +147,10 @@
 #'   mu = 1,
 #'   sigma = 1
 #' )
-#' plot(result$state_est, type = "l", col = "blue", main = "State Estimates",
-#'   ylim = range(c(result$state_est, y)))
+#' plot(result$state_est,
+#'   type = "l", col = "blue", main = "State Estimates",
+#'   ylim = range(c(result$state_est, y))
+#' )
 #' points(y, col = "red", pch = 20)
 #'
 #' # With observations gaps
@@ -190,18 +194,21 @@
 #'   mu = 1,
 #'   sigma = 1,
 #' )
-#' plot(result$state_est, type = "l", col = "blue", main = "State Estimates",
-#'   ylim = range(c(result$state_est, data)))
+#' plot(result$state_est,
+#'   type = "l", col = "blue", main = "State Estimates",
+#'   ylim = range(c(result$state_est, data))
+#' )
 #' points(data_obs, col = "red", pch = 20)
 particle_filter <- function(
     y, num_particles, init_fn, transition_fn,
     log_likelihood_fn, obs_times = NULL,
     algorithm = c("SISAR", "SISR", "SIS"),
-    resample_fn = c("stratified", "systematic",
-                    "multinomial"),
+    resample_fn = c(
+      "stratified", "systematic",
+      "multinomial"
+    ),
     threshold = NULL, return_particles = TRUE,
     ...) {
-
   # Validate num_particles
   if (!is.numeric(num_particles) || num_particles <= 0) {
     stop("num_particles must be a positive integer")
@@ -220,8 +227,10 @@ particle_filter <- function(
 
   # Add t arg if missing
   if (!"t" %in% names(formals(transition_fn))) {
-    formals(transition_fn) <- c(formals(transition_fn),
-                                alist(t = NULL))
+    formals(transition_fn) <- c(
+      formals(transition_fn),
+      alist(t = NULL)
+    )
   }
   if (!"t" %in% names(formals(log_likelihood_fn))) {
     formals(log_likelihood_fn) <- c(
@@ -250,8 +259,7 @@ particle_filter <- function(
   algorithm <- match.arg(algorithm)
   resample_fn <- match.arg(resample_fn)
 
-  resample_func <- switch(
-    resample_fn,
+  resample_func <- switch(resample_fn,
     multinomial = .resample_multinomial,
     stratified = .resample_stratified,
     systematic = .resample_systematic
@@ -285,8 +293,11 @@ particle_filter <- function(
 
   # Allocate storage for t = 0..num_obs
   out_steps <- num_obs + 1
-  state_est <- if (one_dim) numeric(out_steps) else
+  state_est <- if (one_dim) {
+    numeric(out_steps)
+  } else {
     matrix(NA, nrow = out_steps, ncol = d)
+  }
   ess_vec <- numeric(out_steps)
   loglike_history <- numeric(num_obs)
   loglike <- 0
@@ -329,7 +340,8 @@ particle_filter <- function(
           stop("transition_fn must return a length of num_particles")
         }
         particles <- matrix(
-          particles, nrow = num_particles
+          particles,
+          nrow = num_particles
         )
       } else if (nrow(particles) != num_particles) {
         stop("transition_fn must return num_particles rows")

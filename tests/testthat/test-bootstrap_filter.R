@@ -18,16 +18,16 @@ test_that("bootstrap_filter returns errors on wrong input", {
 
   expect_error(
     bootstrap_filter(y,
-                     num_particles = 0, init_fn, transition_fn,
-                     log_likelihood_fn, resample_algorithm = "SISR"
+      num_particles = 0, init_fn, transition_fn,
+      log_likelihood_fn, resample_algorithm = "SISR"
     ),
     "Assertion on 'num_particles' failed"
   )
 
   expect_error(
     bootstrap_filter(y,
-                     num_particles = 10, wrong_init_fn, transition_fn,
-                     log_likelihood_fn, resample_algorithm = "SISR"
+      num_particles = 10, wrong_init_fn, transition_fn,
+      log_likelihood_fn, resample_algorithm = "SISR"
     ),
     "init_fn must return num_particles"
   )
@@ -121,8 +121,8 @@ test_that("bootstrap_filter returns correct structure", {
   y <- rep(0, 5)
 
   result <- bootstrap_filter(y,
-                             num_particles = 10, init_fn, transition_fn, log_likelihood_fn,
-                             resample_algorithm = "SIS"
+    num_particles = 10, init_fn, transition_fn, log_likelihood_fn,
+    resample_algorithm = "SIS"
   )
   expect_true(is.list(result))
   expect_true("state_est" %in% names(result))
@@ -140,8 +140,8 @@ test_that("bootstrap_filter returns no particles_history when requested", {
   y <- rep(0, 5)
 
   result <- bootstrap_filter(y,
-                             num_particles = 10, init_fn, transition_fn, log_likelihood_fn,
-                             resample_algorithm = "SIS", return_particles = FALSE
+    num_particles = 10, init_fn, transition_fn, log_likelihood_fn,
+    resample_algorithm = "SIS", return_particles = FALSE
   )
   expect_false("particles_history" %in% names(result))
 })
@@ -219,8 +219,8 @@ test_that("Multi-dim particle filter works", {
   y <- rep(0, 5)
 
   result <- bootstrap_filter(y,
-                             num_particles = 10, init_fn, transition_fn, log_likelihood_fn,
-                             resample_algorithm = "SIS"
+    num_particles = 10, init_fn, transition_fn, log_likelihood_fn,
+    resample_algorithm = "SIS"
   )
   expect_true(is.list(result))
   expect_true("state_est" %in% names(result))

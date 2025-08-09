@@ -245,7 +245,6 @@ init_fn_epidemic <- function(num_particles) {
 }
 
 transition_fn_epidemic <- function(particles, lambda, gamma, t) {
-
   n_total <- 500
 
   epidemic_step <- function(state, lambda, gamma, n_total) {
@@ -409,8 +408,8 @@ transition function of the SIR model.
 ```{r}
 cppFunction("
 NumericMatrix transition_fn_epidemic_cpp(
-    NumericMatrix particles, 
-    double lambda, 
+    NumericMatrix particles,
+    double lambda,
     double gamma
 ) {
 
@@ -418,35 +417,35 @@ NumericMatrix transition_fn_epidemic_cpp(
   int n_total = 500;
   double t_end = 1.0; // Time step for the transition
   NumericMatrix new_particles(n_particles, 2);
-  
+
   for (int p = 0; p < n_particles; p++) {
     int s = particles(p, 0);
     int i = particles(p, 1);
-    
+
     if (i == 0) {
       new_particles(p, 0) = s;
       new_particles(p, 1) = i;
       continue;
     }
-    
+
     double t = 0.0;
-    
+
     while (t < t_end && i > 0) {
       double rate_infection = (lambda / n_total) * s * i;
       double rate_removal = gamma * i;
       double rate_total = rate_infection + rate_removal;
-      
+
       if (rate_total <= 0.0) {
         break;
       }
-      
+
       double dt = R::rexp(1.0 / rate_total);
       if (t + dt > t_end) {
         break;
       }
-      
+
       t += dt;
-      
+
       if (R::runif(0.0, 1.0) < (rate_infection / rate_total)) {
         // Infection event
         s -= 1;
@@ -456,11 +455,11 @@ NumericMatrix transition_fn_epidemic_cpp(
         i -= 1;
       }
     }
-    
+
     new_particles(p, 0) = s;
     new_particles(p, 1) = i;
   }
-  
+
   return new_particles;
 }
 ")

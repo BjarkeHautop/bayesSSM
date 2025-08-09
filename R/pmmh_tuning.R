@@ -26,34 +26,35 @@
 #' the scaled value with a minimum of 50 and a maximum of 1000.
 #'
 #' @keywords internal
-#' @noRd
 .pilot_run <- function(
-  y, pilot_n, pilot_reps, init_fn, transition_fn, log_likelihood_fn,
+  pf_wrapper,
+  y, pilot_n, pilot_reps,
+  init_fn, transition_fn, log_likelihood_fn,
   obs_times = NULL,
-  algorithm = c("SISAR", "SISR", "SIS"),
-  resample_fn = c("stratified", "systematic", "multinomial"),
-  ...
+  resample_fn = NULL,
+  ... # any extra args for the filter
 ) {
   pilot_loglikes <- numeric(pilot_reps)
+
   for (i in seq_len(pilot_reps)) {
-    pf_result <- particle_filter(
+    pf_result <- pf_wrapper(
       y = y,
       num_particles = pilot_n,
       init_fn = init_fn,
       transition_fn = transition_fn,
       log_likelihood_fn = log_likelihood_fn,
       obs_times = obs_times,
-      algorithm = "SISAR",
-      resample_fn = "stratified",
+      resample_fn = resample_fn,
       return_particles = FALSE,
       ...
     )
     pilot_loglikes[i] <- pf_result$loglike
   }
+
   variance_estimate <- var(pilot_loglikes)
   target_n <- ceiling(pilot_n * variance_estimate)
-  target_n <- max(target_n, 50) # Ensure a minimum number of particles
-  target_n <- min(target_n, 1000) # Limit to 1000 particles
+  target_n <- max(target_n, 50)
+  target_n <- min(target_n, 1000)
 
   list(
     variance_estimate = variance_estimate,
@@ -61,6 +62,8 @@
     pilot_loglikes = pilot_loglikes
   )
 }
+
+
 
 #' Run Pilot Chain for Posterior Estimation
 #'
@@ -77,11 +80,11 @@
 #' the random walk proposal distribution for each parameter.
 #' @param param_transform A character vector specifying the parameter
 #' transformations when proposing parameters using a random walk.
-#' Currently only supports "log" for log-transformation and
-#' "identity" for no transformation. Default is `NULL`, which correspond to
-#' no transformation ("identity).
+#' Currently only supports "log" for log-transformation, "logit" for logit
+#' transformation, and "identity" for no transformation. Default is `NULL`,
+#' which correspond to no transformation ("identity).
 #' @param pilot_init_params A numeric vector of initial parameter values.
-#' If `NULL`, the default is a vector of ones. Default is `NULL`.
+#' If `NULL`, it will default to a vector of ones. Default is `NULL`.
 #' @param ... Additional arguments passed to the particle filter function.
 #'
 #' @return A list containing:
@@ -106,53 +109,53 @@
 #'
 #' @importFrom stats rnorm runif var cov
 #' @keywords internal
-#' @noRd
 .run_pilot_chain <- function(
-  y, pilot_m, pilot_n, pilot_reps, init_fn, transition_fn, log_likelihood_fn,
-  log_priors, proposal_sd,
-  obs_times = NULL,
-  algorithm = c("SISAR", "SISR", "SIS"),
-  resample_fn = c("stratified", "systematic", "multinomial"),
-  param_transform = NULL,
-  pilot_init_params = NULL,
-  verbose = FALSE,
-  ...
-) {
+    pf_wrapper, # particle filter wrapper to use
+    y,
+    pilot_m, pilot_n, pilot_reps,
+    init_fn, transition_fn, log_likelihood_fn,
+    log_priors, proposal_sd,
+    obs_times = NULL,
+    param_transform = NULL,
+    pilot_init_params = NULL,
+    verbose = FALSE,
+    ...) {
   num_params <- length(log_priors)
   pilot_theta_chain <- matrix(NA, nrow = pilot_m, ncol = num_params)
   colnames(pilot_theta_chain) <- names(log_priors)
   pilot_loglike_chain <- numeric(pilot_m)
 
+  # Default initial parameters
   if (is.null(pilot_init_params)) {
     pilot_init_params <- rep(1, num_params)
     names(pilot_init_params) <- names(log_priors)
   }
 
-  # Validate initial parameters using user-supplied log-priors.
+  # Validate initial parameters
   log_prior_init <- sapply(seq_along(pilot_init_params), function(i) {
     log_priors[[i]](pilot_init_params[i])
   })
   if (any(!is.finite(log_prior_init))) {
     stop(paste0(
-      "Invalid initial parameters: at least one initial value is",
-      "outside the support of its prior. Modify them in the argument",
-      "pilot_init_params."
+      "Initial parameter values are invalid: some lie outside the prior ",
+      "support. Please provide valid starting values via pilot_init_params."
     ))
   }
+
 
   current_theta <- pilot_init_params
   pilot_theta_chain[1, ] <- current_theta
 
-  # Run particle filter with current parameters.
+  # Initial log-likelihood
   current_theta_list <- as.list(current_theta)
-  pf_result <- do.call(particle_filter, c(
+  pf_result <- do.call(pf_wrapper, c(
     list(
-      y = y, n = pilot_n, init_fn = init_fn,
+      y = y,
+      num_particles = pilot_n,
+      init_fn = init_fn,
       transition_fn = transition_fn,
       log_likelihood_fn = log_likelihood_fn,
       obs_times = obs_times,
-      algorithm = algorithm,
-      resample_fn = "stratified",
       return_particles = FALSE
     ),
     current_theta_list,
@@ -161,27 +164,20 @@
   current_loglike <- pf_result$loglike
   pilot_loglike_chain[1] <- current_loglike
 
-  # Create default transformation if none provided.
+  # Set default transforms
   if (is.null(param_transform)) {
     param_transform <- rep("identity", num_params)
     names(param_transform) <- names(log_priors)
   } else if (is.list(param_transform)) {
-    # Ensure every parameter in log_priors has a corresponding transform.
     if (!all(names(log_priors) %in% names(param_transform))) {
-      stop(paste0(
-        "param_transform must include an entry for every",
-        "parameter in log_priors."
-      ))
+      stop("param_transform must include every parameter in log_priors.")
     }
-    # Reorder and convert the list to a vector.
     param_transform <- unlist(param_transform[names(log_priors)])
-
-    # Validate transformations and replace any invalid entries.
     invalid <- !(param_transform %in% c("log", "logit", "identity"))
     if (any(invalid)) {
       warning(paste0(
-        "Only 'log', 'logit', and 'identity' transformations are supported.",
-        " Using 'identity' for invalid entries."
+        "Only 'log', 'logit', 'identity' supported.\n",
+        "Invalid replaced with 'identity'."
       ))
       param_transform[invalid] <- "identity"
     }
@@ -189,67 +185,43 @@
     stop("param_transform must be a list.")
   }
 
-  # Reorder param_transform to match the order of log_priors
-  param_transform <- as.list(unlist(param_transform[names(log_priors)]))
+  param_transform <- as.list(param_transform[names(log_priors)])
 
-
-
+  # Pilot MCMC loop
   for (m in 2:pilot_m) {
     valid_theta <- FALSE
     while (!valid_theta) {
-      # Transform the current theta.
-      current_theta_trans <- .transform_params(
-        theta = current_theta,
-        transform = param_transform
-      )
-
-      # Propose in the transformed space.
+      # Transform and propose
+      current_theta_trans <- .transform_params(current_theta, param_transform)
       proposed_theta_trans <- current_theta_trans +
         rnorm(length(current_theta_trans), mean = 0, sd = proposal_sd)
-
-      # Back-transform to original scale.
       proposed_theta <- .back_transform_params(
-        theta_trans = proposed_theta_trans,
-        transform = param_transform
+        proposed_theta_trans,
+        param_transform
       )
 
-      # Compute the Jacobian adjustments.
-      log_jacobian_proposed <- .compute_log_jacobian(
-        theta = proposed_theta,
-        transform = param_transform
-      )
-      log_jacobian_current <- .compute_log_jacobian(
-        theta = current_theta,
-        transform = param_transform
-      )
-
-      # Compute the log-priors for the proposed parameters.
+      # Check priors
       log_prior_proposed <- mapply(
-        function(fn, theta) fn(theta),
-        log_priors, proposed_theta
+        function(fn, val) fn(val), log_priors, proposed_theta
       )
-
-      if (all(is.finite(log_prior_proposed))) {
-        valid_theta <- TRUE
-      }
+      if (all(is.finite(log_prior_proposed))) valid_theta <- TRUE
     }
 
-    # Compute log-priors for current parameters.
+    # Current priors
     log_prior_current <- mapply(
-      function(fn, theta) fn(theta),
-      log_priors, current_theta
+      function(fn, val) fn(val), log_priors, current_theta
     )
 
-    # Run particle filter with the proposed parameters.
+    # Proposed log-likelihood
     proposed_theta_list <- as.list(proposed_theta)
-    pf_prop <- do.call(particle_filter, c(
+    pf_prop <- do.call(pf_wrapper, c(
       list(
-        y = y, n = pilot_n, init_fn = init_fn,
+        y = y,
+        num_particles = pilot_n,
+        init_fn = init_fn,
         transition_fn = transition_fn,
         log_likelihood_fn = log_likelihood_fn,
         obs_times = obs_times,
-        algorithm = algorithm,
-        resample_fn = resample_fn,
         return_particles = FALSE
       ),
       proposed_theta_list,
@@ -257,17 +229,23 @@
     ))
     proposed_loglike <- pf_prop$loglike
 
-    # Acceptance ratio with Jacobian adjustments.
+    # Jacobians
+    log_jacobian_proposed <- .compute_log_jacobian(
+      proposed_theta,
+      param_transform
+    )
+    log_jacobian_current <- .compute_log_jacobian(
+      current_theta,
+      param_transform
+    )
+
+    # MH acceptance
     log_accept_num <- sum(log_prior_proposed) + proposed_loglike +
       log_jacobian_proposed
     log_accept_denom <- sum(log_prior_current) + current_loglike +
       log_jacobian_current
     log_accept_ratio <- log_accept_num - log_accept_denom
-
-    # If it’s NA/NaN, force it to -Inf.
-    if (is.na(log_accept_ratio)) {
-      log_accept_ratio <- -Inf
-    }
+    if (is.na(log_accept_ratio)) log_accept_ratio <- -Inf
 
     if (log(runif(1)) < log_accept_ratio) {
       current_theta <- proposed_theta
@@ -278,50 +256,54 @@
     pilot_loglike_chain[m] <- current_loglike
   }
 
+  # Posterior summaries
   burn_in <- floor(pilot_m / 2)
   pilot_theta_post <- pilot_theta_chain[(burn_in + 1):pilot_m, , drop = FALSE]
   pilot_theta_mean <- colMeans(pilot_theta_post)
-
-  if (ncol(pilot_theta_post) > 1) {
-    pilot_theta_cov <- cov(pilot_theta_post)
+  pilot_theta_cov <- if (ncol(pilot_theta_post) > 1) {
+    cov(pilot_theta_post)
   } else {
-    pilot_theta_cov <- var(pilot_theta_post)
+    var(pilot_theta_post)
   }
 
   if (verbose) {
     message("Pilot chain posterior mean:")
     print(pilot_theta_mean)
     if (ncol(pilot_theta_post) > 1) {
-      if (any(param_transform != "identity")) {
-        message("Pilot chain posterior covariance (on transformed space):")
+      msg <- if (any(param_transform != "identity")) {
+        "Pilot chain posterior covariance (transformed space):"
       } else {
-        message("Pilot chain posterior covariance:")
+        "Pilot chain posterior covariance:"
       }
+      message(msg)
       print(pilot_theta_cov)
     } else {
-      if (any(param_transform != "identity")) {
-        message("Pilot chain posterior variance (on transformed space):")
+      msg <- if (any(param_transform != "identity")) {
+        "Pilot chain posterior variance (transformed space):"
       } else {
-        message("Pilot chain posterior variance:")
+        "Pilot chain posterior variance:"
       }
+      message(msg)
       print(pilot_theta_cov)
     }
   }
 
-  # Run the pilot run using the estimated posterior mean.
+  # Pilot run for target_n
   pilot_result <- do.call(.pilot_run, c(
     list(
-      y = y, pilot_n = pilot_n, pilot_reps = pilot_reps,
+      pf_wrapper = pf_wrapper,
+      y = y,
+      pilot_n = pilot_n,
+      pilot_reps = pilot_reps,
       init_fn = init_fn,
       transition_fn = transition_fn,
       log_likelihood_fn = log_likelihood_fn,
-      obs_times = obs_times,
-      algorithm = algorithm,
-      resample_fn = resample_fn
+      obs_times = obs_times
     ),
     as.list(pilot_theta_mean),
     list(...)
   ))
+
   target_n <- pilot_result$target_n
   message("Using ", target_n, " particles for PMMH:")
 

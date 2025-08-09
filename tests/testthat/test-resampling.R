@@ -1,18 +1,30 @@
 ##################### Tests for cpp code #####################
 test_that("Validation of weights work", {
-  expect_error(resample_multinomial_cpp(3, c(-1, 1, 2)),
-               "Weights must be non-negative")
-  expect_error(resample_stratified_cpp(3, c(-1, 1, 2)),
-               "Weights must be non-negative")
-  expect_error(resample_stratified_cpp(3, c(-1, 1, 2)),
-               "Weights must be non-negative")
+  expect_error(
+    resample_multinomial_cpp(3, c(-1, 1, 2)),
+    "Weights must be non-negative"
+  )
+  expect_error(
+    resample_stratified_cpp(3, c(-1, 1, 2)),
+    "Weights must be non-negative"
+  )
+  expect_error(
+    resample_stratified_cpp(3, c(-1, 1, 2)),
+    "Weights must be non-negative"
+  )
 
-  expect_error(resample_multinomial_cpp(3, c(0, 0, 0)),
-               "Sum of weights must be greater than 0")
-  expect_error(resample_stratified_cpp(3, c(0, 0, 0)),
-               "Sum of weights must be greater than 0")
-  expect_error(resample_systematic_cpp(3, c(0, 0, 0)),
-               "Sum of weights must be greater than 0")
+  expect_error(
+    resample_multinomial_cpp(3, c(0, 0, 0)),
+    "Sum of weights must be greater than 0"
+  )
+  expect_error(
+    resample_stratified_cpp(3, c(0, 0, 0)),
+    "Sum of weights must be greater than 0"
+  )
+  expect_error(
+    resample_systematic_cpp(3, c(0, 0, 0)),
+    "Sum of weights must be greater than 0"
+  )
 })
 test_that("Resampling functions return correct proportions", {
   set.seed(1405)
