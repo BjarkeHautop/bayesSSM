@@ -208,6 +208,7 @@ auxiliary_filter <- function(
     resample_fn = resample_fn,
     resample_algorithm = resample_algorithm,
     return_particles = return_particles,
+    threshold = threshold,
     ...
   )
 }

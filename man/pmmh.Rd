@@ -5,6 +5,7 @@
 \title{Particle Marginal Metropolis-Hastings (PMMH) for State-Space Models}
 \usage{
 pmmh(
+  pf_wrapper,
   y,
   m,
   init_fn,
@@ -15,14 +16,15 @@ pmmh(
   burn_in,
   num_chains = 4,
   obs_times = NULL,
-  algorithm = c("SISAR", "SISR", "SIS"),
+  resample_algorithm = c("SISAR", "SISR", "SIS"),
   resample_fn = c("stratified", "systematic", "multinomial"),
   param_transform = NULL,
   tune_control = default_tune_control(),
   verbose = FALSE,
   return_latent_state_est = FALSE,
   seed = NULL,
-  num_cores = 1
+  num_cores = 1,
+  ...
 )
 }
 \arguments{
@@ -67,10 +69,6 @@ observations in \code{y} are available. Must be of the same length as the
 number of rows in \code{y}. If not specified, it is assumed that observations
 are available at consecutive time steps, i.e., \code{obs_times = 1:nrow(y)}.}
 
-\item{algorithm}{A character string specifying the particle filtering
-algorithm to use. Must be one of \code{"SISAR"}, \code{"SISR"}, or
-\code{"SIS"}. Defaults to \code{"SISAR"}.}
-
 \item{resample_fn}{A character string specifying the resampling method.
 Must be one of \code{"stratified"}, \code{"systematic"}, or
 \code{"multinomial"}. Defaults to \code{"stratified"}.}
@@ -100,6 +98,10 @@ parallel processing. Defaults to 1. Each chain is assigned to its own core,
 so the number of cores cannot exceed the number of chains
 (\code{num_chains}). The progress information given to user is limited if
 using more than one core.}
+
+\item{...}{Additional arguments passed to \code{init_fn},
+\code{transition_fn}, and \code{log_likelihood_fn}. I.e., parameter values if
+the functions requires them.}
 }
 \value{
 A list containing:
@@ -115,12 +117,12 @@ A list containing:
 }
 \description{
 This function implements a Particle Marginal Metropolis-Hastings (PMMH)
-algorithm to perform Bayesian inference in state-space models. It first
+resample_algorithm to perform Bayesian inference in state-space models. It first
 runs a pilot chain to tune the proposal distribution and the number of
 particles for the particle filter, and then runs the main PMMH chain.
 }
 \details{
-The PMMH algorithm is essentially a Metropolis Hastings algorithm
+The PMMH resample_algorithm is essentially a Metropolis Hastings resample_algorithm
 where instead of using the intractable marginal likelihood
 \eqn{p(y_{1:T}\mid \theta)} it instead uses the estimated likelihood using
 a particle filter (see also \code{\link{particle_filter}}). Values are

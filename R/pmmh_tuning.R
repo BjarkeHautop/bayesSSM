@@ -120,6 +120,7 @@
     pilot_init_params = NULL,
     verbose = FALSE,
     ...) {
+
   num_params <- length(log_priors)
   pilot_theta_chain <- matrix(NA, nrow = pilot_m, ncol = num_params)
   colnames(pilot_theta_chain) <- names(log_priors)
@@ -159,7 +160,7 @@
       return_particles = FALSE
     ),
     current_theta_list,
-    list(...)
+    ...
   ))
   current_loglike <- pf_result$loglike
   pilot_loglike_chain[1] <- current_loglike
@@ -225,7 +226,7 @@
         return_particles = FALSE
       ),
       proposed_theta_list,
-      list(...)
+      ...
     ))
     proposed_loglike <- pf_prop$loglike
 
@@ -284,7 +285,7 @@
         "Pilot chain posterior variance:"
       }
       message(msg)
-      print(pilot_theta_cov)
+      print(as.numeric(pilot_theta_cov))
     }
   }
 
@@ -301,7 +302,7 @@
       obs_times = obs_times
     ),
     as.list(pilot_theta_mean),
-    list(...)
+    ...
   ))
 
   target_n <- pilot_result$target_n

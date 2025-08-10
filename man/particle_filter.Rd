@@ -142,8 +142,10 @@ result <- particle_filter(
   transition_fn = transition_fn,
   log_likelihood_fn = log_likelihood_fn
 )
-plot(result$state_est, type = "l", col = "blue", main = "State Estimates",
-  ylim = range(c(result$state_est, y)))
+plot(result$state_est,
+  type = "l", col = "blue", main = "State Estimates",
+  ylim = range(c(result$state_est, y))
+)
 points(y, col = "red", pch = 20)
 
 # With parameters
@@ -168,8 +170,10 @@ result <- particle_filter(
   mu = 1,
   sigma = 1
 )
-plot(result$state_est, type = "l", col = "blue", main = "State Estimates",
-  ylim = range(c(result$state_est, y)))
+plot(result$state_est,
+  type = "l", col = "blue", main = "State Estimates",
+  ylim = range(c(result$state_est, y))
+)
 points(y, col = "red", pch = 20)
 
 # With observations gaps
@@ -213,8 +217,10 @@ result <- particle_filter(
   mu = 1,
   sigma = 1,
 )
-plot(result$state_est, type = "l", col = "blue", main = "State Estimates",
-  ylim = range(c(result$state_est, data)))
+plot(result$state_est,
+  type = "l", col = "blue", main = "State Estimates",
+  ylim = range(c(result$state_est, data))
+)
 points(data_obs, col = "red", pch = 20)
 }
 \references{

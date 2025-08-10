@@ -12,7 +12,7 @@
 #' evaluated at estimated posterior mean. Default is 1.
 #' @param pilot_burn_in Number of burn-in iterations for MCMC. Default is 500.
 #' @param pilot_reps Number of times a particle filter is run. Default is 100.
-#' @param pilot_algorithm The algorithm used for the pilot particle filter.
+#' @param pilot_resample_algorithm The resample_algorithm used for the pilot particle filter.
 #' Default is "SISAR".
 #' @param pilot_resample_fn The resampling function used for the pilot particle
 #' filter. Default is "stratified".
@@ -32,7 +32,7 @@
 default_tune_control <- function(
     pilot_proposal_sd = 0.5, pilot_n = 100, pilot_m = 2000,
     pilot_target_var = 1, pilot_burn_in = 500, pilot_reps = 100,
-    pilot_algorithm = c("SISAR", "SISR", "SIS"),
+    pilot_resample_algorithm = c("SISAR", "SISR", "SIS"),
     pilot_resample_fn = c("stratified", "systematic", "multinomial")) {
   if (!is.numeric(pilot_proposal_sd) || pilot_proposal_sd <= 0) {
     stop("pilot_proposal_sd must be a positive numeric value.")
@@ -49,7 +49,7 @@ default_tune_control <- function(
   if (!is.numeric(pilot_burn_in) || pilot_burn_in <= 0) {
     stop("pilot_burn_in must be a positive numeric value.")
   }
-  pilot_algorithm <- match.arg(pilot_algorithm)
+  pilot_resample_algorithm <- match.arg(pilot_resample_algorithm)
   pilot_resample_fn <- match.arg(pilot_resample_fn)
   list(
     pilot_proposal_sd = pilot_proposal_sd,
@@ -58,7 +58,7 @@ default_tune_control <- function(
     pilot_target_var = pilot_target_var,
     pilot_burn_in = pilot_burn_in,
     pilot_reps = pilot_reps,
-    pilot_algorithm = pilot_algorithm,
+    pilot_resample_algorithm = pilot_resample_algorithm,
     pilot_resample_fn = pilot_resample_fn
   )
 }
@@ -66,7 +66,7 @@ default_tune_control <- function(
 #' Particle Marginal Metropolis-Hastings (PMMH) for State-Space Models
 #'
 #' This function implements a Particle Marginal Metropolis-Hastings (PMMH)
-#' algorithm to perform Bayesian inference in state-space models. It first
+#' resample_algorithm to perform Bayesian inference in state-space models. It first
 #' runs a pilot chain to tune the proposal distribution and the number of
 #' particles for the particle filter, and then runs the main PMMH chain.
 #'
@@ -101,7 +101,7 @@ default_tune_control <- function(
 #' (\code{num_chains}). The progress information given to user is limited if
 #' using more than one core.
 #'
-#' @details The PMMH algorithm is essentially a Metropolis Hastings algorithm
+#' @details The PMMH resample_algorithm is essentially a Metropolis Hastings resample_algorithm
 #' where instead of using the intractable marginal likelihood
 #' \eqn{p(y_{1:T}\mid \theta)} it instead uses the estimated likelihood using
 #' a particle filter (see also \code{\link{particle_filter}}). Values are
@@ -223,17 +223,18 @@ default_tune_control <- function(
 #'   ),
 #'   tune_control = default_tune_control(pilot_m = 500, pilot_burn_in = 100)
 #' )
-pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
+pmmh <- function(pf_wrapper, y, m, init_fn, transition_fn, log_likelihood_fn,
                  log_priors, pilot_init_params, burn_in, num_chains = 4,
                  obs_times = NULL,
-                 algorithm = c("SISAR", "SISR", "SIS"),
+                 resample_algorithm = c("SISAR", "SISR", "SIS"),
                  resample_fn = c("stratified", "systematic", "multinomial"),
                  param_transform = NULL,
                  tune_control = default_tune_control(),
                  verbose = FALSE,
                  return_latent_state_est = FALSE,
                  seed = NULL,
-                 num_cores = 1) {
+                 num_cores = 1,
+                 ...) {
   if (!is.null(seed)) {
     set.seed(seed)
   } else {
@@ -290,7 +291,7 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     pilot_init_params[[1]], log_priors
   )
 
-  algorithm <- match.arg(algorithm)
+  resample_algorithm <- match.arg(resample_algorithm)
   resample_fn <- match.arg(resample_fn)
 
   num_params <- lengths[1]
@@ -327,23 +328,18 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
   # Reorder param_transform to match the order of log_priors
   param_transform <- as.list(unlist(param_transform[names(log_priors)]))
 
-  # Add ... as arg to functions if not present
-  has_dots <- function(fun) {
-    "..." %in% names(formals(fun))
+  # Helper to safely add ... to a function's formals if missing
+  safe_add_dots <- function(fun) {
+    if (is.function(fun) && !"..." %in% names(formals(fun))) {
+      formals(fun) <- c(formals(fun), alist(... = ))
+    }
+    fun
   }
 
-  if (!has_dots(init_fn)) {
-    formals(init_fn) <- c(formals(init_fn), alist(... = ))
-  }
-  if (!has_dots(transition_fn)) {
-    formals(transition_fn) <- c(formals(transition_fn), alist(... = ))
-  }
-  if (!has_dots(log_likelihood_fn)) {
-    formals(log_likelihood_fn) <- c(
-      formals(log_likelihood_fn),
-      alist(... = )
-    )
-  }
+  # Apply to the known core functions
+  init_fn <- safe_add_dots(init_fn)
+  transition_fn <- safe_add_dots(transition_fn)
+  log_likelihood_fn <- safe_add_dots(log_likelihood_fn)
 
   tune_control$pilot_proposal_sd <- rep(
     tune_control$pilot_proposal_sd,
@@ -362,6 +358,7 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     # ---------------------------
     message("Running pilot chain for tuning...")
     pilot_chain <- .run_pilot_chain(
+      pf_wrapper = pf_wrapper,
       y = y,
       pilot_m = tune_control$pilot_m,
       pilot_n = tune_control$pilot_n,
@@ -373,10 +370,11 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
       proposal_sd = tune_control$pilot_proposal_sd,
       obs_times = obs_times,
       pilot_init_params = pilot_init_params[[chain_index]],
-      algorithm = tune_control$pilot_algorithm,
+      resample_algorithm = tune_control$pilot_resample_algorithm,
       resample_fn = tune_control$pilot_resample_fn,
       param_transform = param_transform,
-      verbose = verbose
+      verbose = verbose,
+      ...
     )
 
     init_theta <- pilot_chain$pilot_theta_mean
@@ -409,19 +407,16 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
     state_est_chain <- vector("list", m)
 
     # Evaluate the particle filter at the initial parameter value.
-    pf_result <- do.call(particle_filter, c(
-      list(
-        y = y,
-        n = target_n,
-        init_fn = init_fn,
-        transition_fn = transition_fn,
-        log_likelihood_fn = log_likelihood_fn,
-        obs_times = obs_times,
-        algorithm = algorithm,
-        resample_fn = resample_fn,
-        return_particles = FALSE
-      ),
-      as.list(current_theta)
+    pf_result <- do.call(pf_wrapper, c(
+      list(y = y,
+           num_particles = target_n,
+           init_fn = init_fn,
+           transition_fn = transition_fn,
+           log_likelihood_fn = log_likelihood_fn,
+           obs_times = obs_times,
+           return_particles = FALSE),
+      as.list(current_theta),
+      ...
     ))
     current_loglike <- pf_result$loglike
     current_state_est <- pf_result$state_est
@@ -452,19 +447,16 @@ pmmh <- function(y, m, init_fn, transition_fn, log_likelihood_fn,
       }
 
       # Run the particle filter for the proposed parameters.
-      pf_proposed <- do.call(particle_filter, c(
-        list(
-          y = y,
-          n = target_n,
-          init_fn = init_fn,
-          transition_fn = transition_fn,
-          log_likelihood_fn = log_likelihood_fn,
-          obs_times = obs_times,
-          algorithm = algorithm,
-          resample_fn = resample_fn,
-          return_particles = FALSE
-        ),
-        as.list(proposed_theta)
+      pf_proposed <- do.call(pf_wrapper, c(
+        list(y = y,
+             num_particles = target_n,
+             init_fn = init_fn,
+             transition_fn = transition_fn,
+             log_likelihood_fn = log_likelihood_fn,
+             obs_times = obs_times,
+             return_particles = FALSE),
+        as.list(proposed_theta),
+        ...
       ))
       proposed_loglike <- pf_proposed$loglike
 

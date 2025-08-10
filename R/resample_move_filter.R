@@ -207,20 +207,28 @@ resample_move_filter <- function(
     formals(move_fn) <- c(formals(move_fn), alist(t = NULL))
   }
 
-  .particle_filter_core(
-    y = y,
-    num_particles = num_particles,
-    init_fn = init_fn,
-    transition_fn = transition_fn,
-    weight_fn = weight_fn,
-    aux_weight_fn = NULL,
-    move_fn = move_fn,
-    obs_times = obs_times,
-    algorithm = "RMPF",
-    resample_fn = resample_fn,
-    resample_algorithm = "SISR", # RMPF uses SISR
-    threshold = NULL,
-    return_particles = return_particles,
-    ...
-  )
+  args_list <- list(...)
+
+  # Remove resample_algorithm from args_list if present
+  args_list <- args_list[names(args_list) != "resample_algorithm"]
+
+  do.call(.particle_filter_core, c(
+    list(
+      y = y,
+      num_particles = num_particles,
+      init_fn = init_fn,
+      transition_fn = transition_fn,
+      weight_fn = weight_fn,
+      aux_weight_fn = NULL,
+      move_fn = move_fn,
+      obs_times = obs_times,
+      algorithm = "RMPF",
+      resample_fn = resample_fn,
+      resample_algorithm = "SISR",
+      threshold = NULL,
+      return_particles = return_particles
+    ),
+    args_list
+  ))
+
 }

@@ -48,6 +48,8 @@
     )
   }
 
+
+
   init_fn <- .ensure_dots(init_fn)
   transition_fn <- .ensure_dots(transition_fn)
   weight_fn <- .ensure_dots(weight_fn)

@@ -9,7 +9,7 @@ test_that("default_tune_control returns a list with correct defaults", {
   expect_type(result, "list")
   expect_named(result, c(
     "pilot_proposal_sd", "pilot_n", "pilot_m", "pilot_target_var",
-    "pilot_burn_in", "pilot_reps", "pilot_algorithm", "pilot_resample_fn"
+    "pilot_burn_in", "pilot_reps", "pilot_resample_algorithm", "pilot_resample_fn"
   ))
 
   # Check default values
@@ -19,7 +19,7 @@ test_that("default_tune_control returns a list with correct defaults", {
   expect_equal(result$pilot_target_var, 1)
   expect_equal(result$pilot_burn_in, 500)
   expect_equal(result$pilot_reps, 100)
-  expect_equal(result$pilot_algorithm, "SISAR")
+  expect_equal(result$pilot_resample_algorithm, "SISAR")
   expect_equal(result$pilot_resample_fn, "stratified")
 })
 
@@ -27,7 +27,7 @@ test_that("default_tune_control handles valid inputs", {
   result <- default_tune_control(
     pilot_proposal_sd = 0.5, pilot_n = 500, pilot_m = 5000,
     pilot_target_var = 2, pilot_burn_in = 2000, pilot_reps = 5,
-    pilot_algorithm = "SISR", pilot_resample_fn = "systematic"
+    pilot_resample_algorithm = "SISR", pilot_resample_fn = "systematic"
   )
 
   # Check valid inputs
@@ -37,7 +37,7 @@ test_that("default_tune_control handles valid inputs", {
   expect_equal(result$pilot_target_var, 2)
   expect_equal(result$pilot_burn_in, 2000)
   expect_equal(result$pilot_reps, 5)
-  expect_equal(result$pilot_algorithm, "SISR")
+  expect_equal(result$pilot_resample_algorithm, "SISR")
   expect_equal(result$pilot_resample_fn, "systematic")
 })
 
@@ -63,7 +63,7 @@ test_that("default_tune_control errors on invalid inputs", {
     "pilot_burn_in must be a positive numeric value."
   )
   expect_error(
-    default_tune_control(pilot_algorithm = "InvalidAlg"),
+    default_tune_control(pilot_resample_algorithm = "InvalidAlg"),
     "'arg' should be one of"
   )
   expect_error(
@@ -128,6 +128,7 @@ test_that("pmmh checks input types", {
   # y must be numeric
   expect_error(
     pmmh(
+      pf_wrapper = bootstrap_filter,
       y = "not numeric", m = 10, init_fn = init_fn,
       transition_fn = transition_fn,
       log_likelihood_fn = log_likelihood_fn,
@@ -140,6 +141,7 @@ test_that("pmmh checks input types", {
   # m must be a positive integer
   expect_error(
     pmmh(
+      pf_wrapper = bootstrap_filter,
       y = rnorm(10), m = -5, init_fn = init_fn,
       transition_fn = transition_fn,
       log_likelihood_fn = log_likelihood_fn,
@@ -152,6 +154,7 @@ test_that("pmmh checks input types", {
   # burn_in must be positive
   expect_error(
     pmmh(
+      pf_wrapper = bootstrap_filter,
       y = rnorm(10), m = 10, burn_in = -1, init_fn = init_fn,
       transition_fn = transition_fn,
       log_likelihood_fn = log_likelihood_fn,
@@ -164,6 +167,7 @@ test_that("pmmh checks input types", {
   # burn_in must be smaller than m
   expect_error(
     pmmh(
+      pf_wrapper = bootstrap_filter,
       y = rnorm(10), m = 10, burn_in = 10, init_fn = init_fn,
       transition_fn = transition_fn,
       log_likelihood_fn = log_likelihood_fn,
@@ -176,6 +180,7 @@ test_that("pmmh checks input types", {
   # num_chains must be a positive integer
   expect_error(
     pmmh(
+      pf_wrapper = bootstrap_filter,
       y = rnorm(10), m = 10, burn_in = 2, num_chains = 0,
       init_fn = init_fn,
       transition_fn = transition_fn,
@@ -188,6 +193,7 @@ test_that("pmmh checks input types", {
   # log-likelihood must take y as an argument
   expect_error(
     pmmh(
+      pf_wrapper = bootstrap_filter,
       y = rnorm(10), m = 10, burn_in = 2, num_chains = 1,
       init_fn = init_fn,
       transition_fn = transition_fn,
@@ -200,6 +206,7 @@ test_that("pmmh checks input types", {
   # Verify init_params
   expect_error(
     pmmh(
+      pf_wrapper = bootstrap_filter,
       y = rnorm(10), m = 10, burn_in = 2, num_chains = 2,
       init_fn = init_fn,
       transition_fn = transition_fn,
@@ -211,6 +218,7 @@ test_that("pmmh checks input types", {
 
   expect_error(
     pmmh(
+      pf_wrapper = bootstrap_filter,
       y = rnorm(10), m = 10, burn_in = 2, num_chains = 2,
       init_fn = init_fn,
       transition_fn = transition_fn,
@@ -222,6 +230,7 @@ test_that("pmmh checks input types", {
 
   expect_error(
     pmmh(
+      pf_wrapper = bootstrap_filter,
       y = rnorm(10), m = 10, burn_in = 2, num_chains = 2,
       init_fn = init_fn,
       transition_fn = transition_fn,
@@ -234,6 +243,7 @@ test_that("pmmh checks input types", {
   # Pilot_init_param not same length as num_chains
   expect_error(
     pmmh(
+      pf_wrapper = bootstrap_filter,
       y = rnorm(10), m = 10, burn_in = 2, num_chains = 1,
       init_fn = init_fn,
       transition_fn = transition_fn,
@@ -264,6 +274,7 @@ test_that("pmmh checks function arguments", {
   # Check if functions accept 'particles'
   expect_error(
     pmmh(
+      pf_wrapper = bootstrap_filter,
       y = numeric(50),
       m = 10,
       init_fn = function(phi, sigma_x) 0,
@@ -279,6 +290,7 @@ test_that("pmmh checks function arguments", {
 
   expect_error(
     pmmh(
+      pf_wrapper = bootstrap_filter,
       y = numeric(50), m = 10, init_fn = mock_init_fn,
       transition_fn = function(phi, sigma_x) 0,
       log_likelihood_fn = mock_log_likelihood_fn,
@@ -291,6 +303,7 @@ test_that("pmmh checks function arguments", {
 
   expect_error(
     pmmh(
+      pf_wrapper = bootstrap_filter,
       y = numeric(50), m = 10, init_fn = mock_init_fn,
       transition_fn = mock_transition_fn,
       log_likelihood_fn = function(y, sigma_y) 0,
@@ -321,6 +334,7 @@ test_that("pmmh checks that parameters match init_params and log_priors", {
   invalid_init_params <- list(c(phi = 0.8, sigma_x = 1, sigmay = 0.5))
   expect_error(
     pmmh(
+      pf_wrapper = bootstrap_filter,
       y = numeric(50), m = 10, init_fn = mock_init_fn,
       transition_fn = mock_transition_fn,
       log_likelihood_fn = mock_log_likelihood_fn,
@@ -334,6 +348,7 @@ test_that("pmmh checks that parameters match init_params and log_priors", {
   invalid_log_priors <- list(phi = function(phi) 0)
   expect_error(
     pmmh(
+      pf_wrapper = bootstrap_filter,
       y = numeric(50), m = 10, init_fn = mock_init_fn,
       transition_fn = mock_transition_fn,
       log_likelihood_fn = mock_log_likelihood_fn,
@@ -390,6 +405,7 @@ test_that("pmmh works with valid arguments", {
     {
       suppressWarnings({
         pmmh_result <- pmmh(
+          pf_wrapper = bootstrap_filter,
           y = y,
           m = 500,
           init_fn = init_fn,
@@ -407,7 +423,9 @@ test_that("pmmh works with valid arguments", {
             sigma_x = "log",
             sigma_y = "log"
           ),
-          seed = 1405
+          seed = 1405,
+          resample_algorithm = "SISR",
+          resample_fn = "systematic"
         )
       })
     },
@@ -419,6 +437,7 @@ test_that("pmmh works with valid arguments", {
     {
       suppressWarnings({
         pmmh_result_swapped <- pmmh(
+          pf_wrapper = bootstrap_filter,
           y = y,
           m = 500,
           init_fn = init_fn,
@@ -451,6 +470,7 @@ test_that("pmmh works with valid arguments", {
     {
       suppressWarnings({
         pmmh_result_2_cores <- pmmh(
+          pf_wrapper = bootstrap_filter,
           y = y,
           m = 500,
           init_fn = init_fn,
@@ -484,6 +504,7 @@ test_that("pmmh works with valid arguments", {
 
   expect_error(
     pmmh(
+      pf_wrapper = bootstrap_filter,
       y = y,
       m = 500,
       init_fn = init_fn,
@@ -507,6 +528,96 @@ test_that("pmmh works with valid arguments", {
     "num_cores must be a positive integer"
   )
 })
+
+test_that("pmmh works with resample_move_filter", {
+  run_long_tests <- FALSE  # Change to TRUE to run this test
+
+  if (run_long_tests) {
+    test_that("pmmh works with resample_move_filter", {
+      set.seed(1405)
+
+      time <- 20
+      mu <- 1
+      num_particles <- 20
+
+      x <- numeric(time + 1)
+      y <- numeric(time)
+      x[1] <- rnorm(1, 0, 1)
+      for (t in 1:time) {
+        x[t + 1] <- x[t] + rnorm(1, mu)
+        y[t] <- rnorm(1, x[t + 1], 0.1)
+      }
+
+      init_fn <- function(num_particles) rnorm(num_particles, 0, 1)
+      transition_fn <- function(particles, mu) {
+        particles + rnorm(length(particles), mean = mu)
+      }
+      log_likelihood_fn <- function(y, particles) {
+        dnorm(y, mean = particles, sd = 0.1, log = TRUE)
+      }
+
+      move_fn <- function(particle, y) {
+        proposal <- particle + rnorm(1, 0, 0.1)
+        log_p_curr <- log_likelihood_fn(y = y, particles = particle)
+        log_p_prop <- log_likelihood_fn(y = y, particles = proposal)
+        if (log(runif(1)) < (log_p_prop - log_p_curr)) {
+          proposal
+        } else {
+          particle
+        }
+      }
+
+      log_prior_mu <- function(mu) {
+        dnorm(mu, mean = 0, sd = 10, log = TRUE)
+      }
+
+      log_priors <- list(mu = log_prior_mu)
+
+      expect_error(
+        {
+          suppressWarnings({
+            pmmh_result <- pmmh(
+              pf_wrapper = resample_move_filter,
+              y = y,
+              m = 200,
+              init_fn = init_fn,
+              transition_fn = transition_fn,
+              log_likelihood_fn = log_likelihood_fn,
+              log_priors = log_priors,
+              pilot_init_params = list(
+                c(mu = 1.5)
+              ),
+              burn_in = 50,
+              num_chains = 1,
+              param_transform = list(
+                mu = "identity"
+              ),
+              seed = 1405,
+              verbose = FALSE,
+              move_fn = move_fn,
+              tune_control = default_tune_control(
+                pilot_m = 200, pilot_burn_in = 10
+              )
+            )
+          })
+        },
+        regexp = NA
+      )
+
+      mu_chains <- as.data.frame(pmmh_result$theta_chain)
+      mu_est <- mean(mu_chains$mu)
+
+      expect_equal(mu_est, mu, tolerance = 0.1)
+    })
+  }
+
+  expect_equal(run_long_tests, FALSE)
+})
+
+
+
+
+
 
 # Multi-dimensional example
 test_that("Multi dimensional works", {
@@ -535,6 +646,7 @@ test_that("Multi dimensional works", {
     {
       suppressWarnings({
         pmmh_result <- pmmh(
+          pf_wrapper = bootstrap_filter,
           y = y,
           m = 500,
           init_fn = init_fn,
