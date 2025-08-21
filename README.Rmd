@@ -190,6 +190,7 @@ This is done to make the example run faster.
 library(bayesSSM)
 
 result <- pmmh(
+  pf_wrapper = bootstrap_filter, # use bootstrap particle filter
   y = y,
   m = 500, # number of MCMC samples
   init_fn = init_fn,

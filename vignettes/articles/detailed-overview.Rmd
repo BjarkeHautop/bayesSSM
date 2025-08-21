@@ -351,6 +351,7 @@ within the `init_fn_epidemic`, `transition_fn_epidemic`, and
 
 ```{r, eval = FALSE}
 result <- pmmh(
+  pf_wrapper = bootstrap_filter, # use bootstrap particle filter
   y = observations,
   m = 1000,
   init_fn = init_fn_epidemic,
@@ -379,6 +380,7 @@ $(0, \infty)$, we can use the `log` transformation.
 
 ```{r, eval = FALSE}
 result <- pmmh(
+  pf_wrapper = bootstrap_filter, # use bootstrap particle filter
   y = observations,
   m = 1000,
   init_fn = init_fn_epidemic,
@@ -474,6 +476,7 @@ Now, we can use this C++ function in the `pmmh` function by passing it as the
 
 ```{r}
 result_cpp <- pmmh(
+  pf_wrapper = bootstrap_filter, # use bootstrap particle filter
   y = observations,
   m = 1000,
   init_fn = init_fn_epidemic,
@@ -509,6 +512,7 @@ the observations were made at times 1, 2, 3 and 6.
 obs_times <- c(1, 2, 3, 6)
 new_observations <- observations[obs_times]
 result_obs_times <- pmmh(
+  pf_wrapper = bootstrap_filter, # use bootstrap particle filter
   y = new_observations,
   m = 1000,
   init_fn = init_fn_epidemic,

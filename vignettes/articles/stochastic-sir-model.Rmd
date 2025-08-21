@@ -411,6 +411,7 @@ In practice, these should be much higher.
 
 ```{r run-pmmh}
 result <- bayesSSM::pmmh(
+  pf_wrapper = bootstrap_filter, # use bootstrap particle filter
   y = observations,
   m = 1000,
   init_fn = init_fn_epidemic,

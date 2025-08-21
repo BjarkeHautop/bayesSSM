@@ -18,45 +18,10 @@
 )
 }
 \arguments{
-\item{y}{A numeric vector or matrix of observations. Each row represents an
-observation at a time step. If observations not equally spaced, use the
-\code{obs_times} argument to specify the time points at which
-observations are available.}
-
 \item{pilot_n}{An integer specifying the initial number of particles to use.}
 
 \item{pilot_reps}{An integer specifying the number of repetitions for the
 pilot run.}
-
-\item{init_fn}{A function that initializes the particle states. It should
-take `num_particles` as an argument for initializing the particles and return
-a vector or matrix of initial particle states. It can include any
-model-specific parameters as named arguments.}
-
-\item{transition_fn}{A function describing the state transition model. It
-should take `particles` as an argument and return the propagated particles.
-The function can optionally depend on time by including a time step argument
-`t`. It can include any model-specific parameters as named arguments.}
-
-\item{log_likelihood_fn}{A function that computes the log-likelihoods for the
-particles. It should take a `y` argument for the observations,
-the current particles, and return a numeric vector of log-likelihood
-values. The function can optionally depend on time by including a time step
-argument `t`. It can include any model-specific parameters as named
-arguments.}
-
-\item{obs_times}{A numeric vector indicating the time points at which
-observations in \code{y} are available. Must be of the same length as the
-number of rows in \code{y}. If not specified, it is assumed that observations
-are available at consecutive time steps, i.e., \code{obs_times = 1:nrow(y)}.}
-
-\item{resample_fn}{A character string specifying the resampling method.
-Must be one of \code{"stratified"}, \code{"systematic"}, or
-\code{"multinomial"}. Defaults to \code{"stratified"}.}
-
-\item{...}{Additional arguments passed to \code{init_fn},
-\code{transition_fn}, and \code{log_likelihood_fn}. I.e., parameter values if
-the functions requires them.}
 }
 \value{
 A list containing:

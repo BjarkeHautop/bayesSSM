@@ -12,10 +12,10 @@
 #' evaluated at estimated posterior mean. Default is 1.
 #' @param pilot_burn_in Number of burn-in iterations for MCMC. Default is 500.
 #' @param pilot_reps Number of times a particle filter is run. Default is 100.
-#' @param pilot_resample_algorithm The resample_algorithm used for the pilot particle filter.
-#' Default is "SISAR".
+#' @param pilot_resample_algorithm The resample_algorithm used for the pilot
+#' particle filter. Default is \code{"SISAR"}.
 #' @param pilot_resample_fn The resampling function used for the pilot particle
-#' filter. Default is "stratified".
+#' filter. Default is \code{"stratified"}.
 #'
 #' @return A list of tuning control parameters.
 #'
@@ -28,27 +28,21 @@
 #' Metropolis-Hastings for inference in nonlinear dynamical models. Journal
 #' of Statistical Software, 88(2):1–41, 2019. doi: 10.18637/jss.v088.c02
 #'
+#' @importFrom checkmate assert_number assert_count
 #' @export
 default_tune_control <- function(
     pilot_proposal_sd = 0.5, pilot_n = 100, pilot_m = 2000,
     pilot_target_var = 1, pilot_burn_in = 500, pilot_reps = 100,
     pilot_resample_algorithm = c("SISAR", "SISR", "SIS"),
     pilot_resample_fn = c("stratified", "systematic", "multinomial")) {
-  if (!is.numeric(pilot_proposal_sd) || pilot_proposal_sd <= 0) {
-    stop("pilot_proposal_sd must be a positive numeric value.")
-  }
-  if (!is.numeric(pilot_n) || pilot_n <= 0) {
-    stop("pilot_n must be a positive numeric value.")
-  }
-  if (!is.numeric(pilot_m) || pilot_m <= 0) {
-    stop("pilot_m must be a positive numeric value.")
-  }
-  if (!is.numeric(pilot_target_var) || pilot_target_var <= 0) {
-    stop("pilot_target_var must be a positive numeric value.")
-  }
-  if (!is.numeric(pilot_burn_in) || pilot_burn_in <= 0) {
-    stop("pilot_burn_in must be a positive numeric value.")
-  }
+
+  assert_number(pilot_proposal_sd, lower = 0, finite = TRUE)
+  assert_count(pilot_n, positive = TRUE)
+  assert_count(pilot_m, positive = TRUE)
+  assert_number(pilot_target_var, lower = 0, finite = TRUE)
+  assert_count(pilot_burn_in, positive = TRUE)
+  assert_count(pilot_reps, positive = TRUE)
+
   pilot_resample_algorithm <- match.arg(pilot_resample_algorithm)
   pilot_resample_fn <- match.arg(pilot_resample_fn)
   list(
@@ -66,12 +60,28 @@ default_tune_control <- function(
 #' Particle Marginal Metropolis-Hastings (PMMH) for State-Space Models
 #'
 #' This function implements a Particle Marginal Metropolis-Hastings (PMMH)
-#' resample_algorithm to perform Bayesian inference in state-space models. It first
-#' runs a pilot chain to tune the proposal distribution and the number of
+#' resample_algorithm to perform Bayesian inference in state-space models. It
+#' first runs a pilot chain to tune the proposal distribution and the number of
 #' particles for the particle filter, and then runs the main PMMH chain.
 #'
-#' @inheritParams particle_filter
-#' @param m An integer specifying the total number of MCMC iterations.
+#' @inheritParams particle_filter_common_params
+#' @param pf_wrapper A particle filter wrapper function. See
+#' \code{\link{particle_filter}} for the particle filters implemented in
+#' this package.
+#' @param resample_algorithm A character string specifying the resampling
+#' algorithm to use in the particle filter. Options are:
+#' #'
+#' \itemize{
+#'   \item SIS: Sequential Importance Sampling (without resampling).
+#'   \item SISR: Sequential Importance Sampling with resampling at
+#'   every time step.
+#'   \item SISAR: SIS with adaptive resampling based on the Effective
+#'   Sample Size (ESS). Resampling is triggered when the ESS falls below a
+#'   given threshold (default \code{particles / 2}). Can be modified by
+#'   specifying the \code{threshold} argument (in \code{...}), see also
+#'   \code{\link{particle_filter}}.
+#' }
+#' @param m An integer specifying the number of MCMC iterations for each chain.
 #' @param log_priors A list of functions for computing the log-prior of each
 #' parameter.
 #' @param pilot_init_params A list of initial parameter values. Should be a list
@@ -101,8 +111,8 @@ default_tune_control <- function(
 #' (\code{num_chains}). The progress information given to user is limited if
 #' using more than one core.
 #'
-#' @details The PMMH resample_algorithm is essentially a Metropolis Hastings resample_algorithm
-#' where instead of using the intractable marginal likelihood
+#' @details The PMMH resample_algorithm is essentially a Metropolis Hastings
+#' algorithm, where instead of using the intractable marginal likelihood
 #' \eqn{p(y_{1:T}\mid \theta)} it instead uses the estimated likelihood using
 #' a particle filter (see also \code{\link{particle_filter}}). Values are
 #' proposed using a multivariate normal distribution in the transformed space.
@@ -129,6 +139,7 @@ default_tune_control <- function(
 #' @importFrom stats rnorm dnorm runif dexp
 #' @importFrom MASS mvrnorm
 #' @importFrom dplyr bind_rows
+#' @importFrom checkmate assert_numeric assert_int assert_list assert_true
 #' @export
 #'
 #' @examples
@@ -173,8 +184,9 @@ default_tune_control <- function(
 #' }
 #' x <- c(init_state, x)
 #'
-#' # Should use much higher MCMC iterations in practice (m)
+#' # Should use higher MCMC iterations in practice (m)
 #' pmmh_result <- pmmh(
+#'   pf_wrapper = bootstrap_filter,
 #'   y = y,
 #'   m = 1000,
 #'   init_fn = init_fn,
@@ -203,6 +215,7 @@ default_tune_control <- function(
 #'
 #' # Specify observation times in the pmmh using obs_times
 #' pmmh_result <- pmmh(
+#'   pf_wrapper = bootstrap_filter,
 #'   y = y,
 #'   m = 1000,
 #'   init_fn = init_fn,
@@ -243,48 +256,23 @@ pmmh <- function(pf_wrapper, y, m, init_fn, transition_fn, log_likelihood_fn,
   # ---------------------------
   # Input validation
   # ---------------------------
-  if (!is.numeric(y)) stop("y must be a numeric vector")
-  if (!is.numeric(m) || m <= 0) stop("m must be a positive integer")
-  if (!is.numeric(burn_in) || burn_in < 0) {
-    stop("burn_in must be a positive integer")
-  }
-  if (burn_in >= m) {
-    stop("burn_in must be smaller than the number of MCMC iterations (m)")
-  }
-  if (!is.numeric(num_chains) || num_chains <= 0) {
-    stop("num_chains must be a positive integer")
-  }
-  if (!is.numeric(num_cores) || num_cores < 1) {
-    stop("num_cores must be a positive integer")
-  }
+  assert_numeric(y, any.missing = FALSE)
+  assert_int(m, lower = 1)
+  assert_int(burn_in, lower = 0, upper = m - 1)
+  assert_int(num_chains, lower = 1)
+  assert_int(num_cores, lower = 1)
   if (num_cores > num_chains) {
     message("num_cores exceeds num_chains; setting num_cores to num_chains")
     num_cores <- num_chains
   }
 
-  # Check pilot_init_params is a list
-  if (!is.list(pilot_init_params)) {
-    stop("pilot_init_params must be a list.")
-  }
+  assert_list(pilot_init_params, min.len = num_chains, max.len = num_chains)
+  lengths <- vapply(pilot_init_params, length, integer(1))
+  assert_true(all(lengths == lengths[1]), .var.name = "pilot_init_params")
 
-  # Check pilot_init_params all have same length
-  lengths <- vapply(pilot_init_params, length, FUN.VALUE = integer(1))
-  all_same <- all(lengths == lengths[1])
-  if (!all_same) {
-    stop("pilot_init_params must be a list of vectors of the same length.")
-  }
-
-  # Check pilot_init_params list of length num_chains
-  if (length(lengths) != num_chains) {
-    stop("pilot_init_params must be a list of length num_chains.")
-  }
-
-  # Check pilot_init_params all have same names
-  if (!all(sapply(pilot_init_params, function(x) {
-    all(names(x) == names(pilot_init_params[[1]]))
-  }))) {
-    stop("pilot_init_params must have the same parameter names.")
-  }
+  names_list <- lapply(pilot_init_params, names)
+  assert_true(all(sapply(names_list, function(n) all(n == names_list[[1]]))),
+              .var.name = "pilot_init_params")
 
   .check_params_match(
     init_fn, transition_fn, log_likelihood_fn,

@@ -9,7 +9,8 @@ test_that("default_tune_control returns a list with correct defaults", {
   expect_type(result, "list")
   expect_named(result, c(
     "pilot_proposal_sd", "pilot_n", "pilot_m", "pilot_target_var",
-    "pilot_burn_in", "pilot_reps", "pilot_resample_algorithm", "pilot_resample_fn"
+    "pilot_burn_in", "pilot_reps", "pilot_resample_algorithm",
+    "pilot_resample_fn"
   ))
 
   # Check default values
@@ -44,23 +45,23 @@ test_that("default_tune_control handles valid inputs", {
 test_that("default_tune_control errors on invalid inputs", {
   expect_error(
     default_tune_control(pilot_proposal_sd = -0.1),
-    "pilot_proposal_sd must be a positive numeric value."
+    "Assertion on 'pilot_proposal_sd' failed"
   )
   expect_error(
     default_tune_control(pilot_n = 0),
-    "pilot_n must be a positive numeric value."
+    "Assertion on 'pilot_n' failed"
   )
   expect_error(
     default_tune_control(pilot_m = -10),
-    "pilot_m must be a positive numeric value."
+    "Assertion on 'pilot_m' failed"
   )
   expect_error(
     default_tune_control(pilot_target_var = "a"),
-    "pilot_target_var must be a positive numeric value."
+    "Assertion on 'pilot_target_var' failed"
   )
   expect_error(
     default_tune_control(pilot_burn_in = -1),
-    "pilot_burn_in must be a positive numeric value."
+    "Assertion on 'pilot_burn_in' failed"
   )
   expect_error(
     default_tune_control(pilot_resample_algorithm = "InvalidAlg"),
@@ -135,7 +136,7 @@ test_that("pmmh checks input types", {
       log_priors = log_priors, pilot_init_params = valid_init_params,
       burn_in = 2, num_chains = 1
     ),
-    "y must be a numeric vector"
+    "Assertion on 'y' failed"
   )
 
   # m must be a positive integer
@@ -148,7 +149,7 @@ test_that("pmmh checks input types", {
       log_priors = log_priors, pilot_init_params = valid_init_params,
       burn_in = 2, num_chains = 1
     ),
-    "m must be a positive integer"
+    "Assertion on 'm' failed"
   )
 
   # burn_in must be positive
@@ -161,7 +162,7 @@ test_that("pmmh checks input types", {
       log_priors = log_priors, pilot_init_params = valid_init_params,
       num_chains = 1
     ),
-    "burn_in must be a positive integer"
+    "Assertion on 'burn_in' failed"
   )
 
   # burn_in must be smaller than m
@@ -174,7 +175,7 @@ test_that("pmmh checks input types", {
       log_priors = log_priors, pilot_init_params = valid_init_params,
       num_chains = 1
     ),
-    "burn_in must be smaller than"
+    "Assertion on 'burn_in' failed"
   )
 
   # num_chains must be a positive integer
@@ -187,7 +188,7 @@ test_that("pmmh checks input types", {
       log_likelihood_fn = log_likelihood_fn,
       log_priors = log_priors, pilot_init_params = valid_init_params
     ),
-    "num_chains must be a positive integer"
+    "Assertion on 'num_chains' failed"
   )
 
   # log-likelihood must take y as an argument
@@ -200,7 +201,7 @@ test_that("pmmh checks input types", {
       log_likelihood_fn = function(particles, sigma_y) particles,
       log_priors = log_priors, pilot_init_params = valid_init_params
     ),
-    "log_likelihood_fn does not contain 'y'"
+    "log_likelihood_fn does not contain 'y' as an argument"
   )
 
   # Verify init_params
@@ -213,7 +214,7 @@ test_that("pmmh checks input types", {
       log_likelihood_fn = log_likelihood_fn,
       log_priors = log_priors, pilot_init_params = wrong_init_params
     ),
-    "pilot_init_params must be a list."
+    "Assertion on 'pilot_init_params' failed"
   )
 
   expect_error(
@@ -225,7 +226,7 @@ test_that("pmmh checks input types", {
       log_likelihood_fn = log_likelihood_fn,
       log_priors = log_priors, pilot_init_params = wrong_init_params_length
     ),
-    "pilot_init_params must be a list of vectors of the same length."
+    "Assertion on 'pilot_init_params' failed"
   )
 
   expect_error(
@@ -237,7 +238,7 @@ test_that("pmmh checks input types", {
       log_likelihood_fn = log_likelihood_fn,
       log_priors = log_priors, pilot_init_params = wrong_init_params_names
     ),
-    "pilot_init_params must have the same parameter names."
+    "Assertion on 'pilot_init_params' failed"
   )
 
   # Pilot_init_param not same length as num_chains
@@ -250,7 +251,7 @@ test_that("pmmh checks input types", {
       log_likelihood_fn = log_likelihood_fn,
       log_priors = log_priors, pilot_init_params = wrong_init_params_names
     ),
-    "pilot_init_params must be a list of length num_chains."
+    "Assertion on 'pilot_init_params' failed"
   )
 })
 
@@ -525,7 +526,7 @@ test_that("pmmh works with valid arguments", {
       seed = 1405,
       num_cores = 0
     ),
-    "num_cores must be a positive integer"
+    "Assertion on 'num_cores' failed"
   )
 })
 
