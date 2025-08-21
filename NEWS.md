@@ -1,7 +1,5 @@
 # bayesSSM (development version)
 
-# bayesSSM 0.7.0
-
 * Added `auxiliary_filter` and `resample_move_filter` functions for
   auxiliary particle filter and resample move filter.
 * Refactoring of `pmmh` (and internals) to support different particle filters.

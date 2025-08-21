@@ -316,6 +316,7 @@ modify the tuning and only draw 1000 samples to speed it up).
 
 ```{r}
 result <- pmmh(
+  pf_wrapper = bootstrap_filter, # use bootstrap particle filter
   y = observations,
   m = 1000,
   init_fn = init_fn_epidemic,
