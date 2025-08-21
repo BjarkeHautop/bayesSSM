@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1.9003</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1.9005</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -316,7 +316,6 @@ dependency, so we do not use the <code>t</code> argument.</p>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">transition_fn_epidemic</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">particles</span>, <span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">t</span><span class="op">)</span> <span class="op">{</span></span>
-<span></span>
 <span>  <span class="va">n_total</span> <span class="op">&lt;-</span> <span class="fl">500</span></span>
 <span></span>
 <span>  <span class="va">epidemic_step</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">state</span>, <span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">n_total</span><span class="op">)</span> <span class="op">{</span></span>
@@ -383,6 +382,7 @@ distribution (we modify the tuning and only draw 1000 samples to speed
 it up).</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pmmh.html">pmmh</a></span><span class="op">(</span></span>
+<span>  pf_wrapper <span class="op">=</span> <span class="va">bootstrap_filter</span>, <span class="co"># use bootstrap particle filter</span></span>
 <span>  y <span class="op">=</span> <span class="va">observations</span>,</span>
 <span>  m <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  init_fn <span class="op">=</span> <span class="va">init_fn_epidemic</span>,</span>
@@ -403,32 +403,32 @@ it up).</p>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
 <span><span class="co">#&gt; Pilot chain posterior mean:</span></span>
 <span><span class="co">#&gt;    lambda     gamma </span></span>
-<span><span class="co">#&gt; 0.4884500 0.1862124</span></span>
+<span><span class="co">#&gt; 0.6953863 0.2245241</span></span>
 <span><span class="co">#&gt; Pilot chain posterior covariance:</span></span>
-<span><span class="co">#&gt;             lambda        gamma</span></span>
-<span><span class="co">#&gt; lambda 0.004595206 0.0011484070</span></span>
-<span><span class="co">#&gt; gamma  0.001148407 0.0003359767</span></span>
+<span><span class="co">#&gt;               lambda         gamma</span></span>
+<span><span class="co">#&gt; lambda  1.156114e-03 -3.125054e-06</span></span>
+<span><span class="co">#&gt; gamma  -3.125054e-06  8.447229e-09</span></span>
 <span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running Particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; Running chain 2...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
 <span><span class="co">#&gt; Pilot chain posterior mean:</span></span>
 <span><span class="co">#&gt;    lambda     gamma </span></span>
-<span><span class="co">#&gt; 0.6228020 0.2469006</span></span>
+<span><span class="co">#&gt; 0.4852500 0.2072084</span></span>
 <span><span class="co">#&gt; Pilot chain posterior covariance:</span></span>
-<span><span class="co">#&gt;               lambda         gamma</span></span>
-<span><span class="co">#&gt; lambda  0.0045776235 -0.0002264161</span></span>
-<span><span class="co">#&gt; gamma  -0.0002264161  0.0024275942</span></span>
+<span><span class="co">#&gt;             lambda       gamma</span></span>
+<span><span class="co">#&gt; lambda 0.006865806 0.002023443</span></span>
+<span><span class="co">#&gt; gamma  0.002023443 0.000596335</span></span>
 <span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running Particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
 <span><span class="co">#&gt;  Parameter Mean   SD Median 2.5% 97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;     lambda 0.54 0.08   0.54 0.41  0.69  60 1.036</span></span>
-<span><span class="co">#&gt;      gamma 0.20 0.02   0.21 0.15  0.24  70 1.039</span></span>
-<span><span class="co">#&gt; Warning in pmmh(y = observations, m = 1000, init_fn = init_fn_epidemic, : Some</span></span>
-<span><span class="co">#&gt; ESS values are below 400, indicating poor mixing. Consider running the chains</span></span>
-<span><span class="co">#&gt; for more iterations.</span></span>
-<span><span class="co">#&gt; Warning in pmmh(y = observations, m = 1000, init_fn = init_fn_epidemic, : </span></span>
+<span><span class="co">#&gt;     lambda 0.57 0.08   0.57 0.42  0.71   2 1.262</span></span>
+<span><span class="co">#&gt;      gamma 0.22 0.01   0.22 0.19  0.25  68 1.055</span></span>
+<span><span class="co">#&gt; Warning in pmmh(pf_wrapper = bootstrap_filter, y = observations, m = 1000, :</span></span>
+<span><span class="co">#&gt; Some ESS values are below 400, indicating poor mixing. Consider running the</span></span>
+<span><span class="co">#&gt; chains for more iterations.</span></span>
+<span><span class="co">#&gt; Warning in pmmh(pf_wrapper = bootstrap_filter, y = observations, m = 1000, : </span></span>
 <span><span class="co">#&gt; Some Rhat values are above 1.01, indicating that the chains have not converged. </span></span>
 <span><span class="co">#&gt; Consider running the chains for more iterations and/or increase burn_in.</span></span></code></pre></div>
 </div>
@@ -452,6 +452,7 @@ functions that are exported to the worker processes. I.e, the
 <code>log_likelihood_fn_epidemic</code> functions, as shown above.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pmmh.html">pmmh</a></span><span class="op">(</span></span>
+<span>  pf_wrapper <span class="op">=</span> <span class="va">bootstrap_filter</span>, <span class="co"># use bootstrap particle filter</span></span>
 <span>  y <span class="op">=</span> <span class="va">observations</span>,</span>
 <span>  m <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  init_fn <span class="op">=</span> <span class="va">init_fn_epidemic</span>,</span>
@@ -479,6 +480,7 @@ unconstrained space, leading to more efficient sampling. Since <span class="math
 transformation.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pmmh.html">pmmh</a></span><span class="op">(</span></span>
+<span>  pf_wrapper <span class="op">=</span> <span class="va">bootstrap_filter</span>, <span class="co"># use bootstrap particle filter</span></span>
 <span>  y <span class="op">=</span> <span class="va">observations</span>,</span>
 <span>  m <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  init_fn <span class="op">=</span> <span class="va">init_fn_epidemic</span>,</span>
@@ -507,8 +509,8 @@ the transition function of the SIR model.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/Rcpp/man/cppFunction.html" class="external-link">cppFunction</a></span><span class="op">(</span><span class="st">"</span></span>
 <span><span class="st">NumericMatrix transition_fn_epidemic_cpp(</span></span>
-<span><span class="st">    NumericMatrix particles, </span></span>
-<span><span class="st">    double lambda, </span></span>
+<span><span class="st">    NumericMatrix particles,</span></span>
+<span><span class="st">    double lambda,</span></span>
 <span><span class="st">    double gamma</span></span>
 <span><span class="st">) {</span></span>
 <span><span class="st"></span></span>
@@ -516,35 +518,35 @@ the transition function of the SIR model.</p>
 <span><span class="st">  int n_total = 500;</span></span>
 <span><span class="st">  double t_end = 1.0; // Time step for the transition</span></span>
 <span><span class="st">  NumericMatrix new_particles(n_particles, 2);</span></span>
-<span><span class="st">  </span></span>
+<span><span class="st"></span></span>
 <span><span class="st">  for (int p = 0; p &lt; n_particles; p++) {</span></span>
 <span><span class="st">    int s = particles(p, 0);</span></span>
 <span><span class="st">    int i = particles(p, 1);</span></span>
-<span><span class="st">    </span></span>
+<span><span class="st"></span></span>
 <span><span class="st">    if (i == 0) {</span></span>
 <span><span class="st">      new_particles(p, 0) = s;</span></span>
 <span><span class="st">      new_particles(p, 1) = i;</span></span>
 <span><span class="st">      continue;</span></span>
 <span><span class="st">    }</span></span>
-<span><span class="st">    </span></span>
+<span><span class="st"></span></span>
 <span><span class="st">    double t = 0.0;</span></span>
-<span><span class="st">    </span></span>
+<span><span class="st"></span></span>
 <span><span class="st">    while (t &lt; t_end &amp;&amp; i &gt; 0) {</span></span>
 <span><span class="st">      double rate_infection = (lambda / n_total) * s * i;</span></span>
 <span><span class="st">      double rate_removal = gamma * i;</span></span>
 <span><span class="st">      double rate_total = rate_infection + rate_removal;</span></span>
-<span><span class="st">      </span></span>
+<span><span class="st"></span></span>
 <span><span class="st">      if (rate_total &lt;= 0.0) {</span></span>
 <span><span class="st">        break;</span></span>
 <span><span class="st">      }</span></span>
-<span><span class="st">      </span></span>
+<span><span class="st"></span></span>
 <span><span class="st">      double dt = R::rexp(1.0 / rate_total);</span></span>
 <span><span class="st">      if (t + dt &gt; t_end) {</span></span>
 <span><span class="st">        break;</span></span>
 <span><span class="st">      }</span></span>
-<span><span class="st">      </span></span>
+<span><span class="st"></span></span>
 <span><span class="st">      t += dt;</span></span>
-<span><span class="st">      </span></span>
+<span><span class="st"></span></span>
 <span><span class="st">      if (R::runif(0.0, 1.0) &lt; (rate_infection / rate_total)) {</span></span>
 <span><span class="st">        // Infection event</span></span>
 <span><span class="st">        s -= 1;</span></span>
@@ -554,11 +556,11 @@ the transition function of the SIR model.</p>
 <span><span class="st">        i -= 1;</span></span>
 <span><span class="st">      }</span></span>
 <span><span class="st">    }</span></span>
-<span><span class="st">    </span></span>
+<span><span class="st"></span></span>
 <span><span class="st">    new_particles(p, 0) = s;</span></span>
 <span><span class="st">    new_particles(p, 1) = i;</span></span>
 <span><span class="st">  }</span></span>
-<span><span class="st">  </span></span>
+<span><span class="st"></span></span>
 <span><span class="st">  return new_particles;</span></span>
 <span><span class="st">}</span></span>
 <span><span class="st">"</span><span class="op">)</span></span></code></pre></div>
@@ -569,6 +571,7 @@ for larger datasets or more complex models.</p>
 by passing it as the <code>transition_fn</code> argument.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result_cpp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pmmh.html">pmmh</a></span><span class="op">(</span></span>
+<span>  pf_wrapper <span class="op">=</span> <span class="va">bootstrap_filter</span>, <span class="co"># use bootstrap particle filter</span></span>
 <span>  y <span class="op">=</span> <span class="va">observations</span>,</span>
 <span>  m <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  init_fn <span class="op">=</span> <span class="va">init_fn_epidemic</span>,</span>
@@ -590,32 +593,32 @@ by passing it as the <code>transition_fn</code> argument.</p>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
 <span><span class="co">#&gt; Pilot chain posterior mean:</span></span>
 <span><span class="co">#&gt;    lambda     gamma </span></span>
-<span><span class="co">#&gt; 0.5744942 0.2023182</span></span>
-<span><span class="co">#&gt; Pilot chain posterior covariance (on transformed space):</span></span>
-<span><span class="co">#&gt;              lambda        gamma</span></span>
-<span><span class="co">#&gt; lambda 0.0049477745 0.0008807493</span></span>
-<span><span class="co">#&gt; gamma  0.0008807493 0.0001576646</span></span>
+<span><span class="co">#&gt; 0.5317352 0.1822626</span></span>
+<span><span class="co">#&gt; Pilot chain posterior covariance (transformed space):</span></span>
+<span><span class="co">#&gt;             lambda       gamma</span></span>
+<span><span class="co">#&gt; lambda 0.015968002 0.004597379</span></span>
+<span><span class="co">#&gt; gamma  0.004597379 0.001364845</span></span>
 <span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running Particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; Running chain 2...</span></span>
 <span><span class="co">#&gt; Running pilot chain for tuning...</span></span>
 <span><span class="co">#&gt; Pilot chain posterior mean:</span></span>
 <span><span class="co">#&gt;    lambda     gamma </span></span>
-<span><span class="co">#&gt; 0.5228747 0.1919012</span></span>
-<span><span class="co">#&gt; Pilot chain posterior covariance (on transformed space):</span></span>
-<span><span class="co">#&gt;              lambda        gamma</span></span>
-<span><span class="co">#&gt; lambda 0.0018259219 0.0005323758</span></span>
-<span><span class="co">#&gt; gamma  0.0005323758 0.0001830201</span></span>
+<span><span class="co">#&gt; 0.4623588 0.1752997</span></span>
+<span><span class="co">#&gt; Pilot chain posterior covariance (transformed space):</span></span>
+<span><span class="co">#&gt;               lambda         gamma</span></span>
+<span><span class="co">#&gt; lambda  0.0019022254 -2.446075e-04</span></span>
+<span><span class="co">#&gt; gamma  -0.0002446075  4.555458e-05</span></span>
 <span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running Particle MCMC chain with tuned settings...</span></span>
 <span><span class="co">#&gt; PMMH Results Summary:</span></span>
 <span><span class="co">#&gt;  Parameter Mean   SD Median 2.5% 97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;     lambda 0.57 0.07   0.56 0.42  0.72 109 1.012</span></span>
-<span><span class="co">#&gt;      gamma 0.21 0.02   0.21 0.17  0.24  70 1.020</span></span>
-<span><span class="co">#&gt; Warning in pmmh(y = observations, m = 1000, init_fn = init_fn_epidemic, : Some</span></span>
-<span><span class="co">#&gt; ESS values are below 400, indicating poor mixing. Consider running the chains</span></span>
-<span><span class="co">#&gt; for more iterations.</span></span>
-<span><span class="co">#&gt; Warning in pmmh(y = observations, m = 1000, init_fn = init_fn_epidemic, : </span></span>
+<span><span class="co">#&gt;     lambda 0.59 0.08   0.59 0.43  0.75  39 1.089</span></span>
+<span><span class="co">#&gt;      gamma 0.21 0.02   0.22 0.16  0.25  15 1.082</span></span>
+<span><span class="co">#&gt; Warning in pmmh(pf_wrapper = bootstrap_filter, y = observations, m = 1000, :</span></span>
+<span><span class="co">#&gt; Some ESS values are below 400, indicating poor mixing. Consider running the</span></span>
+<span><span class="co">#&gt; chains for more iterations.</span></span>
+<span><span class="co">#&gt; Warning in pmmh(pf_wrapper = bootstrap_filter, y = observations, m = 1000, : </span></span>
 <span><span class="co">#&gt; Some Rhat values are above 1.01, indicating that the chains have not converged. </span></span>
 <span><span class="co">#&gt; Consider running the chains for more iterations and/or increase burn_in.</span></span></code></pre></div>
 </div>
@@ -636,6 +639,7 @@ where we assume that the observations were made at times 1, 2, 3 and
 <code class="sourceCode R"><span><span class="va">obs_times</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">6</span><span class="op">)</span></span>
 <span><span class="va">new_observations</span> <span class="op">&lt;-</span> <span class="va">observations</span><span class="op">[</span><span class="va">obs_times</span><span class="op">]</span></span>
 <span><span class="va">result_obs_times</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/pmmh.html">pmmh</a></span><span class="op">(</span></span>
+<span>  pf_wrapper <span class="op">=</span> <span class="va">bootstrap_filter</span>, <span class="co"># use bootstrap particle filter</span></span>
 <span>  y <span class="op">=</span> <span class="va">new_observations</span>,</span>
 <span>  m <span class="op">=</span> <span class="fl">1000</span>,</span>
 <span>  init_fn <span class="op">=</span> <span class="va">init_fn_epidemic</span>,</span>
