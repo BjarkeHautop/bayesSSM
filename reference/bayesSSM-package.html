@@ -13,7 +13,7 @@ diagnostics."><meta property="og:image" content="https://bjarkehautop.github.io/
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1.9005</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1.9006</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -52,6 +52,28 @@ diagnostics.</p>
     </div>
 
 
+    <div class="section level2">
+    <h2 id="model-specification">Model Specification<a class="anchor" aria-label="anchor" href="#model-specification"></a></h2>
+
+
+<p>Particle filter implementations in this package assume a discrete-time
+state-space model defined by:</p>
+<ul><li><p>A sequence of latent states \(x_0, x_1, \ldots, x_T\) evolving
+  according to a Markov process.</p></li>
+<li><p>Observations \(y_1, \ldots, y_T\) that are conditionally independent
+  given the corresponding latent states.</p></li>
+</ul><p>The model is specified as:
+$$x_0 \sim \mu_\theta$$
+$$x_t \sim f_\theta(x_t \mid x_{t-1}), \quad t = 1, \ldots, T$$
+$$y_t \sim g_\theta(y_t \mid x_t), \quad t = 1, \ldots, T$$</p>
+<p>where \(\theta\) denotes model parameters passed via <code>...</code>.</p>
+<p>The user provides the following functions:</p><ul><li><p><code>init_fn</code>: draws from the initial distribution
+  \(\mu_\theta\).</p></li>
+<li><p><code>transition_fn</code>: generates or evaluates the transition
+  density \(f_\theta\).</p></li>
+<li><p><code>weight_fn</code>: evaluates the observation likelihood
+  \(g_\theta\).</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p>Useful links:</p><ul><li><p><a href="https://github.com/BjarkeHautop/bayesSSM" class="external-link">https://github.com/BjarkeHautop/bayesSSM</a></p></li>
