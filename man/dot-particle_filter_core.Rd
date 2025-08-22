@@ -83,27 +83,31 @@ a state space model using sequential Monte Carlo methods.
 }
 \section{Model Specification}{
 
-All particle filter implementations assume a discrete-time state-space model
-consisting of:
+Particle filter implementations in this package assume a discrete-time
+state-space model defined by:
 
 \itemize{
-  \item Latent states \eqn{x_0, x_1, \ldots, x_T} evolve via a
-  Markov process.
-  \item Observations \eqn{y_1, \ldots, y_T} are conditionally independent
-  given the latent states.
+  \item A sequence of latent states \eqn{x_0, x_1, \ldots, x_T} evolving
+  according to a Markov process.
+  \item Observations \eqn{y_1, \ldots, y_T} that are conditionally independent
+  given the corresponding latent states.
 }
 
 The model is specified as:
 \deqn{x_0 \sim \mu_\theta}
-\deqn{x_t \sim f_\theta(x_t \mid x_{t-1})}
-\deqn{y_t \sim g_\theta(y_t \mid x_t)}
+\deqn{x_t \sim f_\theta(x_t \mid x_{t-1}), \quad t = 1, \ldots, T}
+\deqn{y_t \sim g_\theta(y_t \mid x_t), \quad t = 1, \ldots, T}
 
-where \eqn{\theta} denotes model parameters passed through \code{...}.
-These functions are defined by:
+where \eqn{\theta} denotes model parameters passed via \code{...}.
+
+The user provides the following functions:
 \itemize{
-  \item \code{init_fn}: draws from \eqn{\mu_\theta}
-  \item \code{transition_fn}: defines the transition density \eqn{f_\theta}
-  \item \code{weight_fn}: defines the observation likelihood \eqn{g_\theta}
+  \item \code{init_fn}: draws from the initial distribution
+  \eqn{\mu_\theta}.
+  \item \code{transition_fn}: generates or evaluates the transition
+  density \eqn{f_\theta}.
+  \item \code{weight_fn}: evaluates the observation likelihood
+  \eqn{g_\theta}.
 }
 }
 

@@ -6,6 +6,8 @@
 #' diagnostics.
 #'
 #' @keywords internal
+#'
+#' @inheritSection particle_filter_model_specification Model Specification
 "_PACKAGE"
 
 ## usethis namespace: start
