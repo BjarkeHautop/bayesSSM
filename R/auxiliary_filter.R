@@ -1,9 +1,10 @@
 #' Auxiliary Particle Filter (APF)
 #'
-#' The Auxiliary Particle Filter enhances the bootstrap filter by using a
-#' look ahead step: particles are weighted based on the predicted likelihood of
-#' the next observation before resampling. This anticipatory weighting reduces
-#' particle degeneracy and improves filter efficiency.
+#' The Auxiliary Particle Filter differs from the bootstrap filter by
+#' incorporating a look-ahead step: particles are reweighted using an
+#' approximation of the likelihood of the next observation prior to resampling.
+#' This adjustment can help reduce particle degeneracy and,
+#' improve filtering efficiency compared to the bootstrap approach.
 #'
 #' @inheritParams particle_filter_common_params
 #' @param aux_log_likelihood_fn A function that computes the log-likelihood of

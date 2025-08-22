@@ -67,8 +67,10 @@ A list with components:
 }
 }
 \description{
-The Resample-Move Particle Filter applies a Metropolis-style move step after
-resampling, improving particle diversity and avoiding sample impoverishment.
+The Resample-Move Particle Filter differs from standard resampling methods
+by including a Metropolis–Hastings move step after resampling. This additional
+step can increase particle diversity and, in some contexts, help mitigate
+sample impoverishment.
 }
 \section{The Resample-Move Particle Filter (RMPF)}{
 
