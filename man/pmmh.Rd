@@ -133,11 +133,14 @@ particles for the particle filter, and then runs the main PMMH chain.
 The PMMH resample_algorithm is essentially a Metropolis Hastings
 algorithm, where instead of using the intractable marginal likelihood
 \eqn{p(y_{1:T}\mid \theta)} it instead uses the estimated likelihood using
-a particle filter (see also \code{\link{particle_filter}}). Values are
-proposed using a multivariate normal distribution in the transformed space.
+a particle filter (see \code{\link{particle_filter}} for available particle
+filters). Values are
+proposed using a multivariate normal distribution in the transformed space
+(specified using `param_transform`).
 The proposal covariance and the number of particles is chosen based on a
-pilot run. The minimum number of particles is chosen as 50 and maximum as
-1000.
+pilot run. The number of particles is chosen such that the variance of the
+log-likelihood estimate at the estimated posterior mean is approximately 1
+(with a minimum of 50 particles and a maximum of 1000).
 }
 \examples{
 init_fn <- function(num_particles) {
