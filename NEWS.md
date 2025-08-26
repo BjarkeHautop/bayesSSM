@@ -1,10 +1,13 @@
 # bayesSSM (development version)
 
-* Added `auxiliary_filter` and `resample_move_filter` functions for
-  auxiliary particle filter and resample move filter.
-* Refactoring of `pmmh` (and internals) to support different particle filters.
-* 
-* Minor edits to README and vignettes for clarity.
+* Add `auxiliary_filter` and `resample_move_filter` for auxiliary and 
+  resample-move particle filters.  
+  See all supported filters in `?particle_filter`.  
+* Refactor `pmmh` and internals to support multiple particle filters.  
+* Add `pf_wrapper` argument to `pmmh` to specify which particle filter to use.  
+* Improve argument checking by switching to the `checkmate` package, 
+  providing clearer and more consistent error messages.  
+* Make minor edits to README and vignettes for clarity.  
 
 # bayesSSM 0.6.1
 
