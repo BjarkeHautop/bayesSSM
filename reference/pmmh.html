@@ -13,7 +13,7 @@ particles for the particle filter, and then runs the main PMMH chain."><meta pro
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1.9006</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.6.1.9007</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -224,11 +224,14 @@ using more than one core.</p></dd>
     <p>The PMMH resample_algorithm is essentially a Metropolis Hastings
 algorithm, where instead of using the intractable marginal likelihood
 \(p(y_{1:T}\mid \theta)\) it instead uses the estimated likelihood using
-a particle filter (see also <code><a href="particle_filter.html">particle_filter</a></code>). Values are
-proposed using a multivariate normal distribution in the transformed space.
+a particle filter (see <code><a href="particle_filter.html">particle_filter</a></code> for available particle
+filters). Values are
+proposed using a multivariate normal distribution in the transformed space
+(specified using `param_transform`).
 The proposal covariance and the number of particles is chosen based on a
-pilot run. The minimum number of particles is chosen as 50 and maximum as
-1000.</p>
+pilot run. The number of particles is chosen such that the variance of the
+log-likelihood estimate at the estimated posterior mean is approximately 1
+(with a minimum of 50 particles and a maximum of 1000).</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
