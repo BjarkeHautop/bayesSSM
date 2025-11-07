@@ -5,7 +5,7 @@ articles:
   bayesSSM: bayesSSM.html
   articles/detailed-overview: detailed-overview.html
   articles/stochastic-sir-model: stochastic-sir-model.html
-last_built: 2025-11-07T16:21Z
+last_built: 2025-11-07T16:41Z
 urls:
   reference: https://bjarkehautop.github.io/bayesSSM/reference
   article: https://bjarkehautop.github.io/bayesSSM/articles
