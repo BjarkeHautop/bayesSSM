@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0.9001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,10 +85,10 @@
 \end{align*}</span> that is <span class="math inline">X_t</span> is a
 latent state and <span class="math inline">Y_t</span> is an observed
 value. The parameters of the model are <span class="math inline">\sigma_x</span> and <span class="math inline">\sigma_y</span>.</p>
-<p>Note: While this example uses pmmh, the model is simple enough that
-standard MCMC methods could also be applied. For a more complicated
-example where standard MCMC methods cannot be used, see the article
-Stochastic SIR Model article <a href="https://bjarkehautop.github.io/bayesSSM/articles/stochastic-sir-model.html">here</a>.</p>
+<p>Note: While this example uses <code>pmmh</code>, the model is simple
+enough that standard MCMC methods could also be applied. For a more
+complicated example where standard MCMC methods cannot be used, see the
+article Stochastic SIR Model article <a href="https://bjarkehautop.github.io/bayesSSM/articles/stochastic-sir-model.html">here</a>.</p>
 <p>First, we will simulate some data from this model:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html" class="external-link">set.seed</a></span><span class="op">(</span><span class="fl">1405</span><span class="op">)</span></span>
@@ -160,9 +160,10 @@ functions.</p>
 <span>  sigma_x <span class="op">=</span> <span class="va">log_prior_sigma_x</span>,</span>
 <span>  sigma_y <span class="op">=</span> <span class="va">log_prior_sigma_y</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>We will use bootstr The <code>pmmh</code> function automatically
-tunes the number of particles and proposal distribution for the
-parameters. The tuning can be modified by the the function
+<p>We will use a bootstrap particle filter as the particle filter in
+<code>pmmh</code>. The <code>pmmh</code> function automatically tunes
+the number of particles and proposal distribution for the parameters.
+The tuning can be modified by the the function
 <code>default_tune_control</code>.</p>
 <p>We fit 2 chains with <span class="math inline">m=1000</span>
 iterations for each, with a burn_in of <span class="math inline">500</span>. We also modify the tuning to only use a
@@ -214,10 +215,6 @@ proposals for <span class="math inline">\sigma_x</span> and <span class="math in
 <span><span class="co">#&gt; sigma_y -0.01408273  0.15461056</span></span>
 <span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running Particle MCMC chain with tuned settings...</span></span>
-<span><span class="co">#&gt; PMMH Results Summary:</span></span>
-<span><span class="co">#&gt;  Parameter Mean   SD Median 2.5% 97.5% ESS Rhat</span></span>
-<span><span class="co">#&gt;    sigma_x 1.20 0.38   1.09 0.43  2.15  20 1.03</span></span>
-<span><span class="co">#&gt;    sigma_y 0.56 0.45   0.39 0.17  1.64   3 1.20</span></span>
 <span><span class="co">#&gt; Warning in pmmh(pf_wrapper = bootstrap_filter, y = y, m = 1000, init_fn =</span></span>
 <span><span class="co">#&gt; init_fn, : Some ESS values are below 400, indicating poor mixing. Consider</span></span>
 <span><span class="co">#&gt; running the chains for more iterations.</span></span>

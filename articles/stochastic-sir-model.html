@@ -26,7 +26,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">bayesSSM</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.7.0.9001</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -84,16 +84,21 @@
 </h2>
 <p>We consider a stochastic SIR (Susceptible–Infectious–Recovered) model
 for the spread of an infectious disease in a <em>closed population</em>
-of size <span class="math inline">N</span>, meaning there are no births,
-deaths, or migration. The population is divided into three compartments:
-susceptible (S), infectious (I), and recovered (R). Initially, all
-individuals are susceptible except for <span class="math inline">m</span> infectious individuals.</p>
+of size <span class="math inline">pop_size</span>, meaning there are no
+births, deaths, or migration. The population is divided into three
+compartments: susceptible (S), infectious (I), and recovered (R).
+Initially, all individuals are susceptible except for <span class="math inline">m</span> infectious individuals.</p>
 <p>Note that most of the literature on SIR models assumes a
 deterministic model, where the compartments are treated as continuous
-and are described by ordinary differential equations (ODEs).</p>
+and are described by ordinary differential equations (ODEs). Here, we
+instead consider a fully stochastic model, where the compartments are
+discrete and the transitions between compartments are governed by
+probabilistic rules. Especially for small populations, stochastic models
+can capture the inherent randomness in disease transmission and recovery
+more accurately than deterministic models.</p>
 <p>Each infectious individual makes contact with any given member of the
 population according to a time-homogeneous Poisson process with rate
-<span class="math inline">\lambda/N</span>, where <span class="math inline">\lambda &gt; 0</span>. Thus, each infectious
+<span class="math inline">\lambda/pop_size</span>, where <span class="math inline">\lambda &gt; 0</span>. Thus, each infectious
 individual makes contact with any other individual at an overall rate of
 <span class="math inline">\lambda</span>, independent of the population
 size.</p>
@@ -108,10 +113,9 @@ infectious individuals at time <span class="math inline">t \geq
 \{(S(t), I(t)) : t \geq 0\}
 </span> forms a continuous-time Markov process, since both infection and
 recovery events are exponentially distributed and are therefore
-memoryless. Since <span class="math inline">N</span> is fixed, we have
-<span class="math inline">R(t) = N - S(t) - I(t)</span>, and thus the
-process can be described by the pair <span class="math inline">(S(t),
-I(t))</span>.</p>
+memoryless. Since <span class="math inline">pop_size</span> is fixed, we
+have <span class="math inline">R(t) = pop_size - S(t) - I(t)</span>, and
+thus the process can be described by the pair <span class="math inline">(S(t), I(t))</span>.</p>
 <div class="section level3">
 <h3 id="transition-rates">Transition Rates<a class="anchor" aria-label="anchor" href="#transition-rates"></a>
 </h3>
@@ -123,7 +127,7 @@ I(t))</span>.</p>
 </span></p>
 <p>occurs at rate</p>
 <p><span class="math display">
-\frac{\lambda}{N} \, s \, i,
+\frac{\lambda}{pop_size} \, s \, i,
 </span></p>
 <p>for <span class="math inline">s &gt; 0</span> and <span class="math inline">i &gt; 0</span>.</p>
 </li>
@@ -174,65 +178,65 @@ becomes infeasible as the number of infectious individuals increases. We
 illustrate how this can be done using matrix exponentiation for small
 populations.</p>
 <p>The probability distribution of the state at time <span class="math inline">t</span> is given by: <span class="math display">
-P(t) = e^{Qt},
-</span> where <span class="math inline">Q</span> is the generator matrix
-of the Markov process, which contains the transition rates between
-states.</p>
+matrix_exp(t) = e^{Qt},
+</span> where <span class="math inline">generator</span> is the
+generator matrix of the Markov process, which contains the transition
+rates between states.</p>
 <p>We define functions below to generate the state space for a small SIR
 system, build the generator matrix, and compute the transition
 probabilities at a given time <span class="math inline">t</span>.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Generate state space for small SIR system</span></span>
-<span><span class="va">generate_sir_states</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">N</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># Returns all (s, i) pairs where s + i &lt;= N</span></span>
-<span>  <span class="va">states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>s <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="va">N</span>, i <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="va">N</span><span class="op">)</span></span>
-<span>  <span class="va">states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html" class="external-link">subset</a></span><span class="op">(</span><span class="va">states</span>, <span class="va">s</span> <span class="op">+</span> <span class="va">i</span> <span class="op">&lt;=</span> <span class="va">N</span><span class="op">)</span></span>
-<span>  <span class="va">states</span> <span class="op">&lt;-</span> <span class="va">states</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="va">states</span><span class="op">$</span><span class="va">s</span>, <span class="va">states</span><span class="op">$</span><span class="va">i</span><span class="op">)</span>, <span class="op">]</span></span>
+<span><span class="va">generate_sir_states</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">pop_size</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># Returns all (s, i) pairs where s + i &lt;= pop_size</span></span>
+<span>  <span class="va">states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>s <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="va">pop_size</span>, i <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="va">pop_size</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">s</span> <span class="op">+</span> <span class="va">.data</span><span class="op">$</span><span class="va">i</span> <span class="op">&lt;=</span> <span class="va">pop_size</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
+<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">s</span>, <span class="va">.data</span><span class="op">$</span><span class="va">i</span><span class="op">)</span></span>
 <span>  <span class="va">states</span></span>
 <span><span class="op">}</span></span>
 <span></span>
-<span><span class="co"># Build generator matrix Q</span></span>
-<span><span class="va">build_generator_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">states</span>, <span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">N</span><span class="op">)</span> <span class="op">{</span></span>
+<span><span class="co"># Build generator matrix</span></span>
+<span><span class="va">build_generator_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">states</span>, <span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">pop_size</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">n_states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">states</span><span class="op">)</span></span>
-<span>  <span class="va">Q</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">n_states</span>, <span class="va">n_states</span><span class="op">)</span></span>
+<span>  <span class="va">generator</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">n_states</span>, <span class="va">n_states</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="kw">for</span> <span class="op">(</span><span class="va">k</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">n_states</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">s</span> <span class="op">&lt;-</span> <span class="va">states</span><span class="op">$</span><span class="va">s</span><span class="op">[</span><span class="va">k</span><span class="op">]</span></span>
 <span>    <span class="va">i</span> <span class="op">&lt;-</span> <span class="va">states</span><span class="op">$</span><span class="va">i</span><span class="op">[</span><span class="va">k</span><span class="op">]</span></span>
 <span></span>
-<span>    <span class="va">rate_infection</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">lambda</span> <span class="op">/</span> <span class="va">N</span><span class="op">)</span> <span class="op">*</span> <span class="va">s</span> <span class="op">*</span> <span class="va">i</span></span>
+<span>    <span class="va">rate_infection</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">lambda</span> <span class="op">/</span> <span class="va">pop_size</span><span class="op">)</span> <span class="op">*</span> <span class="va">s</span> <span class="op">*</span> <span class="va">i</span></span>
 <span>    <span class="va">rate_recovery</span> <span class="op">&lt;-</span> <span class="va">gamma</span> <span class="op">*</span> <span class="va">i</span></span>
 <span></span>
 <span>    <span class="co"># Infection transition</span></span>
 <span>    <span class="kw">if</span> <span class="op">(</span><span class="va">s</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">&amp;&amp;</span> <span class="va">i</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
 <span>      <span class="va">next_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">s</span> <span class="op">-</span> <span class="fl">1</span>, <span class="va">i</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
 <span>      <span class="va">idx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">states</span><span class="op">$</span><span class="va">s</span> <span class="op">==</span> <span class="va">next_state</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&amp;</span> <span class="va">states</span><span class="op">$</span><span class="va">i</span> <span class="op">==</span> <span class="va">next_state</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
-<span>      <span class="va">Q</span><span class="op">[</span><span class="va">k</span>, <span class="va">idx</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">rate_infection</span></span>
+<span>      <span class="va">generator</span><span class="op">[</span><span class="va">k</span>, <span class="va">idx</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">rate_infection</span></span>
 <span>    <span class="op">}</span></span>
 <span></span>
 <span>    <span class="co"># Recovery transition</span></span>
 <span>    <span class="kw">if</span> <span class="op">(</span><span class="va">i</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
 <span>      <span class="va">next_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">s</span>, <span class="va">i</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
 <span>      <span class="va">idx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">states</span><span class="op">$</span><span class="va">s</span> <span class="op">==</span> <span class="va">next_state</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&amp;</span> <span class="va">states</span><span class="op">$</span><span class="va">i</span> <span class="op">==</span> <span class="va">next_state</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
-<span>      <span class="va">Q</span><span class="op">[</span><span class="va">k</span>, <span class="va">idx</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">rate_recovery</span></span>
+<span>      <span class="va">generator</span><span class="op">[</span><span class="va">k</span>, <span class="va">idx</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">rate_recovery</span></span>
 <span>    <span class="op">}</span></span>
 <span></span>
 <span>    <span class="co"># Diagonal: exit rate</span></span>
-<span>    <span class="va">Q</span><span class="op">[</span><span class="va">k</span>, <span class="va">k</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="op">(</span><span class="va">rate_infection</span> <span class="op">+</span> <span class="va">rate_recovery</span><span class="op">)</span></span>
+<span>    <span class="va">generator</span><span class="op">[</span><span class="va">k</span>, <span class="va">k</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="op">(</span><span class="va">rate_infection</span> <span class="op">+</span> <span class="va">rate_recovery</span><span class="op">)</span></span>
 <span>  <span class="op">}</span></span>
 <span></span>
-<span>  <span class="va">Q</span></span>
+<span>  <span class="va">generator</span></span>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="co"># Compute transition probabilities at time t</span></span>
-<span><span class="va">compute_transition_probs</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">N</span>, <span class="va">t</span>, <span class="va">init_state</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">states</span> <span class="op">&lt;-</span> <span class="fu">generate_sir_states</span><span class="op">(</span><span class="va">N</span><span class="op">)</span></span>
-<span>  <span class="va">Q</span> <span class="op">&lt;-</span> <span class="fu">build_generator_matrix</span><span class="op">(</span><span class="va">states</span>, <span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">N</span><span class="op">)</span></span>
+<span><span class="va">compute_transition_probs</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">pop_size</span>, <span class="va">t</span>, <span class="va">init_state</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">states</span> <span class="op">&lt;-</span> <span class="fu">generate_sir_states</span><span class="op">(</span><span class="va">pop_size</span><span class="op">)</span></span>
+<span>  <span class="va">generator</span> <span class="op">&lt;-</span> <span class="fu">build_generator_matrix</span><span class="op">(</span><span class="va">states</span>, <span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">pop_size</span><span class="op">)</span></span>
 <span></span>
-<span>  <span class="va">P</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/expm/man/expm.html" class="external-link">expm</a></span><span class="op">(</span><span class="va">Q</span> <span class="op">*</span> <span class="va">t</span><span class="op">)</span> <span class="co"># matrix exponential</span></span>
+<span>  <span class="va">matrix_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/expm/man/expm.html" class="external-link">expm</a></span><span class="op">(</span><span class="va">generator</span> <span class="op">*</span> <span class="va">t</span><span class="op">)</span></span>
 <span></span>
 <span>  <span class="va">init_index</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">states</span><span class="op">$</span><span class="va">s</span> <span class="op">==</span> <span class="va">init_state</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&amp;</span> <span class="va">states</span><span class="op">$</span><span class="va">i</span> <span class="op">==</span> <span class="va">init_state</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
-<span>  <span class="va">p_t</span> <span class="op">&lt;-</span> <span class="va">P</span><span class="op">[</span><span class="va">init_index</span>, <span class="op">]</span></span>
+<span>  <span class="va">p_t</span> <span class="op">&lt;-</span> <span class="va">matrix_exp</span><span class="op">[</span><span class="va">init_index</span>, <span class="op">]</span></span>
 <span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
 <span>    s <span class="op">=</span> <span class="va">states</span><span class="op">$</span><span class="va">s</span>,</span>
@@ -242,18 +246,18 @@ probabilities at a given time <span class="math inline">t</span>.</p>
 <span><span class="op">}</span></span></code></pre></div>
 <p>This can then be run to compute the transition probabilities for a
 given state and time point. For example, if we have a population of size
-<span class="math inline">N=5</span> with state <span class="math inline">(S(t), I(t)) = (4, 1)</span> at time <span class="math inline">t</span>, we can compute the transition
+<span class="math inline">pop_size=5</span> with state <span class="math inline">(S(t), I(t)) = (4, 1)</span> at time <span class="math inline">t</span>, we can compute the transition
 probabilities for the next time point <span class="math inline">t+1</span> as</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Example with very small population</span></span>
 <span><span class="va">lambda</span> <span class="op">&lt;-</span> <span class="fl">1.0</span></span>
 <span><span class="va">gamma</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span>
-<span><span class="va">N</span> <span class="op">&lt;-</span> <span class="fl">5</span> <span class="co"># Small population</span></span>
-<span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="co"># Time point</span></span>
+<span><span class="va">pop_size</span> <span class="op">&lt;-</span> <span class="fl">5</span></span>
+<span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
 <span><span class="va">init_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">)</span> <span class="co"># (s, i)</span></span>
 <span></span>
 <span><span class="va">transition_probs</span> <span class="op">&lt;-</span> <span class="fu">compute_transition_probs</span><span class="op">(</span></span>
-<span>  <span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">N</span>, <span class="va">t</span>, <span class="va">init_state</span></span>
+<span>  <span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">pop_size</span>, <span class="va">t</span>, <span class="va">init_state</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Show the most probable next states</span></span>
@@ -266,10 +270,10 @@ probabilities for the next time point <span class="math inline">t+1</span> as</p
 <span><span class="co">#&gt; 15 2 3 0.06343076</span></span></code></pre></div>
 <p>Note, that this scales poorly with larger populations, as the number
 of states is given by <span class="math display">
-N+2 \choose 2,
-</span> which for <span class="math inline">N=100</span> is already over
-5000 states. Thus, this whole approach is only feasible for very small
-populations.</p>
+\text{pop_size}+2 \choose 2,
+</span> which for <span class="math inline">pop_size=100</span> is
+already over <span class="math inline">5000</span> states. Thus, this
+whole approach is only feasible for very small populations.</p>
 </div>
 <div class="section level2">
 <h2 id="simulate-data">Simulate data<a class="anchor" aria-label="anchor" href="#simulate-data"></a>
@@ -326,7 +330,8 @@ rates.</p>
 <span><span class="op">}</span></span>
 <span></span>
 <span><span class="va">simulate_epidemic</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span></span>
-<span>    <span class="va">n_total</span>, <span class="va">init_infected</span>, <span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">t_max</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">n_total</span>, <span class="va">init_infected</span>, <span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">t_max</span></span>
+<span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span>, nrow <span class="op">=</span> <span class="va">t_max</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
 <span>  <span class="co"># initial state at t = 0</span></span>
 <span>  <span class="va">state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">n_total</span> <span class="op">-</span> <span class="va">init_infected</span>, <span class="va">init_infected</span><span class="op">)</span></span>
@@ -382,7 +387,7 @@ rates.</p>
 <span></span>
 <span><span class="co"># Function to plot the epidemic data</span></span>
 <span><span class="va">plot_epidemic_data</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data_long</span>, <span class="va">t_max</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">data_long</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">time</span>, y <span class="op">=</span> <span class="va">count</span>, color <span class="op">=</span> <span class="va">state</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">data_long</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">time</span>, y <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">count</span>, color <span class="op">=</span> <span class="va">.data</span><span class="op">$</span><span class="va">state</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html" class="external-link">geom_line</a></span><span class="op">(</span>linewidth <span class="op">=</span> <span class="fl">1.2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_color_manual</a></span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"s"</span> <span class="op">=</span> <span class="st">"blue"</span>, <span class="st">"i"</span> <span class="op">=</span> <span class="st">"red"</span>, <span class="st">"y"</span> <span class="op">=</span> <span class="st">"green"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
@@ -503,10 +508,6 @@ higher.</p>
 <span><span class="co">#&gt; gamma  -0.0002446075  4.555458e-05</span></span>
 <span><span class="co">#&gt; Using 50 particles for PMMH:</span></span>
 <span><span class="co">#&gt; Running Particle MCMC chain with tuned settings...</span></span>
-<span><span class="co">#&gt; PMMH Results Summary:</span></span>
-<span><span class="co">#&gt;  Parameter Mean   SD Median 2.5% 97.5% ESS  Rhat</span></span>
-<span><span class="co">#&gt;     lambda 0.59 0.08   0.59 0.43  0.75  39 1.089</span></span>
-<span><span class="co">#&gt;      gamma 0.21 0.02   0.22 0.16  0.25  15 1.082</span></span>
 <span><span class="co">#&gt; Warning in bayesSSM::pmmh(pf_wrapper = bootstrap_filter, y = observations, :</span></span>
 <span><span class="co">#&gt; Some ESS values are below 400, indicating poor mixing. Consider running the</span></span>
 <span><span class="co">#&gt; chains for more iterations.</span></span>
