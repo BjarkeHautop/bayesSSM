@@ -607,6 +607,8 @@ pmmh <- function(pf_wrapper, y, m, init_fn, transition_fn, log_likelihood_fn,
 
   class(result) <- "pmmh_output"
 
+  print(result)
+
   # If any ESS<400 print a warning
   if (any(sapply(param_ess, function(x) !is.na(x) && x < 400))) {
     warning(paste0(
