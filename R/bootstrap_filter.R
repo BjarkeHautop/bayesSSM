@@ -127,13 +127,14 @@
 #' )
 #' points(data_obs, col = "red", pch = 20)
 bootstrap_filter <- function(
-    y, num_particles, init_fn, transition_fn,
-    log_likelihood_fn, obs_times = NULL,
-    resample_algorithm = c("SISAR", "SISR", "SIS"),
-    resample_fn = c("stratified", "systematic", "multinomial"),
-    threshold = NULL,
-    return_particles = TRUE,
-    ...) {
+  y, num_particles, init_fn, transition_fn,
+  log_likelihood_fn, obs_times = NULL,
+  resample_algorithm = c("SISAR", "SISR", "SIS"),
+  resample_fn = c("stratified", "systematic", "multinomial"),
+  threshold = NULL,
+  return_particles = TRUE,
+  ...
+) {
   resample_algorithm <- match.arg(resample_algorithm)
   resample_fn <- match.arg(resample_fn)
 

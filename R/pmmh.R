@@ -31,15 +31,15 @@
 #' @importFrom checkmate assert_number assert_count
 #' @export
 default_tune_control <- function(
-    pilot_proposal_sd = 0.5, pilot_n = 100, pilot_m = 2000,
-    pilot_target_var = 1, pilot_burn_in = 500, pilot_reps = 100,
-    pilot_resample_algorithm = c("SISAR", "SISR", "SIS"),
-    pilot_resample_fn = c("stratified", "systematic", "multinomial")) {
-
-  assert_number(pilot_proposal_sd, lower = 0, finite = TRUE)
+  pilot_proposal_sd = 0.5, pilot_n = 100, pilot_m = 2000,
+  pilot_target_var = 1, pilot_burn_in = 500, pilot_reps = 100,
+  pilot_resample_algorithm = c("SISAR", "SISR", "SIS"),
+  pilot_resample_fn = c("stratified", "systematic", "multinomial")
+) {
+  checkmate::assert_number(pilot_proposal_sd, lower = 0, finite = TRUE)
   assert_count(pilot_n, positive = TRUE)
   assert_count(pilot_m, positive = TRUE)
-  assert_number(pilot_target_var, lower = 0, finite = TRUE)
+  checkmate::assert_number(pilot_target_var, lower = 0, finite = TRUE)
   assert_count(pilot_burn_in, positive = TRUE)
   assert_count(pilot_reps, positive = TRUE)
 
@@ -276,7 +276,8 @@ pmmh <- function(pf_wrapper, y, m, init_fn, transition_fn, log_likelihood_fn,
 
   names_list <- lapply(pilot_init_params, names)
   assert_true(all(sapply(names_list, function(n) all(n == names_list[[1]]))),
-              .var.name = "pilot_init_params")
+    .var.name = "pilot_init_params"
+  )
 
   .check_params_match(
     init_fn, transition_fn, log_likelihood_fn,
@@ -376,9 +377,9 @@ pmmh <- function(pf_wrapper, y, m, init_fn, transition_fn, log_likelihood_fn,
     # Precompute the transformed proposal covariance:
     scale_vec <- sapply(seq_along(init_theta), function(j) {
       if (param_transform[j] == "log") {
-        1 / init_theta[j] # dz/dtheta = 1 / theta
+        1 / init_theta[j] # Since dz/dtheta = 1 / theta
       } else if (param_transform[j] == "logit") {
-        # dz/dtheta = 1 / (theta * (1 - theta))
+        # Since dz/dtheta = 1 / (theta * (1 - theta))
         1 / (init_theta[j] * (1 - init_theta[j]))
       } else {
         1
@@ -400,13 +401,15 @@ pmmh <- function(pf_wrapper, y, m, init_fn, transition_fn, log_likelihood_fn,
 
     # Evaluate the particle filter at the initial parameter value.
     pf_result <- do.call(pf_wrapper, c(
-      list(y = y,
-           num_particles = target_n,
-           init_fn = init_fn,
-           transition_fn = transition_fn,
-           log_likelihood_fn = log_likelihood_fn,
-           obs_times = obs_times,
-           return_particles = FALSE),
+      list(
+        y = y,
+        num_particles = target_n,
+        init_fn = init_fn,
+        transition_fn = transition_fn,
+        log_likelihood_fn = log_likelihood_fn,
+        obs_times = obs_times,
+        return_particles = FALSE
+      ),
       as.list(current_theta),
       ...
     ))
@@ -440,13 +443,15 @@ pmmh <- function(pf_wrapper, y, m, init_fn, transition_fn, log_likelihood_fn,
 
       # Run the particle filter for the proposed parameters.
       pf_proposed <- do.call(pf_wrapper, c(
-        list(y = y,
-             num_particles = target_n,
-             init_fn = init_fn,
-             transition_fn = transition_fn,
-             log_likelihood_fn = log_likelihood_fn,
-             obs_times = obs_times,
-             return_particles = FALSE),
+        list(
+          y = y,
+          num_particles = target_n,
+          init_fn = init_fn,
+          transition_fn = transition_fn,
+          log_likelihood_fn = log_likelihood_fn,
+          obs_times = obs_times,
+          return_particles = FALSE
+        ),
         as.list(proposed_theta),
         ...
       ))
@@ -467,10 +472,16 @@ pmmh <- function(pf_wrapper, y, m, init_fn, transition_fn, log_likelihood_fn,
       log_prior_current <- sapply(seq_along(current_theta), function(j) {
         log_priors[[j]](current_theta[j])
       })
-      log_accept_num <- (proposed_loglike + sum(log_prior_proposed) +
-                           log_jacobian_proposed)
-      log_accept_denom <- (current_loglike + sum(log_prior_current) +
-                             log_jacobian_current)
+      log_accept_num <-
+        proposed_loglike +
+        sum(log_prior_proposed) +
+        log_jacobian_proposed
+
+      log_accept_denom <-
+        current_loglike +
+        sum(log_prior_current) +
+        log_jacobian_current
+
       log_accept_ratio <- log_accept_num - log_accept_denom
 
       # If it’s NA/NaN, force it to -Inf.
@@ -595,8 +606,6 @@ pmmh <- function(pf_wrapper, y, m, init_fn, transition_fn, log_likelihood_fn,
   }
 
   class(result) <- "pmmh_output"
-
-  print(result)
 
   # If any ESS<400 print a warning
   if (any(sapply(param_ess, function(x) !is.na(x) && x < 400))) {

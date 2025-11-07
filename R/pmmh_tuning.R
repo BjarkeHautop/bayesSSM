@@ -64,7 +64,6 @@
 }
 
 
-
 #' Run Pilot Chain for Posterior Estimation
 #'
 #' @inheritParams particle_filter
@@ -110,17 +109,17 @@
 #' @importFrom stats rnorm runif var cov
 #' @keywords internal
 .run_pilot_chain <- function(
-    pf_wrapper, # particle filter wrapper to use
-    y,
-    pilot_m, pilot_n, pilot_reps,
-    init_fn, transition_fn, log_likelihood_fn,
-    log_priors, proposal_sd,
-    obs_times = NULL,
-    param_transform = NULL,
-    pilot_init_params = NULL,
-    verbose = FALSE,
-    ...) {
-
+  pf_wrapper, # particle filter wrapper to use
+  y,
+  pilot_m, pilot_n, pilot_reps,
+  init_fn, transition_fn, log_likelihood_fn,
+  log_priors, proposal_sd,
+  obs_times = NULL,
+  param_transform = NULL,
+  pilot_init_params = NULL,
+  verbose = FALSE,
+  ...
+) {
   num_params <- length(log_priors)
   pilot_theta_chain <- matrix(NA, nrow = pilot_m, ncol = num_params)
   colnames(pilot_theta_chain) <- names(log_priors)

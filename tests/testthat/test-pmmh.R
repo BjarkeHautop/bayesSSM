@@ -125,7 +125,6 @@ test_that("pmmh checks input types", {
   )
 
 
-
   # y must be numeric
   expect_error(
     pmmh(
@@ -531,7 +530,7 @@ test_that("pmmh works with valid arguments", {
 })
 
 test_that("pmmh works with resample_move_filter", {
-  run_long_tests <- FALSE  # Change to TRUE to run this test
+  run_long_tests <- FALSE # Change to TRUE to run this test
 
   if (run_long_tests) {
     test_that("pmmh works with resample_move_filter", {
@@ -614,10 +613,6 @@ test_that("pmmh works with resample_move_filter", {
 
   expect_equal(run_long_tests, FALSE)
 })
-
-
-
-
 
 
 # Multi-dimensional example

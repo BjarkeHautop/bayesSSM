@@ -1,9 +1,9 @@
 #' Resample-Move Particle Filter (RMPF)
 #'
 #' The Resample-Move Particle Filter differs from standard resampling methods
-#' by including a Metropolis–Hastings move step after resampling. This additional
-#' step can increase particle diversity and, in some contexts, help mitigate
-#' sample impoverishment.
+#' by including a Metropolis–Hastings move step after resampling. This
+#' additional step can increase particle diversity and, in some contexts, help
+#' mitigate sample impoverishment.
 #'
 #' @inheritParams particle_filter_common_params
 #' @param move_fn A function that moves the resampled particles.
@@ -188,12 +188,13 @@
 #' )
 #' points(data_obs, col = "red", pch = 20)
 resample_move_filter <- function(
-    y, num_particles, init_fn, transition_fn,
-    log_likelihood_fn, move_fn,
-    obs_times = NULL,
-    resample_fn = c("stratified", "systematic", "multinomial"),
-    return_particles = TRUE,
-    ...) {
+  y, num_particles, init_fn, transition_fn,
+  log_likelihood_fn, move_fn,
+  obs_times = NULL,
+  resample_fn = c("stratified", "systematic", "multinomial"),
+  return_particles = TRUE,
+  ...
+) {
   resample_fn <- match.arg(resample_fn)
   log_likelihood_fn <- .ensure_dots(log_likelihood_fn)
   if (!"t" %in% names(formals(log_likelihood_fn))) {
@@ -232,5 +233,4 @@ resample_move_filter <- function(
     ),
     args_list
   ))
-
 }

@@ -17,17 +17,18 @@
 #' @importFrom checkmate assert_count assert_numeric assert_integerish
 #' @keywords internal
 .particle_filter_core <- function(
-    y, num_particles, init_fn, transition_fn,
-    weight_fn, # function(y, particles, t, ...) returning log weights
-    aux_weight_fn = NULL, # for APF only
-    move_fn = NULL, # for RMPF only
-    obs_times = NULL,
-    algorithm = c("BPF", "APF", "RMPF"),
-    resample_algorithm = c("SIS", "SISR", "SISAR"),
-    resample_fn = c("stratified", "systematic", "multinomial"),
-    threshold = NULL,
-    return_particles = TRUE,
-    ...) {
+  y, num_particles, init_fn, transition_fn,
+  weight_fn, # function(y, particles, t, ...) returning log weights
+  aux_weight_fn = NULL, # for APF only
+  move_fn = NULL, # for RMPF only
+  obs_times = NULL,
+  algorithm = c("BPF", "APF", "RMPF"),
+  resample_algorithm = c("SIS", "SISR", "SISAR"),
+  resample_fn = c("stratified", "systematic", "multinomial"),
+  threshold = NULL,
+  return_particles = TRUE,
+  ...
+) {
   # Validate inputs
   assert_count(num_particles, positive = TRUE)
 
@@ -47,8 +48,6 @@
       SISAR = num_particles / 2
     )
   }
-
-
 
   init_fn <- .ensure_dots(init_fn)
   transition_fn <- .ensure_dots(transition_fn)

@@ -68,7 +68,6 @@ test_that("Check stratified and systematic correctly uses cumulative weights", {
 })
 
 
-
 test_that("Throws error if particles dim doesn't match weight", {
   particles <- 1:3
   weights <- c(0.1, 0.2, 0.3, 0.2)

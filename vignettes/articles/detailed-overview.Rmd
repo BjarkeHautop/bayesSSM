@@ -133,7 +133,8 @@ epidemic_step <- function(state, lambda, gamma, n_total) {
 }
 
 simulate_epidemic <- function(
-    n_total, init_infected, lambda, gamma, t_max) {
+  n_total, init_infected, lambda, gamma, t_max
+) {
   states <- matrix(0, nrow = t_max, ncol = 2)
   # initial state at t = 0
   state <- c(n_total - init_infected, init_infected)
@@ -178,18 +179,23 @@ prepare_data_for_plot <- function(states, observations, t_max) {
 
   # Convert to long format for ggplot
   data_long <- data %>%
-    gather(key = "state", value = "count", -time)
+    pivot_longer(
+      cols = c("s", "i", "y"),
+      names_to = "state",
+      values_to = "count"
+    )
 
   data_long
 }
 
 # Function to plot the epidemic data
 plot_epidemic_data <- function(data_long, t_max) {
-  ggplot(data_long, aes(x = time, y = count, color = state)) +
+  ggplot(data_long, aes(x = .data$time, y = .data$count, color = .data$state)) +
     geom_line(linewidth = 1.2) +
     scale_color_manual(values = c("s" = "blue", "i" = "red", "y" = "green")) +
     labs(
-      x = "Time (Days)", y = "Count",
+      x = "Time (Days)",
+      y = "Count",
       title = "Susceptible, Infected, and Observed Counts"
     ) +
     theme_minimal() +
@@ -569,4 +575,3 @@ how to define the model, simulate data, and fit the model using the PMMH
 algorithm. We also provided some tips and tricks for using the package
 effectively, including how to use several cores, sample on an unconstrained
 space, and use Rcpp for faster sampling.
-

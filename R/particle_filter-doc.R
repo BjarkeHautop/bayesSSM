@@ -47,8 +47,8 @@ NULL
 #' \itemize{
 #'   \item A sequence of latent states \eqn{x_0, x_1, \ldots, x_T} evolving
 #'   according to a Markov process.
-#'   \item Observations \eqn{y_1, \ldots, y_T} that are conditionally independent
-#'   given the corresponding latent states.
+#'   \item Observations \eqn{y_1, \ldots, y_T} that are conditionally
+#'   independent given the corresponding latent states.
 #' }
 #'
 #' The model is specified as:
@@ -71,8 +71,6 @@ NULL
 #' @name particle_filter_model_specification
 #' @keywords internal
 NULL
-
-
 
 
 #' Shared Return Values for Particle Filters

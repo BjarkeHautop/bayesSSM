@@ -23,7 +23,7 @@ set.seed(1405)
 # Stochastic SIR Model
 
 We consider a stochastic SIR (Susceptible–Infectious–Recovered) model for the 
-spread of an infectious disease in a *closed population* of size $N$, 
+spread of an infectious disease in a *closed population* of size $pop_size$, 
 meaning there are no births, deaths, or migration. The population is divided 
 into three compartments: susceptible (S), infectious (I), and recovered (R). 
 Initially, all individuals are susceptible except for $m$ infectious
@@ -35,9 +35,9 @@ described by ordinary differential equations (ODEs).
 
 Each infectious individual makes contact with any given member of the
 population according to a time-homogeneous Poisson process with rate
-$\lambda/N$, where $\lambda > 0$. Thus, each infectious individual makes contact 
-with any other individual at an overall rate of $\lambda$, independent of the 
-population size. 
+$\lambda/pop_size$, where $\lambda > 0$. Thus, each infectious individual makes
+contact  with any other individual at an overall rate of $\lambda$, independent
+of the population size. 
 
 The duration of the infectious period for each individual is assumed to follow 
 an exponential distribution:
@@ -54,7 +54,7 @@ $$
 $$
 forms a continuous-time Markov process, since both infection and recovery
 events are exponentially distributed and are therefore memoryless. Since
-$N$ is fixed, we have $R(t) = N - S(t) - I(t)$, and thus the process can be
+$pop_size$ is fixed, we have $R(t) = pop_size - S(t) - I(t)$, and thus the process can be
 described by the pair $(S(t), I(t))$.
 
 ## Transition Rates
@@ -68,7 +68,7 @@ described by the pair $(S(t), I(t))$.
   occurs at rate
 
   $$
-  \frac{\lambda}{N} \, s \, i,
+  \frac{\lambda}{pop_size} \, s \, i,
   $$
 
   for $s > 0$ and $i > 0$.
@@ -120,9 +120,9 @@ this can be done using matrix exponentiation for small populations.
 
 The probability distribution of the state at time $t$ is given by:
 $$
-P(t) = e^{Qt},
+matrix_exp(t) = e^{Qt},
 $$
-where $Q$ is the generator matrix of the Markov process, which contains the
+where $generator$ is the generator matrix of the Markov process, which contains the
 transition rates between states. 
 
 We define functions below to generate the state space for a small SIR system, 
@@ -131,56 +131,56 @@ given time $t$.
 
 ```{r transition-probabilities}
 # Generate state space for small SIR system
-generate_sir_states <- function(N) {
-  # Returns all (s, i) pairs where s + i <= N
-  states <- expand.grid(s = 0:N, i = 0:N)
-  states <- subset(states, s + i <= N)
-  states <- states[order(states$s, states$i), ]
+generate_sir_states <- function(pop_size) {
+  # Returns all (s, i) pairs where s + i <= pop_size
+  states <- expand.grid(s = 0:pop_size, i = 0:pop_size) %>%
+    dplyr::filter(.data$s + .data$i <= pop_size) %>%
+    dplyr::arrange(.data$s, .data$i)
   states
 }
 
-# Build generator matrix Q
-build_generator_matrix <- function(states, lambda, gamma, N) {
+# Build generator matrix
+build_generator_matrix <- function(states, lambda, gamma, pop_size) {
   n_states <- nrow(states)
-  Q <- matrix(0, n_states, n_states)
+  generator <- matrix(0, n_states, n_states)
 
   for (k in 1:n_states) {
     s <- states$s[k]
     i <- states$i[k]
 
-    rate_infection <- (lambda / N) * s * i
+    rate_infection <- (lambda / pop_size) * s * i
     rate_recovery <- gamma * i
 
     # Infection transition
     if (s > 0 && i > 0) {
       next_state <- c(s - 1, i + 1)
       idx <- which(states$s == next_state[1] & states$i == next_state[2])
-      Q[k, idx] <- rate_infection
+      generator[k, idx] <- rate_infection
     }
 
     # Recovery transition
     if (i > 0) {
       next_state <- c(s, i - 1)
       idx <- which(states$s == next_state[1] & states$i == next_state[2])
-      Q[k, idx] <- rate_recovery
+      generator[k, idx] <- rate_recovery
     }
 
     # Diagonal: exit rate
-    Q[k, k] <- -(rate_infection + rate_recovery)
+    generator[k, k] <- -(rate_infection + rate_recovery)
   }
 
-  Q
+  generator
 }
 
 # Compute transition probabilities at time t
-compute_transition_probs <- function(lambda, gamma, N, t, init_state) {
-  states <- generate_sir_states(N)
-  Q <- build_generator_matrix(states, lambda, gamma, N)
+compute_transition_probs <- function(lambda, gamma, pop_size, t, init_state) {
+  states <- generate_sir_states(pop_size)
+  generator <- build_generator_matrix(states, lambda, gamma, pop_size)
 
-  P <- expm(Q * t) # matrix exponential
+  matrix_exp <- expm(generator * t)
 
   init_index <- which(states$s == init_state[1] & states$i == init_state[2])
-  p_t <- P[init_index, ]
+  p_t <- matrix_exp[init_index, ]
 
   data.frame(
     s = states$s,
@@ -191,20 +191,20 @@ compute_transition_probs <- function(lambda, gamma, N, t, init_state) {
 ```
 
 This can then be run to compute the transition probabilities for a given 
-state and time point. For example, if we have a population of size $N=5$ with
-state $(S(t), I(t)) = (4, 1)$ at time $t$, we can compute the transition
+state and time point. For example, if we have a population of size $pop_size=5$
+with state $(S(t), I(t)) = (4, 1)$ at time $t$, we can compute the transition
 probabilities for the next time point $t+1$ as
 
 ```{r transition-probabilities-example}
 # Example with very small population
 lambda <- 1.0
 gamma <- 0.5
-N <- 5 # Small population
+pop_size <- 5 # Small population
 t <- 1 # Time point
 init_state <- c(4, 1) # (s, i)
 
 transition_probs <- compute_transition_probs(
-  lambda, gamma, N, t, init_state
+  lambda, gamma, pop_size, t, init_state
 )
 
 # Show the most probable next states
@@ -214,9 +214,9 @@ transition_probs[order(-transition_probs$prob), ][1:5, ]
 Note, that this scales poorly with larger populations, as the number of states
 is given by
 $$
-N+2 \choose 2,
+\text{pop_size}+2 \choose 2,
 $$
-which for $N=100$ is already over 5000 states. Thus, this whole approach
+which for $pop_size=100$ is already over 5000 states. Thus, this whole approach
 is only feasible for very small populations. 
 
 # Simulate data
@@ -272,7 +272,8 @@ epidemic_step <- function(state, lambda, gamma, n_total) {
 }
 
 simulate_epidemic <- function(
-    n_total, init_infected, lambda, gamma, t_max) {
+  n_total, init_infected, lambda, gamma, t_max
+) {
   states <- matrix(0, nrow = t_max, ncol = 2)
   # initial state at t = 0
   state <- c(n_total - init_infected, init_infected)
@@ -324,7 +325,7 @@ prepare_data_for_plot <- function(states, observations, t_max) {
 
 # Function to plot the epidemic data
 plot_epidemic_data <- function(data_long, t_max) {
-  ggplot(data_long, aes(x = time, y = count, color = state)) +
+  ggplot(data_long, aes(x = .data$time, y = .data$count, color = .data$state)) +
     geom_line(linewidth = 1.2) +
     scale_color_manual(values = c("s" = "blue", "i" = "red", "y" = "green")) +
     labs(

@@ -68,9 +68,9 @@ A list with components:
 }
 \description{
 The Resample-Move Particle Filter differs from standard resampling methods
-by including a Metropolis–Hastings move step after resampling. This additional
-step can increase particle diversity and, in some contexts, help mitigate
-sample impoverishment.
+by including a Metropolis–Hastings move step after resampling. This
+additional step can increase particle diversity and, in some contexts, help
+mitigate sample impoverishment.
 }
 \section{The Resample-Move Particle Filter (RMPF)}{
 
@@ -116,8 +116,8 @@ state-space model defined by:
 \itemize{
   \item A sequence of latent states \eqn{x_0, x_1, \ldots, x_T} evolving
   according to a Markov process.
-  \item Observations \eqn{y_1, \ldots, y_T} that are conditionally independent
-  given the corresponding latent states.
+  \item Observations \eqn{y_1, \ldots, y_T} that are conditionally
+  independent given the corresponding latent states.
 }
 
 The model is specified as:

@@ -13,8 +13,9 @@
 #'
 #' @keywords internal
 .check_params_match <- function(
-    init_fn, transition_fn, log_likelihood_fn, pilot_init_params,
-    log_priors) {
+  init_fn, transition_fn, log_likelihood_fn, pilot_init_params,
+  log_priors
+) {
   get_fn_params <- function(fn) {
     names(formals(fn))
   }
