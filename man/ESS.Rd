@@ -11,7 +11,7 @@ ess(chains)
 column and parameter columns.}
 }
 \value{
-The estimated effective sample size (ess) if given a matrix, or a
+The estimated effective sample size (ESS) if given a matrix, or a
 named vector of ESS values if given a data frame.
 }
 \description{

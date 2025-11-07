@@ -23,7 +23,7 @@
 #' \code{"SIS"} for no resampling, \code{"SISR"} for resampling at every time
 #' step, or \code{"SISAR"} for adaptive resampling when ESS
 #' drops below \code{threshold}. Using \code{"SISR"} or \code{"SISAR"} to
-#' avoid weight degeneracy is recommedended. Default is \code{"SISAR"}.
+#' avoid weight degeneracy is recommended. Default is \code{"SISAR"}.
 #' @param resample_fn A string indicating the resampling method:
 #' \code{"stratified"}, \code{"systematic"}, or \code{"multinomial"}.
 #' Default is \code{"stratified"}.

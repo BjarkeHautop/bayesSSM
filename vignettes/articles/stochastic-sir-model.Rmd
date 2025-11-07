@@ -31,7 +31,12 @@ individuals.
 
 Note that most of the literature on SIR models assumes a deterministic
 model, where the compartments are treated as continuous and are 
-described by ordinary differential equations (ODEs). 
+described by ordinary differential equations (ODEs). Here, we instead
+consider a fully stochastic model, where the compartments are discrete and
+the transitions between compartments are governed by probabilistic rules.
+Especially for small populations, stochastic models can capture the inherent
+randomness in disease transmission and recovery more accurately than
+deterministic models.
 
 Each infectious individual makes contact with any given member of the
 population according to a time-homogeneous Poisson process with rate
@@ -122,8 +127,8 @@ The probability distribution of the state at time $t$ is given by:
 $$
 matrix_exp(t) = e^{Qt},
 $$
-where $generator$ is the generator matrix of the Markov process, which contains the
-transition rates between states. 
+where $generator$ is the generator matrix of the Markov process, which contains
+the transition rates between states. 
 
 We define functions below to generate the state space for a small SIR system, 
 build the generator matrix, and compute the transition probabilities at a 
@@ -199,8 +204,8 @@ probabilities for the next time point $t+1$ as
 # Example with very small population
 lambda <- 1.0
 gamma <- 0.5
-pop_size <- 5 # Small population
-t <- 1 # Time point
+pop_size <- 5
+t <- 1
 init_state <- c(4, 1) # (s, i)
 
 transition_probs <- compute_transition_probs(
@@ -216,8 +221,8 @@ is given by
 $$
 \text{pop_size}+2 \choose 2,
 $$
-which for $pop_size=100$ is already over 5000 states. Thus, this whole approach
-is only feasible for very small populations. 
+which for $pop_size=100$ is already over $5000$ states. Thus, this whole
+approach is only feasible for very small populations. 
 
 # Simulate data
 

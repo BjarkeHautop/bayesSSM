@@ -19,15 +19,13 @@
   get_fn_params <- function(fn) {
     names(formals(fn))
   }
-  # Check if 'particles' or 'num_particles' is in init_fn. 'particles' will
-  # be deprecated in the future.
   check_init_fn <- function(fn, fn_name) {
     fn_args <- get_fn_params(fn)
-    if (!("particles" %in% fn_args || "num_particles" %in% fn_args)) {
+    if (!("num_particles" %in% fn_args)) {
       stop(
         paste(
           fn_name,
-          "does not contain 'particles' or 'num_particles' as an argument"
+          "does not contain 'num_particles' as an argument"
         )
       )
     }

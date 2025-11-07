@@ -3,7 +3,7 @@
 #' @param chains A matrix (iterations x chains) or a data.frame with a 'chain'
 #' column and parameter columns.
 #'
-#' @returns The estimated effective sample size (ess) if given a matrix, or a
+#' @returns The estimated effective sample size (ESS) if given a matrix, or a
 #' named vector of ESS values if given a data frame.
 #'
 #' @details Uses the formula for ESS proposed by Vehtari et al. (2021).

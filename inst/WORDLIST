@@ -13,6 +13,8 @@ BjarkeHautop
 BPF
 BugReports
 Cappé
+CMD
+Codecov
 cph
 cre
 Dahlin
@@ -48,12 +50,13 @@ Moulines
 num
 ODEs
 operatorname
+PMCMC
 PMMH
 pmmh
 Pois
 propto
 Rcpp
-recommedended
+README
 rlang
 rmarkdown
 RMPF
@@ -65,4 +68,5 @@ SSM
 SSMs
 testthat
 tidyr
+Vehtari
 VignetteBuilder

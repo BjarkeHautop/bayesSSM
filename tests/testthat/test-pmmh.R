@@ -271,7 +271,7 @@ test_that("pmmh checks function arguments", {
   mock_log_likelihood_fn <- function(y, particles, sigma_y) particles
 
 
-  # Check if functions accept 'particles'
+  # Check init_fn contains `num_particles`
   expect_error(
     pmmh(
       pf_wrapper = bootstrap_filter,
@@ -285,7 +285,7 @@ test_that("pmmh checks function arguments", {
       burn_in = 1,
       num_chains = 1
     ),
-    "init_fn does not contain 'particles' or 'num_particles' as an argument"
+    "init_fn does not contain 'num_particles' as an argument"
   )
 
   expect_error(

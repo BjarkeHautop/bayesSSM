@@ -1,5 +1,7 @@
 # bayesSSM (development version)
 
+* Small documentation fixes.
+
 # bayesSSM 0.7.0
 
 * Add `auxiliary_filter` and `resample_move_filter` for auxiliary and 

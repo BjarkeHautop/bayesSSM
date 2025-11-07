@@ -9,7 +9,10 @@
 coverage](https://codecov.io/gh/BjarkeHautop/bayesSSM/graph/badge.svg)](https://app.codecov.io/gh/BjarkeHautop/bayesSSM)
 [![R-CMD-check](https://github.com/BjarkeHautop/bayesSSM/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/BjarkeHautop/bayesSSM/actions/workflows/R-CMD-check.yaml)
 [![CRAN_Status_Badge](https://www.r-pkg.org/badges/version/bayesSSM)](https://cran.r-project.org/package=bayesSSM)
-[![CRAN_Downloads](https://cranlogs.r-pkg.org/badges/bayesSSM)](https://cran.r-project.org/package=bayesSSM)
+[![CRAN monthly
+downloads](https://cranlogs.r-pkg.org/badges/bayesSSM)](https://cran.r-project.org/package=bayesSSM)
+[![CRAN total
+downloads](https://cranlogs.r-pkg.org/badges/grand-total/bayesSSM)](https://cran.r-project.org/package=bayesSSM)
 <!-- badges: end -->
 
 bayesSSM is an R package offering a set of tools for performing Bayesian
@@ -206,11 +209,6 @@ result <- pmmh(
 #> Running pilot chain for tuning...
 #> Using 50 particles for PMMH:
 #> Running Particle MCMC chain with tuned settings...
-#> PMMH Results Summary:
-#>  Parameter Mean   SD Median 2.5% 97.5% ESS  Rhat
-#>        phi 0.76 0.12   0.75 0.55  0.97   8 1.478
-#>    sigma_x 0.78 0.56   0.74 0.01  1.85  15 1.093
-#>    sigma_y 0.89 0.36   0.94 0.22  1.45  36 1.051
 #> Warning in pmmh(pf_wrapper = bootstrap_filter, y = y, m = 500, init_fn =
 #> init_fn, : Some ESS values are below 400, indicating poor mixing. Consider
 #> running the chains for more iterations.

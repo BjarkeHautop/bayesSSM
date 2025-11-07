@@ -36,10 +36,10 @@ default_tune_control <- function(
   pilot_resample_algorithm = c("SISAR", "SISR", "SIS"),
   pilot_resample_fn = c("stratified", "systematic", "multinomial")
 ) {
-  checkmate::assert_number(pilot_proposal_sd, lower = 0, finite = TRUE)
+  assert_number(pilot_proposal_sd, lower = 0, finite = TRUE)
   assert_count(pilot_n, positive = TRUE)
   assert_count(pilot_m, positive = TRUE)
-  checkmate::assert_number(pilot_target_var, lower = 0, finite = TRUE)
+  assert_number(pilot_target_var, lower = 0, finite = TRUE)
   assert_count(pilot_burn_in, positive = TRUE)
   assert_count(pilot_reps, positive = TRUE)
 

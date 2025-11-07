@@ -1,10 +1,10 @@
 test_that("check_params_match stops if log_likelihood_fn lacks 'y'", {
-  log_likelihood_fn <- function(particles) {
-    sum(particles)
+  init_fn_ssm <- function(num_particles) {
+    num_particles * 2
   }
 
-  init_fn_ssm <- function(particles) {
-    particles * 2
+  log_likelihood_fn <- function(particles) {
+    sum(particles)
   }
 
   transition_fn_ssm <- function(particles) {
