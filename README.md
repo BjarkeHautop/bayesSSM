@@ -23,9 +23,9 @@ for Bayesian inference in SSMs.
 ## Why bayesSSM?
 
 While there are several alternative packages available for performing
-Particle MCMC, bayesSSM is designed to be simple and easy to use. It was
-developed alongside my Master’s thesis about Particle MCMC, since I was
-implementing everything from scratch anyway.
+Particle MCMC, `bayesSSM` is designed to be simple and easy to use. It
+was developed alongside my Master’s thesis about Particle MCMC, since I
+was implementing everything from scratch anyway.
 
 ## Why PMCMC?
 
@@ -72,7 +72,7 @@ proposal distribution for the parameters.
 
 ## Installation
 
-You can install the latest stable version of bayesSSM from CRAN with:
+You can install the latest stable version of `bayesSSM` from CRAN with:
 
 ``` r
 install.packages("bayesSSM")
