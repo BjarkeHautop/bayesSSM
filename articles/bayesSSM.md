@@ -1,0 +1,215 @@
+# bayesSSM
+
+``` r
+library(bayesSSM)
+library(ggplot2)
+```
+
+We will show how to fit the following SSM model using the `bayesSSM`
+package:
+
+\begin{align\*} X_0 &\sim N(0,1) \\ X_t&=\sin(X\_{t-1})+\sigma_x V_t,
+\quad V_t \sim N(0,1), \quad t\geq 1 \\ Y_t&=X_t+\sigma_y W_t, \quad W_t
+\sim N(0, 1), \quad t\geq 1 \end{align\*} that is X_t is a latent state
+and Y_t is an observed value. The parameters of the model are \sigma_x
+and \sigma_y.
+
+Note: While this example uses `pmmh`, the model is simple enough that
+standard MCMC methods could also be applied. For a more complicated
+example where standard MCMC methods cannot be used, see the article
+Stochastic SIR Model article
+[here](https://bjarkehautop.github.io/bayesSSM/articles/stochastic-sir-model.html).
+
+First, we will simulate some data from this model:
+
+``` r
+set.seed(1405)
+t_val <- 20
+sigma_x <- 1
+sigma_y <- 0.5
+
+init_state <- rnorm(1, mean = 0, sd = 1)
+x <- numeric(t_val)
+y <- numeric(t_val)
+x[1] <- sin(init_state) + rnorm(1, mean = 0, sd = sigma_x)
+y[1] <- x[1] + rnorm(1, mean = 0, sd = sigma_y)
+for (t in 2:t_val) {
+  x[t] <- sin(x[t - 1]) + rnorm(1, mean = 0, sd = sigma_x)
+  y[t] <- x[t] + rnorm(1, mean = 0, sd = sigma_y)
+}
+x <- c(init_state, x)
+```
+
+Let’s visualize the data:
+
+``` r
+ggplot() +
+  geom_line(aes(x = 0:t_val, y = x), color = "blue", linewidth = 1) + # Latent
+  geom_point(aes(x = 1:t_val, y = y), color = "red", size = 2) + # Observed
+  labs(
+    title = "Simulated Data: Latent State and Observations",
+    x = "Time",
+    y = "Value",
+    caption = "Blue line: Latent state (x), Red points: Observed values (y)"
+  ) +
+  theme_minimal()
+```
+
+![The blue line represents the latent state, and red points represent
+observed values.](bayesSSM_files/figure-html/unnamed-chunk-3-1.png)
+
+To fit the model using `pmmh` we need to specify the initialization,
+transition, and log-likelihood functions. The initialization function
+`init_fn` must take the argument `num_particles` and return a vector or
+matrix of particles. The transition function `transition_fn` must take
+the argument `particles` and return a vector or matrix of particles. The
+log-likelihood function `log_likelihood_fn` must take the arguments `y`,
+`particles`, and return a vector of log-likelihood values.
+
+All the functions can take model-specific parameters as arguments.
+Time-dependency can be implemented by giving a `t` argument in
+`transition_fn` and `log_likelihood_fn`.
+
+``` r
+init_fn <- function(num_particles) {
+  rnorm(num_particles, mean = 0, sd = 1)
+}
+
+transition_fn <- function(particles, sigma_x) {
+  sin(particles) + rnorm(length(particles), mean = 0, sd = sigma_x)
+}
+
+log_likelihood_fn <- function(y, particles, sigma_y) {
+  dnorm(y, mean = particles, sd = sigma_y, log = TRUE)
+}
+```
+
+Since we are interested in Bayesian inference, we need to specify the
+priors for our parameters. We will use exponential priors for \sigma_x
+and \sigma_y in this vignette. `pmmh` needs the priors to be specified
+on the \log-scale and takes the priors as a list of functions.
+
+``` r
+log_prior_sigma_x <- function(sigma) {
+  dexp(sigma, rate = 1, log = TRUE)
+}
+
+log_prior_sigma_y <- function(sigma) {
+  dexp(sigma, rate = 1, log = TRUE)
+}
+
+log_priors <- list(
+  sigma_x = log_prior_sigma_x,
+  sigma_y = log_prior_sigma_y
+)
+```
+
+We will use a bootstrap particle filter as the particle filter in
+`pmmh`. The `pmmh` function automatically tunes the number of particles
+and proposal distribution for the parameters. The tuning can be modified
+by the the function `default_tune_control`.
+
+We fit 2 chains with m=1000 iterations for each, with a burn_in of 500.
+We also modify the tuning to only use a pilot run of 100 iterations and
+10 burn-in iterations. In practice you should run more iterations and
+chains. To improve sampling we specify that proposals for \sigma_x and
+\sigma_y should be on the \log-scale.
+
+``` r
+result <- pmmh(
+  pf_wrapper = bootstrap_filter,
+  y = y,
+  m = 1000,
+  init_fn = init_fn,
+  transition_fn = transition_fn,
+  log_likelihood_fn = log_likelihood_fn,
+  log_priors = log_priors,
+  pilot_init_params = list(
+    c(sigma_x = 0.4, sigma_y = 0.4),
+    c(sigma_x = 0.8, sigma_y = 0.8)
+  ),
+  burn_in = 500,
+  num_chains = 2,
+  seed = 1405,
+  param_transform = list(
+    sigma_x = "log",
+    sigma_y = "log"
+  ),
+  tune_control = default_tune_control(pilot_m = 100, pilot_burn_in = 10),
+  verbose = TRUE
+)
+#> Running chain 1...
+#> Running pilot chain for tuning...
+#> Pilot chain posterior mean:
+#>   sigma_x   sigma_y 
+#> 1.2320443 0.7809373
+#> Pilot chain posterior covariance (transformed space):
+#>            sigma_x    sigma_y
+#> sigma_x  0.1053286 -0.1128901
+#> sigma_y -0.1128901  0.2216466
+#> Using 50 particles for PMMH:
+#> Running Particle MCMC chain with tuned settings...
+#> Running chain 2...
+#> Running pilot chain for tuning...
+#> Pilot chain posterior mean:
+#>  sigma_x  sigma_y 
+#> 1.289547 0.761259
+#> Pilot chain posterior covariance (transformed space):
+#>             sigma_x     sigma_y
+#> sigma_x  0.04630648 -0.01408273
+#> sigma_y -0.01408273  0.15461056
+#> Using 50 particles for PMMH:
+#> Running Particle MCMC chain with tuned settings...
+#> PMMH Results Summary:
+#>  Parameter Mean   SD Median 2.5% 97.5% ESS Rhat
+#>    sigma_x 1.20 0.38   1.09 0.43  2.15  20 1.03
+#>    sigma_y 0.56 0.45   0.39 0.17  1.64   3 1.20
+#> Warning in pmmh(pf_wrapper = bootstrap_filter, y = y, m = 1000, init_fn =
+#> init_fn, : Some ESS values are below 400, indicating poor mixing. Consider
+#> running the chains for more iterations.
+#> Warning in pmmh(pf_wrapper = bootstrap_filter, y = y, m = 1000, init_fn = init_fn, : 
+#> Some Rhat values are above 1.01, indicating that the chains have not converged. 
+#> Consider running the chains for more iterations and/or increase burn_in.
+```
+
+We see that the chains gives convergence issues, indicating that we
+should run it for more iterations, but we ignore this issue in this
+Vignette.
+
+It automatically prints data frame summarizing the results, which can be
+printed from any `pmmh_output` object by calling `print`.
+
+``` r
+print(result)
+#> PMMH Results Summary:
+#>  Parameter Mean   SD Median 2.5% 97.5% ESS Rhat
+#>    sigma_x 1.20 0.38   1.09 0.43  2.15  20 1.03
+#>    sigma_y 0.56 0.45   0.39 0.17  1.64   3 1.20
+```
+
+The chains are saved as `theta_chain`
+
+``` r
+chains <- result$theta_chain
+```
+
+Let’s collect the chains for \sigma_x from the chains and visualize the
+densities
+
+``` r
+ggplot(chains, aes(x = sigma_x, fill = factor(chain))) +
+  geom_density(alpha = 0.5) +
+  labs(
+    title = "Density plot of sigma_x chains",
+    x = "Value",
+    y = "Density",
+    fill = "Chain"
+  ) +
+  theme_minimal()
+```
+
+![Density plot of sigma_x
+chains.](bayesSSM_files/figure-html/unnamed-chunk-9-1.png)
+
+We have now fitted a simple SSM model using `bayesSSM`. Feel free to
+explore the package further and try out different models.
