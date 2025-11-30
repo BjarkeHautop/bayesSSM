@@ -2,7 +2,7 @@
 
 ## bayesSSM (development version)
 
-- Small documentation fixes.
+- Small improvements to README and vignettes for clarity.
 
 ## bayesSSM 0.7.0
 

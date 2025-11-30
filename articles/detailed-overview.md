@@ -32,18 +32,9 @@ distribution of the latent states, and p(y\_{1:T} \mid x\_{0:T}, \theta)
 is the distribution of the observations given the latent states and
 parameters.
 
-To do standard MCMC we need to be able to compute these terms exactly,
-which is often not possible. Often we only have a **simulator** for the
-likelihood and not via a closed form expression. This includes:
-
-- Epidemic models with stochastic transmission dynamics
-
-- Agent-based models
-
-- Ecological or physical systems with complex latent dynamics
-
-Thus we can’t use standard MCMC methods like Hamiltonian Monte Carlo
-(HMC) or Metropolis-Hastings (MH) directly.
+Standard MCMC methods such as HMC can struggle to explore this
+high-dimensional correlated space efficiently. They can also suffer from
+degeneracy when attempting to jointly sample entire latent trajectories.
 
 Another approach would be to marginalize out the latent states and
 sample the parameters \theta, but this is also often infeasible due to

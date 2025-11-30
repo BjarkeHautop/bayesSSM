@@ -171,109 +171,13 @@ Markov process.</p>
 <div class="section level2">
 <h2 id="why-standard-mcmc-methods-are-infeasible">Why Standard MCMC Methods Are Infeasible<a class="anchor" aria-label="anchor" href="#why-standard-mcmc-methods-are-infeasible"></a>
 </h2>
-<p>If one wanted to use standard MCMC methods to estimate the joint
-posterior of the parameters and latent states, one would need to compute
-the exact transition probabilities for the SIR model, which quickly
-becomes infeasible as the number of infectious individuals increases. We
-illustrate how this can be done using matrix exponentiation for small
-populations.</p>
-<p>The probability distribution of the state at time <span class="math inline">t</span> is given by: <span class="math display">
-matrix_exp(t) = e^{Qt},
-</span> where <span class="math inline">generator</span> is the
-generator matrix of the Markov process, which contains the transition
-rates between states.</p>
-<p>We define functions below to generate the state space for a small SIR
-system, build the generator matrix, and compute the transition
-probabilities at a given time <span class="math inline">t</span>.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Generate state space for small SIR system</span></span>
-<span><span class="va">generate_sir_states</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">pop_size</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="co"># Returns all (s, i) pairs where s + i &lt;= pop_size</span></span>
-<span>  <span class="va">states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html" class="external-link">expand.grid</a></span><span class="op">(</span>s <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="va">pop_size</span>, i <span class="op">=</span> <span class="fl">0</span><span class="op">:</span><span class="va">pop_size</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">s</span> <span class="op">+</span> <span class="va">.data</span><span class="op">$</span><span class="va">i</span> <span class="op">&lt;=</span> <span class="va">pop_size</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html" class="external-link">%&gt;%</a></span></span>
-<span>    <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/arrange.html" class="external-link">arrange</a></span><span class="op">(</span><span class="va">.data</span><span class="op">$</span><span class="va">s</span>, <span class="va">.data</span><span class="op">$</span><span class="va">i</span><span class="op">)</span></span>
-<span>  <span class="va">states</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="co"># Build generator matrix</span></span>
-<span><span class="va">build_generator_matrix</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">states</span>, <span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">pop_size</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">n_states</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">states</span><span class="op">)</span></span>
-<span>  <span class="va">generator</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">n_states</span>, <span class="va">n_states</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">k</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">n_states</span><span class="op">)</span> <span class="op">{</span></span>
-<span>    <span class="va">s</span> <span class="op">&lt;-</span> <span class="va">states</span><span class="op">$</span><span class="va">s</span><span class="op">[</span><span class="va">k</span><span class="op">]</span></span>
-<span>    <span class="va">i</span> <span class="op">&lt;-</span> <span class="va">states</span><span class="op">$</span><span class="va">i</span><span class="op">[</span><span class="va">k</span><span class="op">]</span></span>
-<span></span>
-<span>    <span class="va">rate_infection</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">lambda</span> <span class="op">/</span> <span class="va">pop_size</span><span class="op">)</span> <span class="op">*</span> <span class="va">s</span> <span class="op">*</span> <span class="va">i</span></span>
-<span>    <span class="va">rate_recovery</span> <span class="op">&lt;-</span> <span class="va">gamma</span> <span class="op">*</span> <span class="va">i</span></span>
-<span></span>
-<span>    <span class="co"># Infection transition</span></span>
-<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">s</span> <span class="op">&gt;</span> <span class="fl">0</span> <span class="op">&amp;&amp;</span> <span class="va">i</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span>      <span class="va">next_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">s</span> <span class="op">-</span> <span class="fl">1</span>, <span class="va">i</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
-<span>      <span class="va">idx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">states</span><span class="op">$</span><span class="va">s</span> <span class="op">==</span> <span class="va">next_state</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&amp;</span> <span class="va">states</span><span class="op">$</span><span class="va">i</span> <span class="op">==</span> <span class="va">next_state</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
-<span>      <span class="va">generator</span><span class="op">[</span><span class="va">k</span>, <span class="va">idx</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">rate_infection</span></span>
-<span>    <span class="op">}</span></span>
-<span></span>
-<span>    <span class="co"># Recovery transition</span></span>
-<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">i</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
-<span>      <span class="va">next_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">s</span>, <span class="va">i</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
-<span>      <span class="va">idx</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">states</span><span class="op">$</span><span class="va">s</span> <span class="op">==</span> <span class="va">next_state</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&amp;</span> <span class="va">states</span><span class="op">$</span><span class="va">i</span> <span class="op">==</span> <span class="va">next_state</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
-<span>      <span class="va">generator</span><span class="op">[</span><span class="va">k</span>, <span class="va">idx</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">rate_recovery</span></span>
-<span>    <span class="op">}</span></span>
-<span></span>
-<span>    <span class="co"># Diagonal: exit rate</span></span>
-<span>    <span class="va">generator</span><span class="op">[</span><span class="va">k</span>, <span class="va">k</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="op">(</span><span class="va">rate_infection</span> <span class="op">+</span> <span class="va">rate_recovery</span><span class="op">)</span></span>
-<span>  <span class="op">}</span></span>
-<span></span>
-<span>  <span class="va">generator</span></span>
-<span><span class="op">}</span></span>
-<span></span>
-<span><span class="co"># Compute transition probabilities at time t</span></span>
-<span><span class="va">compute_transition_probs</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">pop_size</span>, <span class="va">t</span>, <span class="va">init_state</span><span class="op">)</span> <span class="op">{</span></span>
-<span>  <span class="va">states</span> <span class="op">&lt;-</span> <span class="fu">generate_sir_states</span><span class="op">(</span><span class="va">pop_size</span><span class="op">)</span></span>
-<span>  <span class="va">generator</span> <span class="op">&lt;-</span> <span class="fu">build_generator_matrix</span><span class="op">(</span><span class="va">states</span>, <span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">pop_size</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="va">matrix_exp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/expm/man/expm.html" class="external-link">expm</a></span><span class="op">(</span><span class="va">generator</span> <span class="op">*</span> <span class="va">t</span><span class="op">)</span></span>
-<span></span>
-<span>  <span class="va">init_index</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/which.html" class="external-link">which</a></span><span class="op">(</span><span class="va">states</span><span class="op">$</span><span class="va">s</span> <span class="op">==</span> <span class="va">init_state</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&amp;</span> <span class="va">states</span><span class="op">$</span><span class="va">i</span> <span class="op">==</span> <span class="va">init_state</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
-<span>  <span class="va">p_t</span> <span class="op">&lt;-</span> <span class="va">matrix_exp</span><span class="op">[</span><span class="va">init_index</span>, <span class="op">]</span></span>
-<span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
-<span>    s <span class="op">=</span> <span class="va">states</span><span class="op">$</span><span class="va">s</span>,</span>
-<span>    i <span class="op">=</span> <span class="va">states</span><span class="op">$</span><span class="va">i</span>,</span>
-<span>    prob <span class="op">=</span> <span class="va">p_t</span></span>
-<span>  <span class="op">)</span></span>
-<span><span class="op">}</span></span></code></pre></div>
-<p>This can then be run to compute the transition probabilities for a
-given state and time point. For example, if we have a population of size
-<span class="math inline">pop_size=5</span> with state <span class="math inline">(S(t), I(t)) = (4, 1)</span> at time <span class="math inline">t</span>, we can compute the transition
-probabilities for the next time point <span class="math inline">t+1</span> as</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Example with very small population</span></span>
-<span><span class="va">lambda</span> <span class="op">&lt;-</span> <span class="fl">1.0</span></span>
-<span><span class="va">gamma</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span>
-<span><span class="va">pop_size</span> <span class="op">&lt;-</span> <span class="fl">5</span></span>
-<span><span class="va">t</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
-<span><span class="va">init_state</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">1</span><span class="op">)</span> <span class="co"># (s, i)</span></span>
-<span></span>
-<span><span class="va">transition_probs</span> <span class="op">&lt;-</span> <span class="fu">compute_transition_probs</span><span class="op">(</span></span>
-<span>  <span class="va">lambda</span>, <span class="va">gamma</span>, <span class="va">pop_size</span>, <span class="va">t</span>, <span class="va">init_state</span></span>
-<span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Show the most probable next states</span></span>
-<span><span class="va">transition_probs</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/order.html" class="external-link">order</a></span><span class="op">(</span><span class="op">-</span><span class="va">transition_probs</span><span class="op">$</span><span class="va">prob</span><span class="op">)</span>, <span class="op">]</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>, <span class="op">]</span></span>
-<span><span class="co">#&gt;    s i       prob</span></span>
-<span><span class="co">#&gt; 19 4 0 0.27979546</span></span>
-<span><span class="co">#&gt; 20 4 1 0.27253179</span></span>
-<span><span class="co">#&gt; 18 3 2 0.14375879</span></span>
-<span><span class="co">#&gt; 17 3 1 0.08872580</span></span>
-<span><span class="co">#&gt; 15 2 3 0.06343076</span></span></code></pre></div>
-<p>Note, that this scales poorly with larger populations, as the number
-of states is given by <span class="math display">
-\text{pop_size}+2 \choose 2,
-</span> which for <span class="math inline">pop_size=100</span> is
-already over <span class="math inline">5000</span> states. Thus, this
-whole approach is only feasible for very small populations.</p>
+<p>Due to the high dimensionality and complex dependencies in the latent
+state space, standard MCMC methods such as Hamiltonian Monte Carlo (HMC)
+struggle to explore the posterior distribution efficiently. Moreover,
+these methods require evaluating the transition density <span class="math display">p(x_{t+1} \mid x_t, \theta),</span> which here
+requires solving the Kolmogorov forward equation. This is only tractable
+for very small populations, making direct likelihood-based MCMC
+infeasible in practice.</p>
 </div>
 <div class="section level2">
 <h2 id="simulate-data">Simulate data<a class="anchor" aria-label="anchor" href="#simulate-data"></a>
@@ -292,7 +196,7 @@ infectious individuals at times <span class="math inline">t=1, \ldots,
 <p>We can simulate using the fact that we have two independent
 exponential distribution, so an event occurs at rate of the sum of the
 rates.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># --- Simulation settings and true parameters ---</span></span>
 <span><span class="va">n_total</span> <span class="op">&lt;-</span> <span class="fl">500</span> <span class="co"># Total population size</span></span>
 <span><span class="va">init_infected</span> <span class="op">&lt;-</span> <span class="fl">70</span> <span class="co"># Initially infectious individuals</span></span>
@@ -342,7 +246,7 @@ rates.</p>
 <span>  <span class="va">states</span></span>
 <span><span class="op">}</span></span></code></pre></div>
 <p>Now, we generate some data:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Simulate an epidemic dataset</span></span>
 <span><span class="va">true_states</span> <span class="op">&lt;-</span> <span class="fu">simulate_epidemic</span><span class="op">(</span></span>
 <span>  <span class="va">n_total</span>, <span class="va">init_infected</span>, <span class="va">true_lambda</span>, <span class="va">true_gamma</span>, <span class="va">t_max</span></span>
@@ -367,7 +271,7 @@ rates.</p>
 <span><span class="co">#&gt; 9     9 118 139 147</span></span>
 <span><span class="co">#&gt; 10   10 107 121 123</span></span></code></pre></div>
 <p>And plot it:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Function to create a tidy dataset for ggplot</span></span>
 <span><span class="va">prepare_data_for_plot</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">states</span>, <span class="va">observations</span>, <span class="va">t_max</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># Organize the data into a tidy format</span></span>
@@ -419,7 +323,7 @@ define the priors as follows: <span class="math display">\begin{align*}
     \gamma &amp;\sim \operatorname{Normal^+}(0, 2^2),
 \end{align*}</span> where <span class="math inline">\operatorname{Normal^+}</span> denotes a truncated
 at <span class="math inline">0</span> normal distribution.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define the log-prior for the parameters</span></span>
 <span><span class="va">log_prior_lambda</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">lambda</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="fu">extraDistr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/extraDistr/man/HalfNormal.html" class="external-link">dhnorm</a></span><span class="op">(</span><span class="va">lambda</span>, sigma <span class="op">=</span> <span class="fl">1</span>, log <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -435,7 +339,7 @@ at <span class="math inline">0</span> normal distribution.</p>
 <span><span class="op">)</span></span></code></pre></div>
 <p>We now define the initial state, transition and likelihood functions
 for the SIR model.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">init_fn_epidemic</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">num_particles</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># Return a matrix with particles rows; each row is the initial state (s, i)</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/matrix.html" class="external-link">matrix</a></span><span class="op">(</span></span>
@@ -466,7 +370,7 @@ distribution. For this vignette we only use a small number of iterations
 (1000) and 2 chains (and we also modify the tuning to only use 100
 iterations with a burn-in of 10). In practice, these should be much
 higher.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">bayesSSM</span><span class="fu">::</span><span class="fu"><a href="../reference/pmmh.html">pmmh</a></span><span class="op">(</span></span>
 <span>  pf_wrapper <span class="op">=</span> <span class="va">bootstrap_filter</span>, <span class="co"># use bootstrap particle filter</span></span>
 <span>  y <span class="op">=</span> <span class="va">observations</span>,</span>
@@ -521,10 +425,10 @@ higher.</p>
 <p>We get convergence warnings as expected, but the posterior is still
 centered around the true value.</p>
 <p>We can access the chains and plot the densities:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">chains</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">theta_chain</span></span></code></pre></div>
 <p>For <span class="math inline">\lambda</span>:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">chains</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">lambda</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">chain</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html" class="external-link">geom_density</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
@@ -536,7 +440,7 @@ centered around the true value.</p>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p><img src="stochastic-sir-model_files/figure-html/lambda-plot-1.png" class="r-plt" alt="Density plot of lambda chains" width="576"></p>
 <p>And for <span class="math inline">\gamma</span>:</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">chains</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">gamma</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">chain</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_density.html" class="external-link">geom_density</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>

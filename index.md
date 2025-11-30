@@ -14,31 +14,23 @@ was implementing everything from scratch anyway.
 
 ## Why PMCMC?
 
-In some state-space models, the full joint density of the parameters and
-the latent states
+In a state-space model, the joint posterior density of the parameters
+\theta and the latent states x\_{1:T} given observations y\_{1:T} is
 
 ![](reference/figures/joint_posterior.png)
 
-can be written out explicitly. In these cases, inference tools like Stan
-(which uses Hamiltonian Monte Carlo) are very efficient.
-
-However, many real-world models define the latent dynamics only through
-a **simulator**, not via an explicit transition density. This includes:
-
-- Epidemic models with stochastic transmission dynamics
-- Agent-based models
-- Ecological or physical systems with complex latent dynamics
-
-In these cases, the joint posterior density cannot be computed directly,
-and the marginal likelihood is intractable. Thus, standard MCMC methods
-like Hamiltonian Monte Carlo (HMC) or Metropolis-Hastings (MH) cannot be
-applied directly.
+Since the dimension of the latent states increases with the number of
+observations standard MCMC methods such as HMC can struggle to explore
+this high-dimensional correlated space efficiently. They can also suffer
+from degeneracy when attempting to jointly sample entire latent
+trajectories.
 
 Particle Markov Chain Monte Carlo (PMCMC) methods, such as the Particle
 Marginal Metropolis-Hastings (PMMH) implemented in this package, are
-designed to handle these situations. They use particle filters to
-approximate the marginal likelihood and allow for efficient sampling
-from the joint posterior density.
+designed to handle these situations. By using particle filters to
+unbiasedly estimate the marginal likelihood, they enable efficient
+sampling from the correct joint posterior while avoiding the need to
+explicitly explore the full latent state space.
 
 ## State-space Models
 
@@ -76,7 +68,7 @@ To illustrate how to use the `pmmh` function, we will simulate a simple
 state-space model (SSM) and perform Bayesian inference on it. Note:
 While this example uses `pmmh`, the model is simple enough that standard
 MCMC methods could also be applied. For a more complicated example where
-standard MCMC methods cannot be used, see the article Stochastic SIR
+standard MCMC methods would struggle more see the article Stochastic SIR
 Model
 [here](https://bjarkehautop.github.io/bayesSSM/articles/stochastic-sir-model.html).
 
