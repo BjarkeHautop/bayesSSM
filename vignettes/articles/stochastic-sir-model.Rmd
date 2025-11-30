@@ -117,112 +117,11 @@ Markov process.
 
 # Why Standard MCMC Methods Are Infeasible
 
-If one wanted to use standard MCMC methods to estimate the joint posterior of
-the parameters and latent states, one would need to compute the exact
-transition probabilities for the SIR model, which quickly becomes 
-infeasible as the number of infectious individuals increases. We illustrate how
-this can be done using matrix exponentiation for small populations.
-
-The probability distribution of the state at time $t$ is given by:
-$$
-matrix_exp(t) = e^{Qt},
-$$
-where $generator$ is the generator matrix of the Markov process, which contains
-the transition rates between states. 
-
-We define functions below to generate the state space for a small SIR system, 
-build the generator matrix, and compute the transition probabilities at a 
-given time $t$.
-
-```{r transition-probabilities}
-# Generate state space for small SIR system
-generate_sir_states <- function(pop_size) {
-  # Returns all (s, i) pairs where s + i <= pop_size
-  states <- expand.grid(s = 0:pop_size, i = 0:pop_size) %>%
-    dplyr::filter(.data$s + .data$i <= pop_size) %>%
-    dplyr::arrange(.data$s, .data$i)
-  states
-}
-
-# Build generator matrix
-build_generator_matrix <- function(states, lambda, gamma, pop_size) {
-  n_states <- nrow(states)
-  generator <- matrix(0, n_states, n_states)
-
-  for (k in 1:n_states) {
-    s <- states$s[k]
-    i <- states$i[k]
-
-    rate_infection <- (lambda / pop_size) * s * i
-    rate_recovery <- gamma * i
-
-    # Infection transition
-    if (s > 0 && i > 0) {
-      next_state <- c(s - 1, i + 1)
-      idx <- which(states$s == next_state[1] & states$i == next_state[2])
-      generator[k, idx] <- rate_infection
-    }
-
-    # Recovery transition
-    if (i > 0) {
-      next_state <- c(s, i - 1)
-      idx <- which(states$s == next_state[1] & states$i == next_state[2])
-      generator[k, idx] <- rate_recovery
-    }
-
-    # Diagonal: exit rate
-    generator[k, k] <- -(rate_infection + rate_recovery)
-  }
-
-  generator
-}
-
-# Compute transition probabilities at time t
-compute_transition_probs <- function(lambda, gamma, pop_size, t, init_state) {
-  states <- generate_sir_states(pop_size)
-  generator <- build_generator_matrix(states, lambda, gamma, pop_size)
-
-  matrix_exp <- expm(generator * t)
-
-  init_index <- which(states$s == init_state[1] & states$i == init_state[2])
-  p_t <- matrix_exp[init_index, ]
-
-  data.frame(
-    s = states$s,
-    i = states$i,
-    prob = p_t
-  )
-}
-```
-
-This can then be run to compute the transition probabilities for a given 
-state and time point. For example, if we have a population of size $pop_size=5$
-with state $(S(t), I(t)) = (4, 1)$ at time $t$, we can compute the transition
-probabilities for the next time point $t+1$ as
-
-```{r transition-probabilities-example}
-# Example with very small population
-lambda <- 1.0
-gamma <- 0.5
-pop_size <- 5
-t <- 1
-init_state <- c(4, 1) # (s, i)
-
-transition_probs <- compute_transition_probs(
-  lambda, gamma, pop_size, t, init_state
-)
-
-# Show the most probable next states
-transition_probs[order(-transition_probs$prob), ][1:5, ]
-```
-
-Note, that this scales poorly with larger populations, as the number of states
-is given by
-$$
-\text{pop_size}+2 \choose 2,
-$$
-which for $pop_size=100$ is already over $5000$ states. Thus, this whole
-approach is only feasible for very small populations. 
+Due to the high dimensionality and complex dependencies in the latent state space,
+standard MCMC methods such as Hamiltonian Monte Carlo (HMC) struggle to explore
+the posterior distribution efficiently. Moreover, these methods require evaluating the transition density
+$$p(x_{t+1} \mid x_t, \theta),$$
+which here requires solving the Kolmogorov forward equation. This is only tractable for very small populations, making direct likelihood-based MCMC infeasible in practice.
 
 # Simulate data
 

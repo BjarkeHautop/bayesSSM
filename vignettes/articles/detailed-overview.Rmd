@@ -43,18 +43,9 @@ $p(x_{0:T} \mid \theta)$ is the distribution of the latent states, and
 $p(y_{1:T} \mid x_{0:T}, \theta)$ is the distribution of the observations given 
 the latent states and parameters. 
 
-To do standard MCMC we need to be able to compute these terms exactly, 
-which is often not possible. Often we only have a **simulator** for the
-likelihood and not via a closed form expression. This includes:
-
-- Epidemic models with stochastic transmission dynamics
-
-- Agent-based models
-
-- Ecological or physical systems with complex latent dynamics
-
-Thus we can't use standard MCMC methods like Hamiltonian Monte Carlo (HMC) or
-Metropolis-Hastings (MH) directly.
+Standard MCMC methods such as HMC can struggle to explore this
+high-dimensional correlated space efficiently. They can also suffer from
+degeneracy when attempting to jointly sample entire latent trajectories.
 
 Another approach would be to marginalize out the latent states and sample the 
 parameters $\theta$, but this is also often infeasible due to the integral 
@@ -68,7 +59,7 @@ samples the latent states and parameters in two steps:
 2. Sample the parameters $\theta$ given the latent states $x_{0:T}$ and the
    observations $y_{1:T}$ using a Metropolis-Hastings step.
 
-The key idea is that, since the particle filter provides an unbiased estimate 
+The key idea is that, since the particle filter provides an unbiased estimate
 of the likelihood, the PMMH algorithm still targets the correct posterior
 distribution as its stationary distribution.
 
