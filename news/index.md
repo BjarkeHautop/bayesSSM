@@ -2,6 +2,10 @@
 
 ## bayesSSM (development version)
 
+## bayesSSM 0.7.1
+
+CRAN release: 2025-12-06
+
 - Small improvements to README and vignettes for clarity.
 
 ## bayesSSM 0.7.0
